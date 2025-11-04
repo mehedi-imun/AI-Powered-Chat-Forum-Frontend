@@ -30,7 +30,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
     // Create socket connection
     const socketUrl =
       process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:5000";
-    
+
     const socketInstance = io(socketUrl, {
       auth: {
         token: accessToken,
@@ -78,7 +78,8 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
       setIsConnected(false);
     });
 
-    // Store socket instance - legitimate use case for Socket.IO
+    // Store socket instance - legitimate use case for Socket.IO connection management
+    // eslint-disable-next-line react-compiler/react-compiler
     setSocket(socketInstance);
 
     // Cleanup on unmount or auth change
