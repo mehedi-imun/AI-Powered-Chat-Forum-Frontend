@@ -2,31 +2,23 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import {
-  Bell,
-  MessageSquare,
-  AtSign,
-  Heart,
-  UserPlus,
-  Shield,
-  AlertTriangle,
-  FileText,
-  Check,
-  Loader2,
-} from "lucide-react";
+import { Bell, Check, CheckCheck, Trash2, X } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { getCookie } from "@/lib/helpers/cookies";
 
 interface Notification {
   _id: string;
-  userId: string;
   type:
     | "mention"
     | "reply"
@@ -45,17 +37,11 @@ interface Notification {
   createdAt: string;
 }
 
-interface NotificationResponse {
-  notifications: Notification[];
-  total: number;
-  unreadCount: number;
-}
-
-export function NotificationDropdown() {
+export default function NotificationDropdown() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
+  const [open, setOpen] = useState(false);
 
   const fetchNotifications = async () => {
     try {
@@ -63,16 +49,16 @@ export function NotificationDropdown() {
       const token = getCookie("accessToken");
       const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-      const response = await fetch(`${API_URL}/notifications?limit=5`, {
+      const response = await fetch(`${API_URL}/notifications?limit=10`, {
         credentials: "include",
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
 
       const result = await response.json();
-      const data: NotificationResponse = result.data;
-
-      setNotifications(data.notifications || []);
-      setUnreadCount(data.unreadCount || 0);
+      if (result.success) {
+        setNotifications(result.data?.notifications || []);
+        setUnreadCount(result.data?.unreadCount || 0);
+      }
     } catch (error) {
       console.error("Failed to fetch notifications:", error);
     } finally {
@@ -80,159 +66,251 @@ export function NotificationDropdown() {
     }
   };
 
-  useEffect(() => {
-    fetchNotifications();
-  }, []);
-
   const markAsRead = async (notificationId: string) => {
     try {
       const token = getCookie("accessToken");
       const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-      await fetch(`${API_URL}/notifications/${notificationId}/read`, {
+      const response = await fetch(
+        `${API_URL}/notifications/${notificationId}/read`,
+        {
+          method: "PATCH",
+          credentials: "include",
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        }
+      );
+
+      if (response.ok) {
+        setNotifications((prev) =>
+          prev.map((n) =>
+            n._id === notificationId ? { ...n, isRead: true } : n
+          )
+        );
+        setUnreadCount((prev) => Math.max(0, prev - 1));
+      }
+    } catch (error) {
+      console.error("Failed to mark notification as read:", error);
+    }
+  };
+
+  const markAllAsRead = async () => {
+    try {
+      const token = getCookie("accessToken");
+      const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+      const response = await fetch(`${API_URL}/notifications/mark-all-read`, {
         method: "PATCH",
         credentials: "include",
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
 
-      await fetchNotifications();
+      if (response.ok) {
+        setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+        setUnreadCount(0);
+      }
     } catch (error) {
-      console.error("Failed to mark as read:", error);
+      console.error("Failed to mark all as read:", error);
     }
   };
 
-  const getNotificationIcon = (type: Notification["type"]) => {
+  const deleteNotification = async (notificationId: string) => {
+    try {
+      const token = getCookie("accessToken");
+      const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+      const response = await fetch(
+        `${API_URL}/notifications/${notificationId}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        }
+      );
+
+      if (response.ok) {
+        setNotifications((prev) =>
+          prev.filter((n) => n._id !== notificationId)
+        );
+        const wasUnread =
+          notifications.find((n) => n._id === notificationId)?.isRead === false;
+        if (wasUnread) {
+          setUnreadCount((prev) => Math.max(0, prev - 1));
+        }
+      }
+    } catch (error) {
+      console.error("Failed to delete notification:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (open) {
+      fetchNotifications();
+    }
+  }, [open]);
+
+  const getNotificationIcon = (type: string) => {
     const iconClass = "w-4 h-4";
     switch (type) {
-      case "mention":
-        return <AtSign className={`${iconClass} text-blue-600`} />;
-      case "reply":
-        return <MessageSquare className={`${iconClass} text-green-600`} />;
-      case "thread_comment":
-        return <MessageSquare className={`${iconClass} text-purple-600`} />;
-      case "post_like":
-        return <Heart className={`${iconClass} text-red-600`} />;
-      case "follow":
-        return <UserPlus className={`${iconClass} text-indigo-600`} />;
       case "post_created":
-        return <FileText className={`${iconClass} text-teal-600`} />;
+        return <Bell className={iconClass} />;
       case "thread_created":
-        return <MessageSquare className={`${iconClass} text-cyan-600`} />;
+        return <Bell className={iconClass} />;
       case "ai_moderation_rejected":
-        return <Shield className={`${iconClass} text-red-600`} />;
+        return <X className="w-4 h-4 text-red-500" />;
       case "ai_moderation_flagged":
-        return <AlertTriangle className={`${iconClass} text-orange-600`} />;
+        return <Bell className="w-4 h-4 text-orange-500" />;
+      case "mention":
+        return <span className={iconClass}>@</span>;
+      case "reply":
+        return <span className={iconClass}>💬</span>;
       default:
-        return <Bell className={`${iconClass} text-gray-600`} />;
+        return <Bell className={iconClass} />;
+    }
+  };
+
+  const getNotificationColor = (type: string) => {
+    switch (type) {
+      case "ai_moderation_rejected":
+        return "bg-red-50 border-red-200";
+      case "ai_moderation_flagged":
+        return "bg-orange-50 border-orange-200";
+      case "post_created":
+        return "bg-green-50 border-green-200";
+      case "thread_created":
+        return "bg-blue-50 border-blue-200";
+      default:
+        return "bg-gray-50 border-gray-200";
     }
   };
 
   return (
-    <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
+    <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="relative">
-          <Bell className="w-5 h-5" />
+          <Bell className="h-5 w-5" />
           {unreadCount > 0 && (
-            <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs bg-red-500">
+            <Badge
+              variant="destructive"
+              className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
+            >
               {unreadCount > 9 ? "9+" : unreadCount}
             </Badge>
           )}
-          <span className="sr-only">Notifications</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent
-        align="end"
-        className="w-96 max-h-[500px] overflow-y-auto"
-      >
-        <div className="flex items-center justify-between px-4 py-3 border-b">
-          <h3 className="font-semibold text-lg">Notifications</h3>
-          {unreadCount > 0 && (
-            <Badge variant="secondary" className="bg-blue-100 text-blue-700">
-              {unreadCount} new
-            </Badge>
+      <DropdownMenuContent align="end" className="w-[400px]">
+        <div className="flex items-center justify-between px-2 py-2">
+          <DropdownMenuLabel className="p-0">Notifications</DropdownMenuLabel>
+          {notifications.length > 0 && unreadCount > 0 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={markAllAsRead}
+              className="h-7 text-xs gap-1"
+            >
+              <CheckCheck className="h-3 w-3" />
+              Mark all read
+            </Button>
           )}
         </div>
+        <DropdownMenuSeparator />
 
-        {loading ? (
-          <div className="flex items-center justify-center py-8">
-            <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
-          </div>
-        ) : notifications.length === 0 ? (
-          <div className="py-8 text-center text-gray-500">
-            <Bell className="w-8 h-8 mx-auto mb-2 opacity-50" />
-            <p className="text-sm">No notifications yet</p>
-          </div>
-        ) : (
-          <div className="divide-y">
-            {notifications.map((notification) => (
-              <div
-                key={notification._id}
-                className={`px-4 py-3 hover:bg-gray-50 transition-colors ${
-                  !notification.isRead ? "bg-blue-50" : ""
-                }`}
-              >
-                <div className="flex items-start gap-3">
-                  <div
-                    className={`p-2 rounded-full ${
-                      !notification.isRead ? "bg-white" : "bg-gray-100"
-                    }`}
-                  >
-                    {getNotificationIcon(notification.type)}
-                  </div>
-
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 line-clamp-2">
-                      {notification.title}
-                    </p>
-                    <p className="text-xs text-gray-600 mt-1 line-clamp-2">
-                      {notification.message}
-                    </p>
-                    <p className="text-xs text-gray-400 mt-1">
-                      {formatDistanceToNow(new Date(notification.createdAt), {
-                        addSuffix: true,
-                      })}
-                    </p>
-
-                    <div className="flex gap-2 mt-2">
-                      {notification.link && (
-                        <Link
-                          href={notification.link}
-                          className="text-xs text-blue-600 hover:underline"
-                          onClick={() => {
-                            markAsRead(notification._id);
-                            setIsOpen(false);
-                          }}
-                        >
-                          View
-                        </Link>
-                      )}
-                      {!notification.isRead && (
-                        <button
-                          type="button"
-                          onClick={() => markAsRead(notification._id)}
-                          className="text-xs text-gray-600 hover:text-gray-900 flex items-center gap-1"
-                        >
-                          <Check className="w-3 h-3" />
-                          Mark as read
-                        </button>
-                      )}
+        <ScrollArea className="h-[400px]">
+          {loading ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
+            </div>
+          ) : notifications.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              <Bell className="w-8 h-8 mx-auto mb-2 opacity-50" />
+              <p className="text-sm">No notifications</p>
+            </div>
+          ) : (
+            <div className="space-y-1">
+              {notifications.map((notification) => (
+                <div
+                  key={notification._id}
+                  className={`relative p-3 hover:bg-gray-50 transition-colors border-l-4 ${
+                    notification.isRead
+                      ? "border-l-transparent"
+                      : "border-l-blue-500"
+                  } ${getNotificationColor(notification.type)}`}
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="mt-1">
+                      {getNotificationIcon(notification.type)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2">
+                        {notification.link ? (
+                          <Link
+                            href={notification.link}
+                            className="text-sm font-medium hover:underline"
+                            onClick={() => {
+                              markAsRead(notification._id);
+                              setOpen(false);
+                            }}
+                          >
+                            {notification.title}
+                          </Link>
+                        ) : (
+                          <p className="text-sm font-medium">
+                            {notification.title}
+                          </p>
+                        )}
+                        <div className="flex items-center gap-1">
+                          {!notification.isRead && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6"
+                              onClick={() => markAsRead(notification._id)}
+                              title="Mark as read"
+                            >
+                              <Check className="h-3 w-3" />
+                            </Button>
+                          )}
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6 text-red-500 hover:text-red-700"
+                            onClick={() => deleteNotification(notification._id)}
+                            title="Delete"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </div>
+                      <p className="text-xs text-gray-600 mt-1">
+                        {notification.message}
+                      </p>
+                      <p className="text-xs text-gray-400 mt-1">
+                        {formatDistanceToNow(new Date(notification.createdAt), {
+                          addSuffix: true,
+                        })}
+                      </p>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        )}
+              ))}
+            </div>
+          )}
+        </ScrollArea>
 
-        <div className="px-4 py-3 border-t">
-          <Link
-            href="/dashboard/notifications"
-            className="text-sm text-blue-600 hover:underline font-medium block text-center"
-            onClick={() => setIsOpen(false)}
-          >
-            View all notifications
-          </Link>
-        </div>
+        {notifications.length > 0 && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link
+                href="/dashboard/notifications"
+                className="w-full text-center text-sm text-blue-600 hover:text-blue-700 cursor-pointer"
+                onClick={() => setOpen(false)}
+              >
+                View all notifications
+              </Link>
+            </DropdownMenuItem>
+          </>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );
