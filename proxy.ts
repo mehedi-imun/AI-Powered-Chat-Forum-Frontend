@@ -7,9 +7,13 @@ export default function proxy(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
-  // Auth pages (login, register)
-  const isAuthPage = pathname.startsWith("/login") || pathname.startsWith("/register");
-  
+  // Auth pages (login, register, verify-email, forgot-password)
+  const isAuthPage =
+    pathname.startsWith("/login") ||
+    pathname.startsWith("/register") ||
+    pathname.startsWith("/verify-email") ||
+    pathname.startsWith("/forgot-password");
+
   // Protected dashboard routes
   const isUserDashboard = pathname.startsWith("/dashboard");
   const isAdminDashboard = pathname.startsWith("/admin");
@@ -47,5 +51,7 @@ export const config = {
     "/admin/:path*",
     "/login",
     "/register",
+    "/verify-email",
+    "/forgot-password",
   ],
 };
