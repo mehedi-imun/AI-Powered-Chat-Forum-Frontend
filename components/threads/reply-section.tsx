@@ -184,12 +184,29 @@ export function ReplySection({
       {isAuthenticated ? (
         <Card className="mb-6">
           <CardHeader>
-            <h3 className="text-lg font-semibold">Post a Reply</h3>
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold">
+                {replyingTo ? "Reply to Comment" : "Post a Reply"}
+              </h3>
+              {replyingTo && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setReplyingTo(null)}
+                >
+                  Cancel
+                </Button>
+              )}
+            </div>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmitReply}>
+            <form onSubmit={(e) => handleSubmitReply(e, replyingTo || undefined)}>
               <Textarea
-                placeholder="Write your reply..."
+                placeholder={
+                  replyingTo
+                    ? "Write your reply to this comment..."
+                    : "Write your reply..."
+                }
                 value={replyContent}
                 onChange={(e) => setReplyContent(e.target.value)}
                 className="mb-4 min-h-[120px]"
@@ -244,8 +261,8 @@ export function ReplySection({
               <ReplyCard
                 key={reply._id}
                 reply={reply}
-                children={children}
-                onReply={(parentId) => {
+                childrenReplies={children}
+                onReply={(parentId: string) => {
                   setReplyingTo(parentId);
                   // Scroll to reply form
                   window.scrollTo({ top: 0, behavior: "smooth" });

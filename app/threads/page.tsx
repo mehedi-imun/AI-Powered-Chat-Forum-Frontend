@@ -1,13 +1,9 @@
 import { Metadata } from "next";
-import Link from "next/link";
 import { Navbar } from "@/components/landing/navbar";
 import { Footer } from "@/components/landing/footer";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MessageSquare, User, Clock, ArrowRight } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
 import { StartDiscussionButton } from "@/components/threads/start-discussion-button";
 import { SearchBar } from "@/components/threads/search-bar";
+import { RealTimeThreadList } from "@/components/threads/real-time-thread-list";
 
 export const metadata: Metadata = {
   title: "Discussions | Chat Forum",
@@ -99,84 +95,8 @@ export default async function ThreadsPage() {
             </div>
           </div>
 
-          {/* Threads List */}
-          {threads.length === 0 ? (
-            <Card>
-              <CardContent className="py-12 text-center">
-                <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-600 mb-4">
-                  No discussions yet. Be the first to start one!
-                </p>
-                <Button asChild>
-                  <Link href="/register">Get Started</Link>
-                </Button>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="space-y-4">
-              {threads.map((thread) => (
-                <Card
-                  key={thread._id}
-                  className="hover:shadow-md transition-shadow"
-                >
-                  <CardHeader>
-                    <CardTitle className="text-xl">
-                      <Link
-                        href={`/threads/${thread._id}`}
-                        className="hover:text-primary transition-colors"
-                      >
-                        {thread.title}
-                      </Link>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {/* Tags */}
-                    {thread.tags && thread.tags.length > 0 && (
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        {thread.tags.slice(0, 3).map((tag, idx) => (
-                          <span
-                            key={idx}
-                            className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded-full"
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-
-                    <div className="flex items-center justify-between text-sm text-gray-500">
-                      <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-1">
-                          <User className="h-4 w-4" />
-                          <span>{thread.createdBy?.name || "Anonymous"}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <MessageSquare className="h-4 w-4" />
-                          <span>{thread.postCount || 0} replies</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Clock className="h-4 w-4" />
-                          <span>
-                            {formatDistanceToNow(new Date(thread.createdAt), {
-                              addSuffix: true,
-                            })}
-                          </span>
-                        </div>
-                      </div>
-
-                      <Link
-                        href={`/threads/${thread._id}`}
-                        className="flex items-center gap-1 text-primary hover:underline"
-                      >
-                        Read more
-                        <ArrowRight className="h-4 w-4" />
-                      </Link>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
+          {/* Threads List with Real-Time Updates */}
+          <RealTimeThreadList initialThreads={threads} />
 
           {/* Pagination placeholder */}
           {threads.length > 0 && (

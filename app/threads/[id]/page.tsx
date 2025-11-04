@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { User, Clock } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import { ReplySection } from "@/components/threads/reply-section";
+import { RealTimeReplySection } from "@/components/threads/real-time-reply-section";
 
 interface Thread {
   _id: string;
@@ -219,8 +219,8 @@ export default async function ThreadDetailPage({
             </CardContent>
           </Card>
 
-          {/* Reply Section with Auth Check */}
-          <ReplySection threadId={thread._id} replies={replies} />
+          {/* Reply Section with Real-Time Updates */}
+          <RealTimeReplySection threadId={thread._id} initialReplies={replies} />
 
           {/* Bottom CTA */}
           <Card className="bg-linear-to-r from-blue-50 to-indigo-50 border-blue-200">
