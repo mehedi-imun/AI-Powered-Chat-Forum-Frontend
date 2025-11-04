@@ -81,21 +81,17 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
       setIsConnected(false);
     });
 
-    // Store socket instance using ref
-    socketRef.current = socketInstance;
+    // Store socket instance
+    setSocket(socketInstance);
 
     // Cleanup on unmount or auth change
     return () => {
       console.log("🧹 Cleaning up Socket.IO connection");
-      if (socketRef.current) {
-        socketRef.current.disconnect();
-        socketRef.current = null;
-      }
-      setIsConnected(false);
+      socketInstance.disconnect();
     };
-  }, [accessToken, isAuthenticated]);
+  }, [accessToken, isAuthenticated, socket?.connected]);
   return (
-    <SocketContext.Provider value={{ socket: socketRef.current, isConnected }}>
+    <SocketContext.Provider value={{ socket, isConnected }}>
       {children}
     </SocketContext.Provider>
   );
