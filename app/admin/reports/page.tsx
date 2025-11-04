@@ -3,6 +3,14 @@
 import { useEffect, useState, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { Flag, CheckCircle, XCircle, Eye } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { getCookie } from "@/lib/helpers/cookies";
@@ -25,6 +33,10 @@ export default function ReportsPage() {
   const [reports, setReports] = useState<Report[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("all");
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [total, setTotal] = useState(0);
+  const limit = 10;
 
   const fetchReports = useCallback(async () => {
     try {
@@ -32,7 +44,7 @@ export default function ReportsPage() {
       const token = getCookie("accessToken");
 
       const API_URL = process.env.NEXT_PUBLIC_API_URL;
-      let url = `${API_URL}/admin/reports?limit=50`;
+      let url = `${API_URL}/admin/reports?page=${page}&limit=${limit}`;
       if (statusFilter !== "all") url += `&status=${statusFilter}`;
 
       const response = await fetch(url, {
@@ -42,16 +54,27 @@ export default function ReportsPage() {
 
       const result = await response.json();
       setReports(result.data?.reports || []);
+      setTotal(result.data?.total || 0);
+      setTotalPages(result.data?.totalPages || 1);
     } catch (error) {
       console.error("Failed to fetch reports:", error);
     } finally {
       setLoading(false);
     }
-  }, [statusFilter]);
+  }, [statusFilter, page, limit]);
 
   useEffect(() => {
     fetchReports();
   }, [fetchReports]);
+
+  const handleFilterChange = (newFilter: string) => {
+    setStatusFilter(newFilter);
+    setPage(1); // Reset to page 1 when filter changes
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
 
   const getStatusBadge = (status: string) => {
     const styles = {
@@ -107,7 +130,7 @@ export default function ReportsPage() {
           <div className="flex gap-4">
             <select
               value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
+              onChange={(e) => handleFilterChange(e.target.value)}
               className="px-4 py-2 border rounded-lg"
             >
               <option value="all">All Reports</option>
@@ -203,6 +226,72 @@ export default function ReportsPage() {
           ))
         )}
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between mt-6">
+          <p className="text-sm text-gray-600">
+            Showing {reports.length} of {total} reports (Page {page} of{" "}
+            {totalPages})
+          </p>
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  onClick={() => handlePageChange(page - 1)}
+                  className={
+                    page === 1
+                      ? "pointer-events-none opacity-50"
+                      : "cursor-pointer"
+                  }
+                />
+              </PaginationItem>
+
+              {[...Array(totalPages)].map((_, index) => {
+                const pageNumber = index + 1;
+                // Show first page, last page, current page, and pages around current
+                if (
+                  pageNumber === 1 ||
+                  pageNumber === totalPages ||
+                  (pageNumber >= page - 1 && pageNumber <= page + 1)
+                ) {
+                  return (
+                    <PaginationItem key={pageNumber}>
+                      <PaginationLink
+                        onClick={() => handlePageChange(pageNumber)}
+                        isActive={page === pageNumber}
+                        className="cursor-pointer"
+                      >
+                        {pageNumber}
+                      </PaginationLink>
+                    </PaginationItem>
+                  );
+                }
+                // Show ellipsis
+                if (pageNumber === page - 2 || pageNumber === page + 2) {
+                  return (
+                    <PaginationItem key={pageNumber}>
+                      <span className="px-4 py-2">...</span>
+                    </PaginationItem>
+                  );
+                }
+                return null;
+              })}
+
+              <PaginationItem>
+                <PaginationNext
+                  onClick={() => handlePageChange(page + 1)}
+                  className={
+                    page === totalPages
+                      ? "pointer-events-none opacity-50"
+                      : "cursor-pointer"
+                  }
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
     </div>
   );
 }
