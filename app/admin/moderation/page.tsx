@@ -75,7 +75,10 @@ export default function ModerationPage() {
   }, [filter, fetchModeratedPosts]);
 
   const getStatusBadge = (status: string) => {
-    const badges: Record<string, { color: string; icon: LucideIcon; text: string }> = {
+    const badges: Record<
+      string,
+      { color: string; icon: LucideIcon; text: string }
+    > = {
       approved: {
         color: "bg-green-100 text-green-800",
         icon: CheckCircle,
