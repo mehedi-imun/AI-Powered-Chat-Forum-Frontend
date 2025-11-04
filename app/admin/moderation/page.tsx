@@ -11,9 +11,11 @@ import {
   Eye,
   ThumbsUp,
   ThumbsDown,
+  Activity,
   type LucideIcon,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { getCookie } from "@/lib/helpers/cookies";
 
 interface ModeratedPost {
   _id: string;
@@ -34,22 +36,57 @@ interface ModeratedPost {
     inappropriate?: number;
     sentiment?: string;
   };
+  aiReasoning?: string;
+  aiRecommendation?: string;
   createdAt: string;
   moderatedAt?: string;
 }
 
+interface AISummary {
+  totalModerated: number;
+  moderatedToday: number;
+  moderatedThisWeek: number;
+  breakdown: {
+    approved: number;
+    flagged: number;
+    rejected: number;
+    pending: number;
+  };
+  averageScores: {
+    spam: number;
+    toxicity: number;
+    inappropriate: number;
+  };
+  highRiskCount: number;
+}
+
 export default function ModerationPage() {
   const [posts, setPosts] = useState<ModeratedPost[]>([]);
+  const [summary, setSummary] = useState<AISummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>("all");
+
+  const fetchSummary = async () => {
+    try {
+      const token = getCookie("accessToken");
+      const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+      const response = await fetch(`${API_URL}/admin/ai-moderation/summary`, {
+        credentials: "include",
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+
+      const result = await response.json();
+      setSummary(result.data);
+    } catch (error) {
+      console.error("Failed to fetch AI summary:", error);
+    }
+  };
 
   const fetchModeratedPosts = useCallback(async () => {
     try {
       setLoading(true);
-      const token = document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("accessToken="))
-        ?.split("=")[1];
+      const token = getCookie("accessToken");
 
       const API_URL = process.env.NEXT_PUBLIC_API_URL;
       const url =
@@ -58,7 +95,8 @@ export default function ModerationPage() {
           : `${API_URL}/admin/posts?moderationStatus=${filter}&limit=50`;
 
       const response = await fetch(url, {
-        headers: { Authorization: `Bearer ${token}` },
+        credentials: "include",
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
 
       const result = await response.json();
@@ -71,6 +109,7 @@ export default function ModerationPage() {
   }, [filter]);
 
   useEffect(() => {
+    fetchSummary();
     fetchModeratedPosts();
   }, [filter, fetchModeratedPosts]);
 
@@ -136,16 +175,170 @@ export default function ModerationPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold flex items-center gap-2">
           <Shield className="h-8 w-8 text-blue-600" />
-          AI Moderation
+          AI Moderation & Summary
         </h1>
         <button
           type="button"
-          onClick={fetchModeratedPosts}
+          onClick={() => {
+            fetchSummary();
+            fetchModeratedPosts();
+          }}
           className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
         >
           Refresh
         </button>
       </div>
+
+      {/* AI Summary Stats */}
+      {summary && (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Total Moderated
+                </CardTitle>
+                <Activity className="h-5 w-5 text-blue-600" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold">
+                  {summary.totalModerated}
+                </div>
+                <p className="text-xs text-gray-600 mt-1">
+                  All time AI actions
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Today</CardTitle>
+                <Activity className="h-5 w-5 text-green-600" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold text-green-600">
+                  {summary.moderatedToday}
+                </div>
+                <p className="text-xs text-gray-600 mt-1">Posts moderated</p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">This Week</CardTitle>
+                <Activity className="h-5 w-5 text-purple-600" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold text-purple-600">
+                  {summary.moderatedThisWeek}
+                </div>
+                <p className="text-xs text-gray-600 mt-1">Last 7 days</p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  High Risk
+                </CardTitle>
+                <AlertTriangle className="h-5 w-5 text-red-600" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold text-red-600">
+                  {summary.highRiskCount}
+                </div>
+                <p className="text-xs text-gray-600 mt-1">Flagged posts</p>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4 text-green-600" />
+                  Approved
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-green-600">
+                  {summary.breakdown.approved}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium flex items-center gap-2">
+                  <AlertTriangle className="h-4 w-4 text-orange-600" />
+                  Flagged
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-orange-600">
+                  {summary.breakdown.flagged}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium flex items-center gap-2">
+                  <XCircle className="h-4 w-4 text-red-600" />
+                  Rejected
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-red-600">
+                  {summary.breakdown.rejected}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium flex items-center gap-2">
+                  <Eye className="h-4 w-4 text-yellow-600" />
+                  Pending
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-yellow-600">
+                  {summary.breakdown.pending}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Average AI Scores</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <p className="text-sm text-gray-600 mb-1">Spam Detection</p>
+                  <div className="text-2xl font-bold text-blue-600">
+                    {(summary.averageScores.spam * 100).toFixed(1)}%
+                  </div>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600 mb-1">Toxicity</p>
+                  <div className="text-2xl font-bold text-orange-600">
+                    {(summary.averageScores.toxicity * 100).toFixed(1)}%
+                  </div>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600 mb-1">Inappropriate</p>
+                  <div className="text-2xl font-bold text-red-600">
+                    {(summary.averageScores.inappropriate * 100).toFixed(1)}%
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </>
+      )}
 
       {/* Filter Tabs */}
       <div className="flex gap-2 border-b">
@@ -198,19 +391,25 @@ export default function ModerationPage() {
                     </div>
                     <CardTitle className="text-base">
                       Thread:{" "}
-                      <a
-                        href={`/threads/${post.threadId._id}`}
-                        className="text-blue-600 hover:underline"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {post.threadId.title}
-                      </a>
+                      {post.threadId ? (
+                        <a
+                          href={`/threads/${post.threadId._id}`}
+                          className="text-blue-600 hover:underline"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {post.threadId.title}
+                        </a>
+                      ) : (
+                        <span className="text-gray-500">Deleted Thread</span>
+                      )}
                     </CardTitle>
                     <p className="text-sm text-gray-600 mt-1">
                       By:{" "}
-                      <span className="font-medium">{post.author.name}</span> (
-                      {post.author.email})
+                      <span className="font-medium">
+                        {post.author?.name || "Unknown User"}
+                      </span>{" "}
+                      {post.author?.email && `(${post.author.email})`}
                     </p>
                   </div>
                 </div>
@@ -222,6 +421,30 @@ export default function ModerationPage() {
                     {post.content}
                   </p>
                 </div>
+
+                {/* AI Reasoning/Feedback */}
+                {post.aiReasoning && (
+                  <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                    <p className="text-xs font-semibold text-blue-900 mb-1 flex items-center gap-1">
+                      <Shield className="h-3 w-3" />
+                      AI Feedback:
+                    </p>
+                    <p className="text-sm text-blue-800">{post.aiReasoning}</p>
+                    {post.aiRecommendation && (
+                      <span
+                        className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium mt-2 ${
+                          post.aiRecommendation === "approve"
+                            ? "bg-green-100 text-green-800"
+                            : post.aiRecommendation === "review"
+                              ? "bg-orange-100 text-orange-800"
+                              : "bg-red-100 text-red-800"
+                        }`}
+                      >
+                        AI Recommendation: {post.aiRecommendation}
+                      </span>
+                    )}
+                  </div>
+                )}
 
                 {/* AI Scores */}
                 {post.aiScore && (
@@ -297,16 +520,18 @@ export default function ModerationPage() {
                     <ThumbsDown className="h-4 w-4 mr-1" />
                     Reject
                   </Button>
-                  <Button size="sm" variant="outline" asChild>
-                    <a
-                      href={`/threads/${post.threadId._id}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <Eye className="h-4 w-4 mr-1" />
-                      View in Thread
-                    </a>
-                  </Button>
+                  {post.threadId && (
+                    <Button size="sm" variant="outline" asChild>
+                      <a
+                        href={`/threads/${post.threadId._id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <Eye className="h-4 w-4 mr-1" />
+                        View in Thread
+                      </a>
+                    </Button>
+                  )}
                 </div>
               </CardContent>
             </Card>

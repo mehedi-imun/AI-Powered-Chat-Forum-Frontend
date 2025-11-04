@@ -6,10 +6,8 @@ import {
   LayoutDashboard,
   Users,
   MessageSquare,
-  AlertTriangle,
   Flag,
   Settings,
-  BarChart3,
   Home,
   FileText,
   Shield,
@@ -19,7 +17,6 @@ import { cn } from "@/lib/utils";
 
 const navigation = [
   { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
-  { name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
   { name: "Users", href: "/admin/users", icon: Users },
   { name: "Threads", href: "/admin/threads", icon: MessageSquare },
   { name: "Posts", href: "/admin/posts", icon: FileText },

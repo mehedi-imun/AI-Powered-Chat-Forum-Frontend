@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Flag, CheckCircle, XCircle, Eye } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { getCookie } from "@/lib/helpers/cookies";
 
 interface Report {
   _id: string;
@@ -28,17 +29,15 @@ export default function ReportsPage() {
   const fetchReports = useCallback(async () => {
     try {
       setLoading(true);
-      const token = document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("accessToken="))
-        ?.split("=")[1];
+      const token = getCookie("accessToken");
 
       const API_URL = process.env.NEXT_PUBLIC_API_URL;
       let url = `${API_URL}/admin/reports?limit=50`;
       if (statusFilter !== "all") url += `&status=${statusFilter}`;
 
       const response = await fetch(url, {
-        headers: { Authorization: `Bearer ${token}` },
+        credentials: "include",
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
 
       const result = await response.json();
@@ -158,10 +157,10 @@ export default function ReportsPage() {
                       </span>
                     </div>
                     <CardTitle className="text-base mb-1">
-                      Reported by: {report.reportedBy.name}
+                      Reported by: {report.reportedBy?.name || "Unknown User"}
                     </CardTitle>
                     <p className="text-sm text-gray-600">
-                      {report.reportedBy.email} •{" "}
+                      {report.reportedBy?.email || "No email"} •{" "}
                       {formatDistanceToNow(new Date(report.createdAt), {
                         addSuffix: true,
                       })}

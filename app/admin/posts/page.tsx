@@ -4,9 +4,18 @@ import { useEffect, useState, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { FileText, Search, Trash2, Eye, AlertTriangle } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import Link from "next/link";
+import { getCookie } from "@/lib/helpers/cookies";
 
 interface Post {
   _id: string;
@@ -30,32 +39,36 @@ export default function PostsManagementPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [total, setTotal] = useState(0);
+  const limit = 10;
 
   const fetchPosts = useCallback(async () => {
     try {
       setLoading(true);
-      const token = document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("accessToken="))
-        ?.split("=")[1];
+      const token = getCookie("accessToken");
 
       const API_URL = process.env.NEXT_PUBLIC_API_URL;
-      let url = `${API_URL}/admin/posts?limit=50`;
+      let url = `${API_URL}/admin/posts?page=${page}&limit=${limit}`;
       if (statusFilter !== "all") url += `&status=${statusFilter}`;
       if (searchTerm) url += `&searchTerm=${searchTerm}`;
 
       const response = await fetch(url, {
-        headers: { Authorization: `Bearer ${token}` },
+        credentials: "include",
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
 
       const result = await response.json();
       setPosts(result.data?.posts || []);
+      setTotal(result.data?.total || 0);
+      setTotalPages(result.data?.totalPages || 1);
     } catch (error) {
       console.error("Failed to fetch posts:", error);
     } finally {
       setLoading(false);
     }
-  }, [statusFilter, searchTerm]);
+  }, [statusFilter, searchTerm, page, limit]);
 
   useEffect(() => {
     fetchPosts();
@@ -63,7 +76,12 @@ export default function PostsManagementPage() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    setPage(1); // Reset to page 1 on new search
     fetchPosts();
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
   };
 
   if (loading) {
@@ -167,19 +185,25 @@ export default function PostsManagementPage() {
                     </div>
                     <CardTitle className="text-base mb-1">
                       Thread:{" "}
-                      <Link
-                        href={`/threads/${post.threadId._id}`}
-                        className="text-blue-600 hover:underline"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {post.threadId.title}
-                      </Link>
+                      {post.threadId ? (
+                        <Link
+                          href={`/threads/${post.threadId._id}`}
+                          className="text-blue-600 hover:underline"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {post.threadId.title}
+                        </Link>
+                      ) : (
+                        <span className="text-gray-500">Deleted Thread</span>
+                      )}
                     </CardTitle>
                     <p className="text-sm text-gray-600">
                       By:{" "}
-                      <span className="font-medium">{post.author.name}</span> (
-                      {post.author.email}) •{" "}
+                      <span className="font-medium">
+                        {post.author?.name || "Unknown User"}
+                      </span>{" "}
+                      {post.author?.email && `(${post.author.email})`} •{" "}
                       {formatDistanceToNow(new Date(post.createdAt), {
                         addSuffix: true,
                       })}
@@ -211,22 +235,88 @@ export default function PostsManagementPage() {
                     <AlertTriangle className="h-3 w-3" />
                     Flag
                   </Button>
-                  <Button size="sm" variant="outline" asChild>
-                    <Link
-                      href={`/threads/${post.threadId._id}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <Eye className="h-3 w-3 mr-1" />
-                      View in Thread
-                    </Link>
-                  </Button>
+                  {post.threadId && (
+                    <Button size="sm" variant="outline" asChild>
+                      <Link
+                        href={`/threads/${post.threadId._id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <Eye className="h-3 w-3 mr-1" />
+                        View in Thread
+                      </Link>
+                    </Button>
+                  )}
                 </div>
               </CardContent>
             </Card>
           ))
         )}
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between mt-6">
+          <p className="text-sm text-gray-600">
+            Showing {posts.length} of {total} posts (Page {page} of{" "}
+            {totalPages})
+          </p>
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  onClick={() => handlePageChange(page - 1)}
+                  className={
+                    page === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"
+                  }
+                />
+              </PaginationItem>
+
+              {[...Array(totalPages)].map((_, index) => {
+                const pageNumber = index + 1;
+                // Show first page, last page, current page, and pages around current
+                if (
+                  pageNumber === 1 ||
+                  pageNumber === totalPages ||
+                  (pageNumber >= page - 1 && pageNumber <= page + 1)
+                ) {
+                  return (
+                    <PaginationItem key={pageNumber}>
+                      <PaginationLink
+                        onClick={() => handlePageChange(pageNumber)}
+                        isActive={page === pageNumber}
+                        className="cursor-pointer"
+                      >
+                        {pageNumber}
+                      </PaginationLink>
+                    </PaginationItem>
+                  );
+                }
+                // Show ellipsis
+                if (pageNumber === page - 2 || pageNumber === page + 2) {
+                  return (
+                    <PaginationItem key={pageNumber}>
+                      <span className="px-4 py-2">...</span>
+                    </PaginationItem>
+                  );
+                }
+                return null;
+              })}
+
+              <PaginationItem>
+                <PaginationNext
+                  onClick={() => handlePageChange(page + 1)}
+                  className={
+                    page === totalPages
+                      ? "pointer-events-none opacity-50"
+                      : "cursor-pointer"
+                  }
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
     </div>
   );
 }

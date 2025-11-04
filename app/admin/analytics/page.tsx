@@ -12,6 +12,7 @@ import {
   CheckCircle,
   XCircle,
 } from "lucide-react";
+import { getCookie } from "@/lib/helpers/cookies";
 
 interface AnalyticsData {
   totalUsers: number;
@@ -33,24 +34,29 @@ export default function AnalyticsPage() {
   }, []);
 
   const fetchAnalytics = async () => {
+    setLoading(true);
     try {
-      const token = document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("accessToken="))
-        ?.split("=")[1];
-
       const API_URL = process.env.NEXT_PUBLIC_API_URL;
+      const token = getCookie("accessToken");
+
+      console.log(
+        "📍 Fetching analytics with token:",
+        token ? "✅ Token found" : "❌ No token"
+      );
 
       // Fetch multiple endpoints in parallel
       const [usersRes, threadsRes, postsRes] = await Promise.all([
         fetch(`${API_URL}/admin/users/stats`, {
-          headers: { Authorization: `Bearer ${token}` },
+          credentials: "include",
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
         }),
         fetch(`${API_URL}/admin/threads/stats`, {
-          headers: { Authorization: `Bearer ${token}` },
+          credentials: "include",
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
         }),
         fetch(`${API_URL}/admin/posts/stats`, {
-          headers: { Authorization: `Bearer ${token}` },
+          credentials: "include",
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
         }),
       ]);
 

@@ -5,6 +5,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import {
   MessageSquare,
   Search,
   Pin,
@@ -16,6 +24,7 @@ import {
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import Link from "next/link";
+import { getCookie } from "@/lib/helpers/cookies";
 
 interface Thread {
   _id: string;
@@ -39,32 +48,36 @@ export default function ThreadsManagementPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [total, setTotal] = useState(0);
+  const limit = 10;
 
   const fetchThreads = useCallback(async () => {
     try {
       setLoading(true);
-      const token = document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("accessToken="))
-        ?.split("=")[1];
+      const token = getCookie("accessToken");
 
       const API_URL = process.env.NEXT_PUBLIC_API_URL;
-      let url = `${API_URL}/admin/threads?limit=50`;
+      let url = `${API_URL}/admin/threads?page=${page}&limit=${limit}`;
       if (statusFilter !== "all") url += `&status=${statusFilter}`;
       if (searchTerm) url += `&searchTerm=${searchTerm}`;
 
       const response = await fetch(url, {
-        headers: { Authorization: `Bearer ${token}` },
+        credentials: "include",
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
 
       const result = await response.json();
       setThreads(result.data?.threads || []);
+      setTotal(result.data?.total || 0);
+      setTotalPages(result.data?.totalPages || 1);
     } catch (error) {
       console.error("Failed to fetch threads:", error);
     } finally {
       setLoading(false);
     }
-  }, [statusFilter, searchTerm]);
+  }, [statusFilter, searchTerm, page, limit]);
 
   useEffect(() => {
     fetchThreads();
@@ -72,7 +85,12 @@ export default function ThreadsManagementPage() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    setPage(1); // Reset to page 1 on new search
     fetchThreads();
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
   };
 
   if (loading) {
@@ -187,7 +205,7 @@ export default function ThreadsManagementPage() {
                     <p className="text-sm text-gray-600">
                       By:{" "}
                       <span className="font-medium">
-                        {thread.createdBy.name}
+                        {thread.createdBy?.name || "Unknown User"}
                       </span>{" "}
                       •{" "}
                       {formatDistanceToNow(new Date(thread.createdAt), {
@@ -263,6 +281,70 @@ export default function ThreadsManagementPage() {
           ))
         )}
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between mt-6">
+          <p className="text-sm text-gray-600">
+            Showing {threads.length} of {total} threads (Page {page} of{" "}
+            {totalPages})
+          </p>
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  onClick={() => handlePageChange(page - 1)}
+                  className={
+                    page === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"
+                  }
+                />
+              </PaginationItem>
+
+              {[...Array(totalPages)].map((_, index) => {
+                const pageNumber = index + 1;
+                // Show first page, last page, current page, and pages around current
+                if (
+                  pageNumber === 1 ||
+                  pageNumber === totalPages ||
+                  (pageNumber >= page - 1 && pageNumber <= page + 1)
+                ) {
+                  return (
+                    <PaginationItem key={pageNumber}>
+                      <PaginationLink
+                        onClick={() => handlePageChange(pageNumber)}
+                        isActive={page === pageNumber}
+                        className="cursor-pointer"
+                      >
+                        {pageNumber}
+                      </PaginationLink>
+                    </PaginationItem>
+                  );
+                }
+                // Show ellipsis
+                if (pageNumber === page - 2 || pageNumber === page + 2) {
+                  return (
+                    <PaginationItem key={pageNumber}>
+                      <span className="px-4 py-2">...</span>
+                    </PaginationItem>
+                  );
+                }
+                return null;
+              })}
+
+              <PaginationItem>
+                <PaginationNext
+                  onClick={() => handlePageChange(page + 1)}
+                  className={
+                    page === totalPages
+                      ? "pointer-events-none opacity-50"
+                      : "cursor-pointer"
+                  }
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
     </div>
   );
 }
