@@ -121,7 +121,10 @@ export default async function ThreadsPage() {
           ) : (
             <div className="space-y-4">
               {threads.map((thread) => (
-                <Card key={thread._id} className="hover:shadow-md transition-shadow">
+                <Card
+                  key={thread._id}
+                  className="hover:shadow-md transition-shadow"
+                >
                   <CardHeader>
                     <CardTitle className="text-xl">
                       <Link

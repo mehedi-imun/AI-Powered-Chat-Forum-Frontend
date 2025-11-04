@@ -39,9 +39,7 @@ export function Hero() {
               <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4 mx-auto">
                 <MessageSquare className="h-6 w-6 text-primary" />
               </div>
-              <h3 className="font-semibold text-lg mb-2">
-                Rich Discussions
-              </h3>
+              <h3 className="font-semibold text-lg mb-2">Rich Discussions</h3>
               <p className="text-gray-600 dark:text-gray-400 text-sm">
                 Create and participate in threaded conversations with markdown
                 support and real-time updates.
@@ -52,9 +50,7 @@ export function Hero() {
               <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4 mx-auto">
                 <Users className="h-6 w-6 text-primary" />
               </div>
-              <h3 className="font-semibold text-lg mb-2">
-                Active Community
-              </h3>
+              <h3 className="font-semibold text-lg mb-2">Active Community</h3>
               <p className="text-gray-600 dark:text-gray-400 text-sm">
                 Connect with like-minded individuals and build meaningful
                 relationships through shared interests.

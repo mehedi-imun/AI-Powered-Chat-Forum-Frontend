@@ -10,7 +10,10 @@ export function Footer() {
         <div className="grid md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="col-span-1">
-            <Link href="/" className="flex items-center gap-2 font-bold text-xl mb-4">
+            <Link
+              href="/"
+              className="flex items-center gap-2 font-bold text-xl mb-4"
+            >
               <MessageSquare className="h-6 w-6 text-primary" />
               <span>Chat Forum</span>
             </Link>

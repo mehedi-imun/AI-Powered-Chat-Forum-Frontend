@@ -13,6 +13,7 @@
 ### 1. Form Components (`components/forms/`)
 
 All form components are:
+
 - Type-safe with full TypeScript support
 - Accessible (built on ShadcnUI/Radix UI)
 - Reusable across the entire application
@@ -22,26 +23,31 @@ All form components are:
 #### Created Components:
 
 1. **FormWrapper** (`form-wrapper.tsx`)
+
    - Provides React Hook Form context via FormProvider
    - Generic type support for any form data shape
    - Handles form submission automatically
 
 2. **FormInput** (`form-input.tsx`)
+
    - Reusable text input with label and error display
    - Supports all HTML input types (text, email, password, etc.)
    - Optional required indicator and disabled state
 
 3. **FormTextarea** (`form-textarea.tsx`)
+
    - Reusable textarea with label and error display
    - Configurable rows
    - Same consistent error handling as other components
 
 4. **FormSelect** (`form-select.tsx`)
+
    - Reusable dropdown select with React Hook Form Controller
    - Takes array of { label, value } options
    - Fully controlled component with validation
 
 5. **FormCheckbox** (`form-checkbox.tsx`)
+
    - Reusable checkbox with label and optional description
    - Uses React Hook Form Controller for proper boolean handling
    - Error messages displayed below checkbox
@@ -54,17 +60,20 @@ All form components are:
 ### 2. Validation Schemas (`lib/schemas/`)
 
 #### Auth Schemas (`auth.schema.ts`)
+
 - ✅ Already existed from Phase 3
 - `loginSchema` - email + password validation
 - `registerSchema` - username, email, password with confirmation
 
 #### Thread Schemas (`thread.schema.ts`) - **NEW**
+
 - `createThreadSchema` - title (5-200 chars), content (20-10,000 chars), category, optional tags
 - `updateThreadSchema` - title and content validation
 - `replySchema` - reply content (1-5,000 chars)
 - All with TypeScript type inference
 
 #### User Schemas (`user.schema.ts`) - **NEW**
+
 - `updateProfileSchema` - displayName, bio, avatar, notification preferences
 - `changePasswordSchema` - current password, new password with confirmation and difference check
 - Complex validation logic (password matching, must be different)
@@ -74,6 +83,7 @@ All form components are:
 ### 3. Example Pages
 
 #### Forms Showcase (`app/forms-example/page.tsx`)
+
 - Demonstrates ALL form components in one page
 - Shows username, email, bio, role selection, terms checkbox
 - Live validation with error messages
@@ -81,6 +91,7 @@ All form components are:
 - Feature list documentation
 
 #### Thread Creation Example (`app/create-thread-example/page.tsx`)
+
 - Real-world example showing how to use the form system
 - Title, category dropdown, content textarea, tags input
 - Loading states and error handling
@@ -92,6 +103,7 @@ All form components are:
 ### 4. Documentation
 
 #### Form System README (`components/forms/README.md`)
+
 - Complete API documentation for all components
 - Usage examples with code snippets
 - Step-by-step guide for creating new forms
@@ -104,6 +116,7 @@ All form components are:
 ## 🎯 Key Features
 
 ### Type Safety
+
 ```typescript
 // Zod schema automatically infers types
 export const threadSchema = z.object({
@@ -121,12 +134,14 @@ const form = useForm<ThreadFormData>({
 ```
 
 ### Error Handling
+
 - Automatic error display below each field
 - Red border on invalid fields
 - Error messages from Zod validation
 - Form-level errors supported
 
 ### Reusability
+
 ```tsx
 // Before (repetitive code)
 <div>
@@ -140,6 +155,7 @@ const form = useForm<ThreadFormData>({
 ```
 
 ### Consistency
+
 - All forms look and behave the same
 - Same validation patterns
 - Same error display
@@ -150,6 +166,7 @@ const form = useForm<ThreadFormData>({
 ## 📊 Technical Details
 
 ### Dependencies Used
+
 - ✅ `react-hook-form` - Form state management (already installed)
 - ✅ `zod` - Schema validation (already installed)
 - ✅ `@hookform/resolvers` - Zod + RHF integration (already installed)
@@ -158,7 +175,7 @@ const form = useForm<ThreadFormData>({
 ### Architecture Decisions
 
 1. **Generic Types**: FormWrapper uses `<T extends FieldValues>` for maximum flexibility
-2. **Controller vs Register**: 
+2. **Controller vs Register**:
    - Simple inputs use `register()` for better performance
    - Complex components (Select, Checkbox) use `Controller` for full control
 3. **Error Display**: Consistent pattern across all components
@@ -195,6 +212,7 @@ Route (app)
 ## 📁 Files Created
 
 ### Form Components (6 files)
+
 ```
 components/forms/
 ├── form-wrapper.tsx      (27 lines)
@@ -207,6 +225,7 @@ components/forms/
 ```
 
 ### Schemas (2 files)
+
 ```
 lib/schemas/
 ├── thread.schema.ts      (28 lines)
@@ -214,6 +233,7 @@ lib/schemas/
 ```
 
 ### Example Pages (2 files)
+
 ```
 app/
 ├── forms-example/page.tsx          (182 lines)
@@ -227,6 +247,7 @@ app/
 ## 🎨 Usage Examples
 
 ### Basic Form
+
 ```tsx
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -251,32 +272,23 @@ export default function MyForm() {
 ```
 
 ### Complex Form
+
 ```tsx
 <FormWrapper form={form} onSubmit={onSubmit} className="space-y-6">
   <FormInput name="title" label="Title" required />
-  
-  <FormSelect
-    name="category"
-    label="Category"
-    options={categories}
-    required
-  />
-  
-  <FormTextarea
-    name="content"
-    label="Content"
-    rows={10}
-    required
-  />
-  
+
+  <FormSelect name="category" label="Category" options={categories} required />
+
+  <FormTextarea name="content" label="Content" rows={10} required />
+
   <FormInput name="tags" label="Tags (optional)" />
-  
+
   <FormCheckbox
     name="publishNow"
     label="Publish immediately"
     description="Uncheck to save as draft"
   />
-  
+
   <Button type="submit">Create</Button>
 </FormWrapper>
 ```
@@ -301,11 +313,13 @@ export default function MyForm() {
 ## 🔄 Integration Status
 
 ### Already Using Form System
+
 - ❌ Login page - still using manual form code
 - ❌ Register page - still using manual form code
 - ❌ Forgot password - still using manual form code
 
 ### Can Be Refactored (Future)
+
 Consider refactoring existing auth pages to use the new form system for consistency. This is optional and can be done in a future phase.
 
 ---
@@ -313,13 +327,16 @@ Consider refactoring existing auth pages to use the new form system for consiste
 ## 📝 Next Steps (Phase 5+)
 
 ### Immediate Next Phase
+
 **Phase 5: Public Pages (Landing + Threads)**
+
 - Create landing page with navbar, hero, footer
 - Implement public thread list (SSR, SEO-friendly)
 - Implement thread detail pages
 - Add "Login to reply" CTA for guests
 
 ### Form System Enhancements (Future)
+
 1. Add DatePicker form component
 2. Add MultiSelect form component
 3. Add file upload form component
@@ -361,6 +378,7 @@ Build status: ✅ Passing
 ## 🎉 Phase 4 Complete!
 
 All objectives achieved:
+
 - ✅ Reusable form components created
 - ✅ Zod validation schemas implemented
 - ✅ TypeScript fully typed

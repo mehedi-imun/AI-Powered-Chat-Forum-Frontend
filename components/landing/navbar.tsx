@@ -34,7 +34,7 @@ export function Navbar() {
             >
               About
             </Link>
-            
+
             {isAuthenticated ? (
               <>
                 <Link
@@ -93,7 +93,7 @@ export function Navbar() {
               >
                 About
               </Link>
-              
+
               {isAuthenticated ? (
                 <>
                   <Link
@@ -110,12 +110,18 @@ export function Navbar() {
               ) : (
                 <>
                   <Button variant="ghost" asChild className="justify-start">
-                    <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
+                    <Link
+                      href="/login"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
                       Sign In
                     </Link>
                   </Button>
                   <Button asChild>
-                    <Link href="/register" onClick={() => setMobileMenuOpen(false)}>
+                    <Link
+                      href="/register"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
                       Get Started
                     </Link>
                   </Button>
