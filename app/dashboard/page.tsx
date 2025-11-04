@@ -2,7 +2,8 @@
 
 import { useAuth } from "@/lib/hooks/use-auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MessageSquare, Users, Bell, TrendingUp } from "lucide-react";
+import { MessageSquare, MessageCircle, Bell, Eye } from "lucide-react";
+import Link from "next/link";
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -10,36 +11,36 @@ export default function DashboardPage() {
 
   const stats = [
     {
-      title: "My Threads",
+      title: "Total Posts",
+      value: "48",
+      icon: MessageCircle,
+      description: "Comments made",
+      bgColor: "bg-blue-100",
+      color: "text-blue-600",
+    },
+    {
+      title: "Active Threads",
       value: "12",
       icon: MessageSquare,
-      description: "Active discussions",
-      color: "text-blue-600",
-      bgColor: "bg-blue-50",
-    },
-    {
-      title: "Followers",
-      value: "248",
-      icon: Users,
-      description: "People following you",
+      description: "Participating in",
+      bgColor: "bg-green-100",
       color: "text-green-600",
-      bgColor: "bg-green-50",
     },
     {
-      title: "Notifications",
-      value: "8",
+      title: "Unread Notifications",
+      value: "5",
       icon: Bell,
-      description: "Unread notifications",
+      description: "New activity",
+      bgColor: "bg-orange-100",
       color: "text-orange-600",
-      bgColor: "bg-orange-50",
     },
     {
-      title: "Reputation",
-      value: "1,234",
-      icon: TrendingUp,
-      description: "Community points",
+      title: "Profile Views",
+      value: "234",
+      icon: Eye,
+      description: "Last 30 days",
+      bgColor: "bg-purple-100",
       color: "text-purple-600",
-      bgColor: "bg-purple-50",
     },
   ];
 
@@ -84,21 +85,27 @@ export default function DashboardPage() {
               <div className="flex items-start gap-3">
                 <div className="w-2 h-2 bg-blue-500 rounded-full mt-2" />
                 <div>
-                  <p className="text-sm font-medium">New reply on your thread</p>
+                  <p className="text-sm font-medium">
+                    New reply on your thread
+                  </p>
                   <p className="text-xs text-gray-500">2 hours ago</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <div className="w-2 h-2 bg-green-500 rounded-full mt-2" />
                 <div>
-                  <p className="text-sm font-medium">User started following you</p>
+                  <p className="text-sm font-medium">
+                    User started following you
+                  </p>
                   <p className="text-xs text-gray-500">5 hours ago</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <div className="w-2 h-2 bg-orange-500 rounded-full mt-2" />
                 <div>
-                  <p className="text-sm font-medium">Your thread was featured</p>
+                  <p className="text-sm font-medium">
+                    Your thread was featured
+                  </p>
                   <p className="text-xs text-gray-500">1 day ago</p>
                 </div>
               </div>
@@ -112,18 +119,29 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              <button className="w-full text-left px-4 py-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">
-                <p className="font-medium text-blue-900">Create New Thread</p>
-                <p className="text-sm text-blue-600">Start a new discussion</p>
-              </button>
-              <button className="w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
+              <Link
+                href="/threads"
+                className="block w-full text-left px-4 py-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
+              >
+                <p className="font-medium text-blue-900">Browse Threads</p>
+                <p className="text-sm text-blue-600">
+                  Explore active discussions
+                </p>
+              </Link>
+              <Link
+                href="/dashboard/notifications"
+                className="block w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors"
+              >
                 <p className="font-medium text-gray-900">View Notifications</p>
-                <p className="text-sm text-gray-600">8 unread messages</p>
-              </button>
-              <button className="w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
+                <p className="text-sm text-gray-600">Check your updates</p>
+              </Link>
+              <Link
+                href="/dashboard/profile"
+                className="block w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors"
+              >
                 <p className="font-medium text-gray-900">Edit Profile</p>
                 <p className="text-sm text-gray-600">Update your information</p>
-              </button>
+              </Link>
             </div>
           </CardContent>
         </Card>

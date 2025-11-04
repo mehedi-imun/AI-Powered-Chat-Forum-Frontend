@@ -22,59 +22,40 @@ interface Thread {
   title: string;
   content: string;
   author: {
+    _id: string;
     username: string;
-    displayName: string;
+    displayName?: string;
   };
   replyCount: number;
+  viewCount: number;
   createdAt: string;
   updatedAt: string;
 }
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
+
 async function getThreads(): Promise<Thread[]> {
   try {
-    // In production, this would fetch from your backend API
-    // For now, return mock data
-    return [
-      {
-        _id: "1",
-        title: "Welcome to Chat Forum!",
-        content:
-          "This is a sample thread to demonstrate the public threads page. Feel free to browse and explore!",
-        author: {
-          username: "admin",
-          displayName: "Admin",
-        },
-        replyCount: 5,
-        createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-        updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+    const response = await fetch(`${API_URL}/threads?sort=-createdAt&limit=20`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
       },
-      {
-        _id: "2",
-        title: "How to get started with Next.js 16?",
-        content:
-          "I'm new to Next.js and want to learn about the App Router and Server Components. Any recommendations?",
-        author: {
-          username: "developer123",
-          displayName: "Developer",
-        },
-        replyCount: 12,
-        createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-        updatedAt: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
-      },
-      {
-        _id: "3",
-        title: "Best practices for TypeScript in React",
-        content:
-          "What are your favorite TypeScript patterns and best practices when building React applications?",
-        author: {
-          username: "typescript_lover",
-          displayName: "TS Enthusiast",
-        },
-        replyCount: 8,
-        createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-        updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-      },
-    ];
+      cache: "no-store", // Always fetch fresh data
+    });
+
+    if (!response.ok) {
+      console.error("Failed to fetch threads:", response.statusText);
+      return [];
+    }
+
+    const result = await response.json();
+    
+    if (result.success && result.data?.threads) {
+      return result.data.threads;
+    }
+
+    return [];
   } catch (error) {
     console.error("Failed to fetch threads:", error);
     return [];

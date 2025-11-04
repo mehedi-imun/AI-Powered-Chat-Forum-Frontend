@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { useAppSelector } from "@/lib/hooks/use-app-selector";
 
@@ -17,6 +17,7 @@ const SocketContext = createContext<SocketContextType>({
 export function SocketProvider({ children }: { children: React.ReactNode }) {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
+  const socketRef = useRef<Socket | null>(null);
   const { accessToken, isAuthenticated } = useAppSelector(
     (state) => state.auth
   );
@@ -24,11 +25,20 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Only connect if user is authenticated
     if (!isAuthenticated || !accessToken) {
+      // Disconnect existing socket if user logs out
+      if (socketRef.current) {
+        console.log("🔌 Disconnecting socket due to logout");
+        socketRef.current.disconnect();
+        socketRef.current = null;
+        setSocket(null);
+        setIsConnected(false);
+      }
       return;
     }
 
     // Don't create a new socket if one already exists
-    if (socket?.connected) {
+    if (socketRef.current?.connected) {
+      console.log("♻️  Reusing existing socket connection");
       return;
     }
 
@@ -36,6 +46,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
     const socketUrl =
       process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:5000";
 
+    console.log("🔌 Creating new Socket.IO connection...");
     const socketInstance = io(socketUrl, {
       auth: {
         token: accessToken,
@@ -81,15 +92,19 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
       setIsConnected(false);
     });
 
-    // Store socket instance
+    // Store socket instance in both ref and state
+    socketRef.current = socketInstance;
     setSocket(socketInstance);
 
-    // Cleanup on unmount or auth change
+    // Cleanup only on unmount or auth change
     return () => {
-      console.log("🧹 Cleaning up Socket.IO connection");
-      socketInstance.disconnect();
+      if (socketRef.current) {
+        console.log("🧹 Cleaning up Socket.IO connection");
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
     };
-  }, [accessToken, isAuthenticated, socket?.connected]);
+  }, [accessToken, isAuthenticated]);
   return (
     <SocketContext.Provider value={{ socket, isConnected }}>
       {children}

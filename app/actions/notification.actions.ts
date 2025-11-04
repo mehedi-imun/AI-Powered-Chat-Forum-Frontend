@@ -56,7 +56,8 @@ export async function getUserNotificationsAction(
   isRead?: boolean
 ) {
   try {
-    const token = cookies().get("accessToken")?.value;
+    const cookieStore = await cookies();
+    const token = cookieStore.get("accessToken")?.value;
 
     if (!token) {
       return {
@@ -105,7 +106,8 @@ export async function getUserNotificationsAction(
  */
 export async function getUnreadCountAction() {
   try {
-    const token = cookies().get("accessToken")?.value;
+    const cookieStore = await cookies();
+    const token = cookieStore.get("accessToken")?.value;
 
     if (!token) {
       return {
@@ -147,7 +149,8 @@ export async function getUnreadCountAction() {
  */
 export async function getNotificationByIdAction(notificationId: string) {
   try {
-    const token = cookies().get("accessToken")?.value;
+    const cookieStore = await cookies();
+    const token = cookieStore.get("accessToken")?.value;
 
     if (!token) {
       return {
@@ -189,7 +192,8 @@ export async function getNotificationByIdAction(notificationId: string) {
  */
 export async function markNotificationAsReadAction(notificationId: string) {
   try {
-    const token = cookies().get("accessToken")?.value;
+    const cookieStore = await cookies();
+    const token = cookieStore.get("accessToken")?.value;
 
     if (!token) {
       return {
@@ -236,7 +240,8 @@ export async function markNotificationAsReadAction(notificationId: string) {
  */
 export async function markAllNotificationsAsReadAction() {
   try {
-    const token = cookies().get("accessToken")?.value;
+    const cookieStore = await cookies();
+    const token = cookieStore.get("accessToken")?.value;
 
     if (!token) {
       return {
@@ -283,7 +288,8 @@ export async function markAllNotificationsAsReadAction() {
  */
 export async function deleteNotificationAction(notificationId: string) {
   try {
-    const token = cookies().get("accessToken")?.value;
+    const cookieStore = await cookies();
+    const token = cookieStore.get("accessToken")?.value;
 
     if (!token) {
       return {
@@ -329,7 +335,8 @@ export async function deleteNotificationAction(notificationId: string) {
  */
 export async function deleteAllReadNotificationsAction() {
   try {
-    const token = cookies().get("accessToken")?.value;
+    const cookieStore = await cookies();
+    const token = cookieStore.get("accessToken")?.value;
 
     if (!token) {
       return {
