@@ -86,12 +86,12 @@ export function CreateThreadModal() {
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="content">
+              <Label htmlFor="initialPostContent">
                 Content <span className="text-red-500">*</span>
               </Label>
               <Textarea
-                id="content"
-                name="content"
+                id="initialPostContent"
+                name="initialPostContent"
                 placeholder="Share your thoughts in detail..."
                 className="min-h-[150px]"
                 required

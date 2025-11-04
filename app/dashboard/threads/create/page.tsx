@@ -42,7 +42,7 @@ export default function CreateThreadPage() {
 
     const formData = new FormData();
     formData.append("title", data.title);
-    formData.append("content", data.content);
+    formData.append("initialPostContent", data.content);
     if (data.tags) {
       formData.append("tags", data.tags);
     }

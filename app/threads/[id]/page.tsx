@@ -12,30 +12,46 @@ import { ReplySection } from "@/components/threads/reply-section";
 interface Thread {
   _id: string;
   title: string;
-  content: string;
-  author: {
+  slug: string;
+  createdBy?: {
     _id: string;
-    username: string;
-    displayName?: string;
+    name: string;
+    email: string;
+    role: string;
   };
+  tags: string[];
+  viewCount: number;
+  postCount: number;
+  isPinned: boolean;
+  isLocked: boolean;
+  status: string;
   createdAt: string;
   updatedAt: string;
+  lastActivityAt: string;
 }
 
-interface Reply {
+interface Post {
   _id: string;
+  threadId: string;
+  parentId: string | null;
   content: string;
   author: {
     _id: string;
-    username: string;
-    displayName?: string;
+    name: string;
+    email: string;
+    role: string;
   };
+  mentions: string[];
+  isEdited: boolean;
+  moderationStatus: string;
+  status: string;
   createdAt: string;
   updatedAt: string;
+  replies?: Post[];
 }
 
 const API_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
+  process.env.NEXT_PUBLIC_API_URL;
 
 async function getThread(id: string): Promise<Thread | null> {
   try {
@@ -54,8 +70,8 @@ async function getThread(id: string): Promise<Thread | null> {
 
     const result = await response.json();
 
-    if (result.success && result.data?.thread) {
-      return result.data.thread;
+    if (result.success && result.data) {
+      return result.data;
     }
 
     return null;
@@ -65,21 +81,18 @@ async function getThread(id: string): Promise<Thread | null> {
   }
 }
 
-async function getReplies(threadId: string): Promise<Reply[]> {
+async function getPosts(threadId: string): Promise<Post[]> {
   try {
-    const response = await fetch(
-      `${API_URL}/posts?thread=${threadId}&sort=createdAt`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        cache: "no-store", // Always fetch fresh data
-      }
-    );
+    const response = await fetch(`${API_URL}/posts/thread/${threadId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      cache: "no-store", // Always fetch fresh data
+    });
 
     if (!response.ok) {
-      console.error("Failed to fetch replies:", response.statusText);
+      console.error("Failed to fetch posts:", response.statusText);
       return [];
     }
 
@@ -91,7 +104,7 @@ async function getReplies(threadId: string): Promise<Reply[]> {
 
     return [];
   } catch (error) {
-    console.error("Failed to fetch replies:", error);
+    console.error("Failed to fetch posts:", error);
     return [];
   }
 }
@@ -99,9 +112,11 @@ async function getReplies(threadId: string): Promise<Reply[]> {
 export async function generateMetadata({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }): Promise<Metadata> {
-  const thread = await getThread(params.id);
+  const { id } = await params;
+  const thread = await getThread(id);
+  const posts = await getPosts(id);
 
   if (!thread) {
     return {
@@ -109,12 +124,14 @@ export async function generateMetadata({
     };
   }
 
+  const description = posts[0]?.content?.slice(0, 160) || thread.title;
+
   return {
     title: `${thread.title} | Chat Forum`,
-    description: thread.content.slice(0, 160),
+    description,
     openGraph: {
       title: thread.title,
-      description: thread.content.slice(0, 160),
+      description,
       type: "article",
     },
   };
@@ -123,14 +140,30 @@ export async function generateMetadata({
 export default async function ThreadDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const thread = await getThread(params.id);
-  const replies = await getReplies(params.id);
+  const { id } = await params;
+  const thread = await getThread(id);
+  const posts = await getPosts(id);
 
   if (!thread) {
     notFound();
   }
+
+  // First post is the initial thread content
+  const initialPost = posts[0];
+  // Remaining posts are replies - map to match ReplySection interface
+  const replies = posts.slice(1).map((post) => ({
+    _id: post._id,
+    content: post.content,
+    author: {
+      _id: post.author._id,
+      username: post.author.email.split("@")[0], // Use email prefix as username
+      displayName: post.author.name,
+    },
+    createdAt: post.createdAt,
+    updatedAt: post.updatedAt,
+  }));
 
   return (
     <>
@@ -158,7 +191,9 @@ export default async function ThreadDetailPage({
                 <div className="flex items-center gap-1">
                   <User className="h-4 w-4" />
                   <span>
-                    {thread.author.displayName || thread.author.username}
+                    {initialPost?.author?.name ||
+                      thread.createdBy?.name ||
+                      "Anonymous"}
                   </span>
                 </div>
                 <div className="flex items-center gap-1">
@@ -173,11 +208,13 @@ export default async function ThreadDetailPage({
             </CardHeader>
             <CardContent>
               <div className="prose max-w-none">
-                {thread.content.split("\n").map((paragraph, index) => (
-                  <p key={index} className="mb-4 text-gray-700">
-                    {paragraph}
-                  </p>
-                ))}
+                {initialPost?.content
+                  ?.split("\n")
+                  .map((paragraph: string, index: number) => (
+                    <p key={index} className="mb-4 text-gray-700">
+                      {paragraph}
+                    </p>
+                  )) || <p className="text-gray-500">No content available.</p>}
               </div>
             </CardContent>
           </Card>

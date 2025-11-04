@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MessageSquare, User, Clock, ArrowRight } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { StartDiscussionButton } from "@/components/threads/start-discussion-button";
+import { SearchBar } from "@/components/threads/search-bar";
 
 export const metadata: Metadata = {
   title: "Discussions | Chat Forum",
@@ -21,20 +22,25 @@ export const metadata: Metadata = {
 interface Thread {
   _id: string;
   title: string;
-  content: string;
-  author: {
+  slug: string;
+  createdBy: {
     _id: string;
-    username: string;
-    displayName?: string;
-  };
-  replyCount: number;
+    name: string;
+    email: string;
+    role: string;
+  } | null;
+  tags: string[];
   viewCount: number;
+  postCount: number;
+  status: string;
+  isPinned: boolean;
+  isLocked: boolean;
+  lastActivityAt: string;
   createdAt: string;
   updatedAt: string;
 }
 
-const API_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 async function getThreads(): Promise<Thread[]> {
   try {
@@ -76,14 +82,21 @@ export default async function ThreadsPage() {
       <main className="min-h-screen bg-gray-50">
         <div className="container mx-auto px-4 py-8">
           {/* Header */}
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h1 className="text-3xl font-bold mb-2">All Discussions</h1>
-              <p className="text-gray-600">
-                Browse and explore community discussions
-              </p>
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h1 className="text-3xl font-bold mb-2">All Discussions</h1>
+                <p className="text-gray-600">
+                  Browse and explore community discussions
+                </p>
+              </div>
+              <StartDiscussionButton />
             </div>
-            <StartDiscussionButton />
+
+            {/* Search Bar */}
+            <div className="mt-6">
+              <SearchBar />
+            </div>
           </div>
 
           {/* Threads List */}
@@ -117,22 +130,29 @@ export default async function ThreadsPage() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-gray-600 mb-4 line-clamp-2">
-                      {thread.content}
-                    </p>
+                    {/* Tags */}
+                    {thread.tags && thread.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {thread.tags.slice(0, 3).map((tag, idx) => (
+                          <span
+                            key={idx}
+                            className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded-full"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
 
                     <div className="flex items-center justify-between text-sm text-gray-500">
                       <div className="flex items-center gap-4">
                         <div className="flex items-center gap-1">
                           <User className="h-4 w-4" />
-                          <span>
-                            {thread.author.displayName ||
-                              thread.author.username}
-                          </span>
+                          <span>{thread.createdBy?.name || "Anonymous"}</span>
                         </div>
                         <div className="flex items-center gap-1">
                           <MessageSquare className="h-4 w-4" />
-                          <span>{thread.replyCount || 0} replies</span>
+                          <span>{thread.postCount || 0} replies</span>
                         </div>
                         <div className="flex items-center gap-1">
                           <Clock className="h-4 w-4" />
