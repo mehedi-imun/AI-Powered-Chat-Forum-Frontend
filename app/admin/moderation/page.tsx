@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,6 +11,7 @@ import {
   Eye,
   ThumbsUp,
   ThumbsDown,
+  type LucideIcon,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
@@ -42,7 +43,7 @@ export default function ModerationPage() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>("all");
 
-  const fetchModeratedPosts = async () => {
+  const fetchModeratedPosts = useCallback(async () => {
     try {
       setLoading(true);
       const token = document.cookie
@@ -67,10 +68,14 @@ export default function ModerationPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filter]);
+
+  useEffect(() => {
+    fetchModeratedPosts();
+  }, [filter, fetchModeratedPosts]);
 
   const getStatusBadge = (status: string) => {
-    const badges: Record<string, { color: string; icon: any; text: string }> = {
+    const badges: Record<string, { color: string; icon: LucideIcon; text: string }> = {
       approved: {
         color: "bg-green-100 text-green-800",
         icon: CheckCircle,
