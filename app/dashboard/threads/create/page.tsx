@@ -157,12 +157,16 @@ export default function CreateThreadPage() {
 
       <Card className="bg-blue-50 border-blue-200">
         <CardHeader>
-          <CardTitle className="text-blue-900">Tips for Creating Threads</CardTitle>
+          <CardTitle className="text-blue-900">
+            Tips for Creating Threads
+          </CardTitle>
         </CardHeader>
         <CardContent className="text-blue-800 space-y-2 text-sm">
           <ul className="list-disc list-inside space-y-1">
             <li>Use a clear, descriptive title that summarizes your topic</li>
-            <li>Provide enough context in the content for others to understand</li>
+            <li>
+              Provide enough context in the content for others to understand
+            </li>
             <li>Add relevant tags to help others find your thread</li>
             <li>Be respectful and follow community guidelines</li>
             <li>Use proper formatting for code snippets if applicable</li>

@@ -20,7 +20,10 @@ export default async function DashboardThreadsPage() {
           </p>
         </div>
         <Button asChild>
-          <Link href="/dashboard/threads/create" className="flex items-center gap-2">
+          <Link
+            href="/dashboard/threads/create"
+            className="flex items-center gap-2"
+          >
             <Plus className="w-4 h-4" />
             Create Thread
           </Link>
@@ -59,7 +62,10 @@ export default async function DashboardThreadsPage() {
       ) : (
         <div className="space-y-4">
           {threads.map((thread) => (
-            <Card key={thread._id} className="hover:shadow-md transition-shadow">
+            <Card
+              key={thread._id}
+              className="hover:shadow-md transition-shadow"
+            >
               <CardContent className="p-6">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
@@ -92,8 +98,8 @@ export default async function DashboardThreadsPage() {
                           thread.status === "active"
                             ? "bg-green-100 text-green-700"
                             : thread.status === "locked"
-                              ? "bg-red-100 text-red-700"
-                              : "bg-gray-100 text-gray-700"
+                            ? "bg-red-100 text-red-700"
+                            : "bg-gray-100 text-gray-700"
                         }`}
                       >
                         {thread.status}

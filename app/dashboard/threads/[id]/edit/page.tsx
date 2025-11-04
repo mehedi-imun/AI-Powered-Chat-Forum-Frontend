@@ -117,9 +117,7 @@ export default function EditThreadPage() {
       <Card>
         <CardHeader>
           <CardTitle>Thread Details</CardTitle>
-          <CardDescription>
-            Make changes to your thread below
-          </CardDescription>
+          <CardDescription>Make changes to your thread below</CardDescription>
         </CardHeader>
         <CardContent>
           <FormWrapper form={form} onSubmit={onSubmit} className="space-y-6">
@@ -197,7 +195,9 @@ export default function EditThreadPage() {
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogTitle>
+                      Are you absolutely sure?
+                    </AlertDialogTitle>
                     <AlertDialogDescription>
                       This action cannot be undone. This will permanently delete
                       your thread and all associated replies.

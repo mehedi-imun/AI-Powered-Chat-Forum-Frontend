@@ -34,9 +34,13 @@ export function Header() {
 
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-medium">
-            {user?.displayName?.charAt(0).toUpperCase() || user?.username?.charAt(0).toUpperCase() || "U"}
+            {user?.displayName?.charAt(0).toUpperCase() ||
+              user?.username?.charAt(0).toUpperCase() ||
+              "U"}
           </div>
-          <span className="text-sm font-medium">{user?.displayName || user?.username || "User"}</span>
+          <span className="text-sm font-medium">
+            {user?.displayName || user?.username || "User"}
+          </span>
         </div>
       </div>
     </header>
