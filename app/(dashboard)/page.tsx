@@ -34,7 +34,9 @@ export default function DashboardPage() {
         <CardContent className="space-y-4">
           <div className="flex items-center gap-2">
             <User className="h-4 w-4 text-muted-foreground" />
-            <span className="font-medium">{user?.displayName || user?.username}</span>
+            <span className="font-medium">
+              {user?.displayName || user?.username}
+            </span>
           </div>
           <div className="text-sm text-muted-foreground">
             <p>Email: {user?.email}</p>
