@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { useAppSelector } from "@/lib/hooks/use-app-selector";
 
@@ -15,7 +15,7 @@ const SocketContext = createContext<SocketContextType>({
 });
 
 export function SocketProvider({ children }: { children: React.ReactNode }) {
-  const [socket, setSocket] = useState<Socket | null>(null);
+  const socketRef = useRef<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const { accessToken, isAuthenticated } = useAppSelector(
     (state) => state.auth
@@ -24,13 +24,24 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Only connect if user is authenticated
     if (!isAuthenticated || !accessToken) {
+      // Clean up existing socket if user logs out
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
+        setIsConnected(false);
+      }
+      return;
+    }
+
+    // Don't create a new socket if one already exists
+    if (socketRef.current?.connected) {
       return;
     }
 
     // Create socket connection
     const socketUrl =
       process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:5000";
-
+    
     const socketInstance = io(socketUrl, {
       auth: {
         token: accessToken,
@@ -44,13 +55,11 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
     // Connection event handlers
     socketInstance.on("connect", () => {
       console.log("✅ Socket.IO connected:", socketInstance.id);
-      // Update connection state when socket connects
       setIsConnected(true);
     });
 
     socketInstance.on("disconnect", (reason) => {
       console.log("❌ Socket.IO disconnected:", reason);
-      // Update connection state when socket disconnects
       setIsConnected(false);
     });
 
@@ -78,20 +87,19 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
       setIsConnected(false);
     });
 
-    // Store socket instance - legitimate use case for Socket.IO connection management
-    // eslint-disable-next-line react-compiler/react-compiler
-    setSocket(socketInstance);
+    // Store socket instance using ref
+    socketRef.current = socketInstance;
 
     // Cleanup on unmount or auth change
     return () => {
       console.log("🧹 Cleaning up Socket.IO connection");
-      socketInstance.disconnect();
-      setSocket(null);
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
       setIsConnected(false);
     };
-  }, [accessToken, isAuthenticated]);
-
-  return (
+  }, [accessToken, isAuthenticated]);  return (
     <SocketContext.Provider value={{ socket, isConnected }}>
       {children}
     </SocketContext.Provider>
