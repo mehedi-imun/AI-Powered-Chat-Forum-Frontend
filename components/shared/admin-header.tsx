@@ -20,7 +20,9 @@ export function AdminHeader() {
 
         <div className="flex items-center gap-3">
           <div className="text-right">
-            <p className="text-sm font-medium">{user?.name}</p>
+            <p className="text-sm font-medium">
+              {user?.displayName || user?.username}
+            </p>
             <p className="text-xs text-gray-500">Administrator</p>
           </div>
           <Button variant="ghost" size="icon" onClick={logout}>
