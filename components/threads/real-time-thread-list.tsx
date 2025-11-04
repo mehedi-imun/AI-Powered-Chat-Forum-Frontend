@@ -120,14 +120,16 @@ export function RealTimeThreadList({
             <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors mb-2">
               {thread.title}
             </h3>
-            
+
             {/* Meta + Tags in one line */}
             <div className="flex items-center gap-3 text-xs text-gray-600">
               <div className="flex items-center gap-1">
                 <div className="w-5 h-5 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xs font-semibold">
                   {(thread.createdBy?.name || "A").charAt(0).toUpperCase()}
                 </div>
-                <span className="font-medium">{thread.createdBy?.name || "Anonymous"}</span>
+                <span className="font-medium">
+                  {thread.createdBy?.name || "Anonymous"}
+                </span>
               </div>
               <span className="text-gray-400">•</span>
               <span>
@@ -153,7 +155,9 @@ export function RealTimeThreadList({
                       </span>
                     ))}
                     {thread.tags.length > 2 && (
-                      <span className="text-gray-500">+{thread.tags.length - 2}</span>
+                      <span className="text-gray-500">
+                        +{thread.tags.length - 2}
+                      </span>
                     )}
                   </div>
                 </>

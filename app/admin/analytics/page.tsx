@@ -109,7 +109,9 @@ export default function AnalyticsPage() {
             <Users className="h-5 w-5 text-blue-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">{analytics?.totalUsers || 0}</div>
+            <div className="text-3xl font-bold">
+              {analytics?.totalUsers || 0}
+            </div>
             <p className="text-xs text-gray-600 mt-1">
               {analytics?.activeUsers || 0} active users
             </p>
@@ -122,7 +124,9 @@ export default function AnalyticsPage() {
             <MessageSquare className="h-5 w-5 text-green-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">{analytics?.totalThreads || 0}</div>
+            <div className="text-3xl font-bold">
+              {analytics?.totalThreads || 0}
+            </div>
             <p className="text-xs text-gray-600 mt-1">Community discussions</p>
           </CardContent>
         </Card>
@@ -133,8 +137,12 @@ export default function AnalyticsPage() {
             <FileText className="h-5 w-5 text-purple-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">{analytics?.totalPosts || 0}</div>
-            <p className="text-xs text-gray-600 mt-1">All replies and comments</p>
+            <div className="text-3xl font-bold">
+              {analytics?.totalPosts || 0}
+            </div>
+            <p className="text-xs text-gray-600 mt-1">
+              All replies and comments
+            </p>
           </CardContent>
         </Card>
 

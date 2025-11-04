@@ -42,7 +42,7 @@ export function AdminSidebar() {
       <div className="p-6">
         <h2 className="text-2xl font-bold">Admin Panel</h2>
       </div>
-      
+
       {/* Main Navigation */}
       <nav className="flex-1 space-y-1 px-3">
         {navigation.map((item) => {

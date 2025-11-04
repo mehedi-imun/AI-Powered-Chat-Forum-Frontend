@@ -189,7 +189,11 @@ export default async function ThreadDetailPage({
               <div className="flex items-center gap-3 text-xs text-gray-600">
                 <div className="flex items-center gap-1.5">
                   <div className="w-6 h-6 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xs font-semibold">
-                    {(initialPost?.author?.name || thread.createdBy?.name || "A")
+                    {(
+                      initialPost?.author?.name ||
+                      thread.createdBy?.name ||
+                      "A"
+                    )
                       .charAt(0)
                       .toUpperCase()}
                   </div>
@@ -211,7 +215,10 @@ export default async function ThreadDetailPage({
                 <span className="text-gray-400">•</span>
                 <div className="flex items-center gap-1">
                   <MessageSquare className="h-3 w-3" />
-                  <span>{thread.postCount} {thread.postCount === 1 ? "reply" : "replies"}</span>
+                  <span>
+                    {thread.postCount}{" "}
+                    {thread.postCount === 1 ? "reply" : "replies"}
+                  </span>
                 </div>
               </div>
             </CardHeader>

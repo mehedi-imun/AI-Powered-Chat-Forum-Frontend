@@ -4,12 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-
-import {
-  LogIn,
-  MessageSquare,
-  CornerDownRight,
-} from "lucide-react";
+import { LogIn, MessageSquare, CornerDownRight } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useAuth } from "@/lib/hooks/use-auth";
 import { Textarea } from "@/components/ui/textarea";
@@ -52,7 +47,7 @@ function ReplyCard({
   const maxDepth = 5;
   const hasChildren = childrenReplies[reply._id]?.length > 0;
   const replyCount = childrenReplies[reply._id]?.length || 0;
-  
+
   // Compact indent - only left border, no card background
   const indentClass = depth > 0 ? "ml-8 pl-3 border-l-2 border-gray-200" : "";
 
@@ -121,7 +116,8 @@ function ReplyCard({
       )}
     </div>
   );
-}export function ReplySection({
+}
+export function ReplySection({
   threadId,
   replies: initialReplies,
 }: ReplySectionProps) {
@@ -197,7 +193,10 @@ function ReplyCard({
             <div className="mb-2 flex items-center gap-2 text-sm">
               <CornerDownRight className="h-3 w-3 text-blue-600" />
               <span className="text-gray-600">
-                Replying to <span className="font-semibold text-gray-900">@{replyingToUsername}</span>
+                Replying to{" "}
+                <span className="font-semibold text-gray-900">
+                  @{replyingToUsername}
+                </span>
               </span>
               <button
                 type="button"
@@ -211,7 +210,7 @@ function ReplyCard({
               </button>
             </div>
           )}
-          
+
           {/* Compact form */}
           <form
             onSubmit={(e) => handleSubmitReply(e, replyingTo || undefined)}
@@ -234,8 +233,8 @@ function ReplyCard({
               </div>
             )}
             <div className="flex items-center justify-end gap-2 px-3 py-2 border-t bg-gray-50">
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 disabled={isSubmitting || !replyContent.trim()}
                 size="sm"
                 className="bg-blue-600 hover:bg-blue-700"
@@ -269,7 +268,8 @@ function ReplyCard({
         <div className="flex items-center justify-between mb-3 pb-2 border-b">
           <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
             <MessageSquare className="h-5 w-5 text-gray-600" />
-            {initialReplies.length} {initialReplies.length === 1 ? "Reply" : "Replies"}
+            {initialReplies.length}{" "}
+            {initialReplies.length === 1 ? "Reply" : "Replies"}
           </h2>
         </div>
 
@@ -299,13 +299,13 @@ function ReplyCard({
                     }
                     return undefined;
                   };
-                  
+
                   const targetReply = findReply(initialReplies);
                   setReplyingTo(parentId);
                   setReplyingToUsername(
-                    targetReply?.author.displayName || 
-                    targetReply?.author.username || 
-                    "User"
+                    targetReply?.author.displayName ||
+                      targetReply?.author.username ||
+                      "User"
                   );
                   // Scroll to reply form
                   window.scrollTo({ top: 0, behavior: "smooth" });
