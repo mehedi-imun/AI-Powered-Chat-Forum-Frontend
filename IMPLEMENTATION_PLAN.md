@@ -1083,38 +1083,60 @@ frontend/
    - Similar structure with registerAction
    - Commit: `feat: add register page`
 
-4. **Auth Middleware**
+4. **Auth Proxy (Next.js 16 Middleware)**
 
-   - File: `middleware.ts`
+   - File: `proxy.ts` (replaces middleware.ts in Next.js 16)
 
    ```typescript
    import { NextResponse } from "next/server";
    import type { NextRequest } from "next/server";
 
    export function middleware(request: NextRequest) {
-     const token = request.cookies.get("accessToken");
-     const isAuthPage =
-       request.nextUrl.pathname.startsWith("/login") ||
-       request.nextUrl.pathname.startsWith("/register");
-     const isDashboard = request.nextUrl.pathname.startsWith("/dashboard");
+     const token = request.cookies.get("accessToken")?.value;
+     const userRole = request.cookies.get("userRole")?.value; // 'admin' or 'user'
 
-     if (isDashboard && !token) {
+     const { pathname } = request.nextUrl;
+
+     // Auth pages (login, register)
+     const isAuthPage =
+       pathname.startsWith("/login") || pathname.startsWith("/register");
+
+     // Protected dashboard routes
+     const isUserDashboard = pathname.startsWith("/dashboard");
+     const isAdminDashboard = pathname.startsWith("/admin");
+
+     // Redirect logged-in users away from auth pages
+     if (isAuthPage && token) {
+       if (userRole === "admin") {
+         return NextResponse.redirect(new URL("/admin", request.url));
+       }
+       return NextResponse.redirect(new URL("/dashboard", request.url));
+     }
+
+     // Protect user dashboard - require authentication
+     if (isUserDashboard && !token) {
        return NextResponse.redirect(new URL("/login", request.url));
      }
 
-     if (isAuthPage && token) {
-       return NextResponse.redirect(new URL("/dashboard", request.url));
+     // Protect admin dashboard - require authentication AND admin role
+     if (isAdminDashboard) {
+       if (!token) {
+         return NextResponse.redirect(new URL("/login", request.url));
+       }
+       if (userRole !== "admin") {
+         return NextResponse.redirect(new URL("/dashboard", request.url));
+       }
      }
 
      return NextResponse.next();
    }
 
    export const config = {
-     matcher: ["/dashboard/:path*", "/login", "/register"],
+     matcher: ["/dashboard/:path*", "/admin/:path*", "/login", "/register"],
    };
    ```
 
-   - Commit: `feat: add auth middleware`
+   - Commit: `feat: add role-based auth proxy (Next.js 16)`
 
 **Acceptance Criteria:**
 
