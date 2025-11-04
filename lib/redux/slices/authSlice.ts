@@ -1,8 +1,9 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export enum UserRole {
-  USER = "user",
-  ADMIN = "admin",
+  MEMBER = "Member",
+  MODERATOR = "Moderator",
+  ADMIN = "Admin",
 }
 
 export interface User {

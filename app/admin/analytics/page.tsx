@@ -60,15 +60,19 @@ export default function AnalyticsPage() {
         postsRes.json(),
       ]);
 
+      console.log("Users data:", usersData);
+      console.log("Threads data:", threadsData);
+      console.log("Posts data:", postsData);
+
       setAnalytics({
         totalUsers: usersData.data?.total || 0,
         totalThreads: threadsData.data?.total || 0,
         totalPosts: postsData.data?.total || 0,
         activeUsers: usersData.data?.active || 0,
-        pendingModeration: postsData.data?.pending || 0,
-        approvedPosts: postsData.data?.approved || 0,
-        rejectedPosts: postsData.data?.rejected || 0,
-        flaggedPosts: postsData.data?.flagged || 0,
+        pendingModeration: postsData.data?.moderation?.pending || 0,
+        approvedPosts: postsData.data?.moderation?.approved || 0,
+        rejectedPosts: postsData.data?.moderation?.rejected || 0,
+        flaggedPosts: postsData.data?.moderation?.flagged || 0,
       });
     } catch (error) {
       console.error("Failed to fetch analytics:", error);

@@ -4,10 +4,20 @@ import { useAuth } from "@/lib/hooks/use-auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MessageSquare, MessageCircle, Bell, Eye } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function DashboardPage() {
   const { user } = useAuth();
+  const router = useRouter();
   const displayName = user?.displayName || user?.username || "User";
+
+  // Redirect admin/moderator users to admin dashboard
+  useEffect(() => {
+    if (user?.role === "Admin" || user?.role === "Moderator") {
+      router.push("/admin");
+    }
+  }, [user, router]);
 
   const stats = [
     {

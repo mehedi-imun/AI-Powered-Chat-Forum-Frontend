@@ -2,13 +2,13 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { MessageSquare, Menu, X } from "lucide-react";
+import { MessageSquare, Menu, X, LogOut } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/lib/hooks/use-auth";
 
 export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, logout } = useAuth();
 
   return (
     <nav className="bg-white border-b sticky top-0 z-50">
@@ -43,10 +43,19 @@ export function Navbar() {
                 >
                   Dashboard
                 </Link>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
                   <span className="text-sm text-gray-600">
                     {user?.displayName || user?.username}
                   </span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={logout}
+                    className="gap-2"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Logout
+                  </Button>
                 </div>
               </>
             ) : (
@@ -106,6 +115,17 @@ export function Navbar() {
                   <div className="text-sm text-gray-600 py-2">
                     Signed in as {user?.displayName || user?.username}
                   </div>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      logout();
+                    }}
+                    className="justify-start gap-2"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Logout
+                  </Button>
                 </>
               ) : (
                 <>
