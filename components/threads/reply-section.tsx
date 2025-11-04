@@ -28,7 +28,10 @@ interface ReplySectionProps {
   replies: Reply[];
 }
 
-export function ReplySection({ threadId, replies: initialReplies }: ReplySectionProps) {
+export function ReplySection({
+  threadId,
+  replies: initialReplies,
+}: ReplySectionProps) {
   const { isAuthenticated } = useAuth();
   const [replyContent, setReplyContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -37,7 +40,7 @@ export function ReplySection({ threadId, replies: initialReplies }: ReplySection
 
   const handleSubmitReply = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!replyContent.trim()) {
       setError("Reply cannot be empty");
       return;
@@ -146,7 +149,9 @@ export function ReplySection({ threadId, replies: initialReplies }: ReplySection
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-700 whitespace-pre-wrap">{reply.content}</p>
+                  <p className="text-gray-700 whitespace-pre-wrap">
+                    {reply.content}
+                  </p>
                 </CardContent>
               </Card>
             ))}
