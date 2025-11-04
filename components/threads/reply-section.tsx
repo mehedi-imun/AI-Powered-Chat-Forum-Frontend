@@ -5,7 +5,13 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { LogIn, User, Clock, MessageSquare, CornerDownRight } from "lucide-react";
+import {
+  LogIn,
+  User,
+  Clock,
+  MessageSquare,
+  CornerDownRight,
+} from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useAuth } from "@/lib/hooks/use-auth";
 import { Textarea } from "@/components/ui/textarea";
@@ -27,6 +33,84 @@ interface Reply {
 interface ReplySectionProps {
   threadId: string;
   replies: Reply[];
+}
+
+interface ReplyCardProps {
+  reply: Reply;
+  childrenReplies: Record<string, Reply[]>;
+  onReply: (parentId: string) => void;
+  isAuthenticated: boolean;
+  depth?: number;
+}
+
+// Recursive component to display nested replies
+function ReplyCard({
+  reply,
+  childrenReplies,
+  onReply,
+  isAuthenticated,
+  depth = 0,
+}: ReplyCardProps) {
+  const maxDepth = 5; // Limit nesting depth to prevent UI issues
+  const hasChildren = childrenReplies[reply._id]?.length > 0;
+  const indentClass = depth > 0 ? "ml-6 border-l-2 border-gray-200 pl-4" : "";
+
+  return (
+    <div className={indentClass}>
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-sm">
+              <User className="h-4 w-4 text-gray-600" />
+              <span className="font-medium">
+                {reply.author.displayName || reply.author.username}
+              </span>
+            </div>
+            <div className="flex items-center gap-1 text-xs text-gray-500">
+              <Clock className="h-3 w-3" />
+              <span>
+                {formatDistanceToNow(new Date(reply.createdAt), {
+                  addSuffix: true,
+                })}
+              </span>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <p className="text-gray-700 whitespace-pre-wrap mb-3">
+            {reply.content}
+          </p>
+          {isAuthenticated && depth < maxDepth && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onReply(reply._id)}
+              className="text-blue-600 hover:text-blue-800"
+            >
+              <CornerDownRight className="h-4 w-4 mr-1" />
+              Reply
+            </Button>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Render nested replies recursively */}
+      {hasChildren && depth < maxDepth && (
+        <div className="mt-4 space-y-4">
+          {childrenReplies[reply._id].map((childReply) => (
+            <ReplyCard
+              key={childReply._id}
+              reply={childReply}
+              childrenReplies={childrenReplies}
+              onReply={onReply}
+              isAuthenticated={isAuthenticated}
+              depth={depth + 1}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
 }
 
 export function ReplySection({
