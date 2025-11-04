@@ -51,9 +51,7 @@ function VerifyEmailContent() {
       };
 
       // Update Redux state
-      dispatch(
-        setCredentials({ user: mappedUser, accessToken: result.token })
-      );
+      dispatch(setCredentials({ user: mappedUser, accessToken: result.token }));
 
       // Redirect to dashboard after 2 seconds
       setTimeout(() => {
@@ -106,9 +104,7 @@ function VerifyEmailContent() {
         <CardDescription className="text-center">
           {status === "loading" && "Please wait while we verify your email"}
           {status === "success" && "You will be redirected shortly"}
-          {status === "error" &&
-            !token &&
-            "We sent you a verification email"}
+          {status === "error" && !token && "We sent you a verification email"}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">

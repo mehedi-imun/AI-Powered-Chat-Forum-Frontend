@@ -58,9 +58,7 @@ export default function LoginPage() {
         avatar: result.user.avatar,
       };
 
-      dispatch(
-        setCredentials({ user: mappedUser, accessToken: result.token })
-      );
+      dispatch(setCredentials({ user: mappedUser, accessToken: result.token }));
 
       // Redirect based on role
       if (result.user.role === "admin") {

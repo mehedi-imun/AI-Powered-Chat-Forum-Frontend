@@ -57,7 +57,11 @@ export default function RegisterPage() {
       setSuccess(result.message || "Registration successful!");
       // Redirect to a success page after 2 seconds
       setTimeout(() => {
-        router.push(`/verify-email?email=${encodeURIComponent(result.email || data.email)}`);
+        router.push(
+          `/verify-email?email=${encodeURIComponent(
+            result.email || data.email
+          )}`
+        );
       }, 2000);
     } else {
       setError(result.error || "Registration failed");
