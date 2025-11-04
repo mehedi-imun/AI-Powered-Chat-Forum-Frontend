@@ -32,7 +32,7 @@ export async function apiClient<T = unknown>(
   return response.json();
 }
 
-export async function publicApiClient<T = any>(
+export async function publicApiClient<T = unknown>(
   endpoint: string,
   options?: RequestInit
 ): Promise<ApiResponse<T>> {
