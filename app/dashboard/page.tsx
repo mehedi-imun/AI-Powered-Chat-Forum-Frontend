@@ -1,49 +1,133 @@
 "use client";
 
 import { useAuth } from "@/lib/hooks/use-auth";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
-import { User, LogOut } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { MessageSquare, Users, Bell, TrendingUp } from "lucide-react";
 
 export default function DashboardPage() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
+  const displayName = user?.displayName || user?.username || "User";
+
+  const stats = [
+    {
+      title: "My Threads",
+      value: "12",
+      icon: MessageSquare,
+      description: "Active discussions",
+      color: "text-blue-600",
+      bgColor: "bg-blue-50",
+    },
+    {
+      title: "Followers",
+      value: "248",
+      icon: Users,
+      description: "People following you",
+      color: "text-green-600",
+      bgColor: "bg-green-50",
+    },
+    {
+      title: "Notifications",
+      value: "8",
+      icon: Bell,
+      description: "Unread notifications",
+      color: "text-orange-600",
+      bgColor: "bg-orange-50",
+    },
+    {
+      title: "Reputation",
+      value: "1,234",
+      icon: TrendingUp,
+      description: "Community points",
+      color: "text-purple-600",
+      bgColor: "bg-purple-50",
+    },
+  ];
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Dashboard</h1>
-        <Button onClick={logout} variant="outline">
-          <LogOut className="mr-2 h-4 w-4" />
-          Logout
-        </Button>
+      <div>
+        <h1 className="text-3xl font-bold">Welcome back, {displayName}! 👋</h1>
+        <p className="text-gray-600 mt-2">
+          Here&apos;s what&apos;s happening with your account today.
+        </p>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Welcome Back!</CardTitle>
-          <CardDescription>
-            You&apos;re successfully logged in to your dashboard
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center gap-2">
-            <User className="h-4 w-4 text-muted-foreground" />
-            <span className="font-medium">
-              {user?.displayName || user?.username}
-            </span>
-          </div>
-          <div className="text-sm text-muted-foreground">
-            <p>Email: {user?.email}</p>
-            <p>Role: {user?.role}</p>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {stats.map((stat) => {
+          const Icon = stat.icon;
+          return (
+            <Card key={stat.title}>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  {stat.title}
+                </CardTitle>
+                <div className={`${stat.bgColor} p-2 rounded-lg`}>
+                  <Icon className={`w-4 h-4 ${stat.color}`} />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stat.value}</div>
+                <p className="text-xs text-gray-500 mt-1">{stat.description}</p>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent Activity</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex items-start gap-3">
+                <div className="w-2 h-2 bg-blue-500 rounded-full mt-2" />
+                <div>
+                  <p className="text-sm font-medium">New reply on your thread</p>
+                  <p className="text-xs text-gray-500">2 hours ago</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="w-2 h-2 bg-green-500 rounded-full mt-2" />
+                <div>
+                  <p className="text-sm font-medium">User started following you</p>
+                  <p className="text-xs text-gray-500">5 hours ago</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="w-2 h-2 bg-orange-500 rounded-full mt-2" />
+                <div>
+                  <p className="text-sm font-medium">Your thread was featured</p>
+                  <p className="text-xs text-gray-500">1 day ago</p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Quick Actions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <button className="w-full text-left px-4 py-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">
+                <p className="font-medium text-blue-900">Create New Thread</p>
+                <p className="text-sm text-blue-600">Start a new discussion</p>
+              </button>
+              <button className="w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
+                <p className="font-medium text-gray-900">View Notifications</p>
+                <p className="text-sm text-gray-600">8 unread messages</p>
+              </button>
+              <button className="w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
+                <p className="font-medium text-gray-900">Edit Profile</p>
+                <p className="text-sm text-gray-600">Update your information</p>
+              </button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
