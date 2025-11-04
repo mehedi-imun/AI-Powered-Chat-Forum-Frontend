@@ -32,17 +32,21 @@ interface Thread {
   updatedAt: string;
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
 
 async function getThreads(): Promise<Thread[]> {
   try {
-    const response = await fetch(`${API_URL}/threads?sort=-createdAt&limit=20`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      cache: "no-store", // Always fetch fresh data
-    });
+    const response = await fetch(
+      `${API_URL}/threads?sort=-createdAt&limit=20`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        cache: "no-store", // Always fetch fresh data
+      }
+    );
 
     if (!response.ok) {
       console.error("Failed to fetch threads:", response.statusText);
@@ -50,7 +54,7 @@ async function getThreads(): Promise<Thread[]> {
     }
 
     const result = await response.json();
-    
+
     if (result.success && result.data?.threads) {
       return result.data.threads;
     }
