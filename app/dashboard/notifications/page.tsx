@@ -345,7 +345,9 @@ export default function NotificationsPage() {
                       <div className="flex-1">
                         <h3
                           className={`font-semibold ${
-                            !notification.isRead ? "text-gray-900" : "text-gray-700"
+                            !notification.isRead
+                              ? "text-gray-900"
+                              : "text-gray-700"
                           }`}
                         >
                           {notification.title}
