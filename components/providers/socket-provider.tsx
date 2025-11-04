@@ -15,7 +15,7 @@ const SocketContext = createContext<SocketContextType>({
 });
 
 export function SocketProvider({ children }: { children: React.ReactNode }) {
-  const socketRef = useRef<Socket | null>(null);
+  const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const { accessToken, isAuthenticated } = useAppSelector(
     (state) => state.auth
@@ -24,24 +24,18 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Only connect if user is authenticated
     if (!isAuthenticated || !accessToken) {
-      // Clean up existing socket if user logs out
-      if (socketRef.current) {
-        socketRef.current.disconnect();
-        socketRef.current = null;
-        setIsConnected(false);
-      }
       return;
     }
 
     // Don't create a new socket if one already exists
-    if (socketRef.current?.connected) {
+    if (socket?.connected) {
       return;
     }
 
     // Create socket connection
     const socketUrl =
       process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:5000";
-    
+
     const socketInstance = io(socketUrl, {
       auth: {
         token: accessToken,
@@ -99,8 +93,9 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
       }
       setIsConnected(false);
     };
-  }, [accessToken, isAuthenticated]);  return (
-    <SocketContext.Provider value={{ socket, isConnected }}>
+  }, [accessToken, isAuthenticated]);
+  return (
+    <SocketContext.Provider value={{ socket: socketRef.current, isConnected }}>
       {children}
     </SocketContext.Provider>
   );
