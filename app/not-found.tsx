@@ -13,8 +13,8 @@ export default function NotFound() {
           <FileQuestion className="h-24 w-24 text-gray-400 mx-auto mb-6" />
           <h1 className="text-4xl font-bold mb-4">404 - Page Not Found</h1>
           <p className="text-xl text-gray-600 mb-8 max-w-md mx-auto">
-            Sorry, we couldn&apos;t find the page you&apos;re looking for. It might
-            have been moved or deleted.
+            Sorry, we couldn&apos;t find the page you&apos;re looking for. It
+            might have been moved or deleted.
           </p>
           <div className="flex gap-4 justify-center">
             <Button asChild>

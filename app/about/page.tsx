@@ -16,7 +16,9 @@ export default function AboutPage() {
       <Navbar />
       <main className="min-h-screen bg-gray-50">
         <div className="container mx-auto px-4 py-16 max-w-4xl">
-          <h1 className="text-4xl font-bold mb-6 text-center">About Chat Forum</h1>
+          <h1 className="text-4xl font-bold mb-6 text-center">
+            About Chat Forum
+          </h1>
           <p className="text-xl text-gray-600 mb-12 text-center">
             A modern discussion platform built for meaningful conversations
           </p>
@@ -51,7 +53,8 @@ export default function AboutPage() {
               <CardContent>
                 <p className="text-gray-600">
                   Create threaded conversations with markdown support, code
-                  highlighting, and real-time updates for seamless communication.
+                  highlighting, and real-time updates for seamless
+                  communication.
                 </p>
               </CardContent>
             </Card>
@@ -80,8 +83,8 @@ export default function AboutPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600">
-                  AI-powered moderation keeps discussions respectful and on-topic,
-                  creating a welcoming environment for all users.
+                  AI-powered moderation keeps discussions respectful and
+                  on-topic, creating a welcoming environment for all users.
                 </p>
               </CardContent>
             </Card>

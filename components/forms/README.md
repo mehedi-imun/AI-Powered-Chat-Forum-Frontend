@@ -15,10 +15,11 @@ import { FormWrapper } from "@/components/forms";
 
 <FormWrapper form={form} onSubmit={onSubmit} className="space-y-4">
   {/* Form fields */}
-</FormWrapper>
+</FormWrapper>;
 ```
 
 **Props:**
+
 - `form`: UseFormReturn from React Hook Form
 - `onSubmit`: Submit handler function
 - `children`: Form fields
@@ -37,10 +38,11 @@ import { FormInput } from "@/components/forms";
   type="email"
   placeholder="you@example.com"
   required
-/>
+/>;
 ```
 
 **Props:**
+
 - `name`: Field name (must match schema)
 - `label`: Display label
 - `type`: Input type (text, email, password, etc.)
@@ -62,10 +64,11 @@ import { FormTextarea } from "@/components/forms";
   placeholder="Enter your content..."
   rows={6}
   required
-/>
+/>;
 ```
 
 **Props:**
+
 - `name`: Field name
 - `label`: Display label
 - `placeholder`: Placeholder text
@@ -90,10 +93,11 @@ import { FormSelect } from "@/components/forms";
     { label: "Tech", value: "tech" },
   ]}
   required
-/>
+/>;
 ```
 
 **Props:**
+
 - `name`: Field name
 - `label`: Display label
 - `placeholder`: Placeholder text
@@ -114,10 +118,11 @@ import { FormCheckbox } from "@/components/forms";
   label="I agree to the terms"
   description="By checking this, you agree to our Terms of Service."
   required
-/>
+/>;
 ```
 
 **Props:**
+
 - `name`: Field name
 - `label`: Display label
 - `description`: Optional helper text
@@ -150,8 +155,16 @@ export type CreateThreadFormData = z.infer<typeof createThreadSchema>;
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FormWrapper, FormInput, FormTextarea, FormSelect } from "@/components/forms";
-import { createThreadSchema, CreateThreadFormData } from "@/lib/schemas/thread.schema";
+import {
+  FormWrapper,
+  FormInput,
+  FormTextarea,
+  FormSelect,
+} from "@/components/forms";
+import {
+  createThreadSchema,
+  CreateThreadFormData,
+} from "@/lib/schemas/thread.schema";
 
 export default function CreateThreadPage() {
   const form = useForm<CreateThreadFormData>({
@@ -177,7 +190,7 @@ export default function CreateThreadPage() {
         placeholder="Enter title"
         required
       />
-      
+
       <FormSelect
         name="category"
         label="Category"
@@ -187,20 +200,11 @@ export default function CreateThreadPage() {
         ]}
         required
       />
-      
-      <FormTextarea
-        name="content"
-        label="Content"
-        rows={8}
-        required
-      />
-      
-      <FormInput
-        name="tags"
-        label="Tags"
-        placeholder="Comma-separated"
-      />
-      
+
+      <FormTextarea name="content" label="Content" rows={8} required />
+
+      <FormInput name="tags" label="Tags" placeholder="Comma-separated" />
+
       <Button type="submit">Create Thread</Button>
     </FormWrapper>
   );
@@ -215,11 +219,12 @@ export default function CreateThreadPage() {
 ✅ **Accessible**: Built on ShadcnUI (Radix UI) components  
 ✅ **Reusable**: DRY - no repeated form code  
 ✅ **Consistent**: Same styling and behavior across all forms  
-✅ **Developer-Friendly**: Simple API, easy to use  
+✅ **Developer-Friendly**: Simple API, easy to use
 
 ## Examples
 
 See working examples at:
+
 - `/forms-example` - Basic form showcase
 - `/create-thread-example` - Real-world thread creation form
 
