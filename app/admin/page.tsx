@@ -72,12 +72,13 @@ export default function AdminDashboardPage() {
         }),
       ]);
 
-      const [dashboardData, usersData, threadsData, postsData] = await Promise.all([
-        dashboardRes.json(),
-        usersRes.json(),
-        threadsRes.json(),
-        postsRes.json(),
-      ]);
+      const [dashboardData, usersData, threadsData, postsData] =
+        await Promise.all([
+          dashboardRes.json(),
+          usersRes.json(),
+          threadsRes.json(),
+          postsRes.json(),
+        ]);
 
       setStats(dashboardData.data);
       setAnalytics({

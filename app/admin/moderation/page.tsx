@@ -238,9 +238,7 @@ export default function ModerationPage() {
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  High Risk
-                </CardTitle>
+                <CardTitle className="text-sm font-medium">High Risk</CardTitle>
                 <AlertTriangle className="h-5 w-5 text-red-600" />
               </CardHeader>
               <CardContent>
@@ -436,8 +434,8 @@ export default function ModerationPage() {
                           post.aiRecommendation === "approve"
                             ? "bg-green-100 text-green-800"
                             : post.aiRecommendation === "review"
-                              ? "bg-orange-100 text-orange-800"
-                              : "bg-red-100 text-red-800"
+                            ? "bg-orange-100 text-orange-800"
+                            : "bg-red-100 text-red-800"
                         }`}
                       >
                         AI Recommendation: {post.aiRecommendation}

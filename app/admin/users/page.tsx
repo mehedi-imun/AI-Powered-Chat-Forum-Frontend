@@ -62,7 +62,8 @@ export default function UsersManagementPage() {
 
       let url = `${API_URL}/admin/users?page=${currentPage}&limit=${limit}`;
       if (roleFilter !== "all") url += `&role=${roleFilter}`;
-      if (statusFilter !== "all") url += `&isActive=${statusFilter === "active"}`;
+      if (statusFilter !== "all")
+        url += `&isActive=${statusFilter === "active"}`;
       if (searchTerm) url += `&searchTerm=${searchTerm}`;
 
       const response = await fetch(url, {
@@ -260,7 +261,9 @@ export default function UsersManagementPage() {
                       </td>
                       <td className="p-3">
                         <span
-                          className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getRoleBadge(user.role)}`}
+                          className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getRoleBadge(
+                            user.role
+                          )}`}
                         >
                           {user.role === "Admin" && (
                             <Shield className="h-3 w-3 mr-1" />

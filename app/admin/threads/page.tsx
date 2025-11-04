@@ -295,7 +295,9 @@ export default function ThreadsManagementPage() {
                 <PaginationPrevious
                   onClick={() => handlePageChange(page - 1)}
                   className={
-                    page === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"
+                    page === 1
+                      ? "pointer-events-none opacity-50"
+                      : "cursor-pointer"
                   }
                 />
               </PaginationItem>

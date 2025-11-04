@@ -258,8 +258,8 @@ export default function PostsManagementPage() {
       {totalPages > 1 && (
         <div className="flex items-center justify-between mt-6">
           <p className="text-sm text-gray-600">
-            Showing {posts.length} of {total} posts (Page {page} of{" "}
-            {totalPages})
+            Showing {posts.length} of {total} posts (Page {page} of {totalPages}
+            )
           </p>
           <Pagination>
             <PaginationContent>
@@ -267,7 +267,9 @@ export default function PostsManagementPage() {
                 <PaginationPrevious
                   onClick={() => handlePageChange(page - 1)}
                   className={
-                    page === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"
+                    page === 1
+                      ? "pointer-events-none opacity-50"
+                      : "cursor-pointer"
                   }
                 />
               </PaginationItem>
