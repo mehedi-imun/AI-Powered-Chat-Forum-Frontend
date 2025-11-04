@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MessageSquare, User, Clock, ArrowRight } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { StartDiscussionButton } from "@/components/threads/start-discussion-button";
 
 export const metadata: Metadata = {
   title: "Discussions | Chat Forum",
@@ -82,12 +83,7 @@ export default async function ThreadsPage() {
                 Browse and explore community discussions
               </p>
             </div>
-            <Button asChild>
-              <Link href="/login">
-                <MessageSquare className="mr-2 h-4 w-4" />
-                Start Discussion
-              </Link>
-            </Button>
+            <StartDiscussionButton />
           </div>
 
           {/* Threads List */}
@@ -129,7 +125,10 @@ export default async function ThreadsPage() {
                       <div className="flex items-center gap-4">
                         <div className="flex items-center gap-1">
                           <User className="h-4 w-4" />
-                          <span>{thread.author.displayName || thread.author.username}</span>
+                          <span>
+                            {thread.author.displayName ||
+                              thread.author.username}
+                          </span>
                         </div>
                         <div className="flex items-center gap-1">
                           <MessageSquare className="h-4 w-4" />
