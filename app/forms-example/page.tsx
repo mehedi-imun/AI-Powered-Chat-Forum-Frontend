@@ -51,7 +51,9 @@ export default function FormsExamplePage() {
 
   const onSubmit = async (data: DemoFormData) => {
     console.log("Form submitted:", data);
-    alert(`Form submitted successfully!\n\nData: ${JSON.stringify(data, null, 2)}`);
+    alert(
+      `Form submitted successfully!\n\nData: ${JSON.stringify(data, null, 2)}`
+    );
     form.reset();
   };
 
@@ -61,7 +63,8 @@ export default function FormsExamplePage() {
         <CardHeader>
           <CardTitle>Reusable Form System Demo</CardTitle>
           <CardDescription>
-            Phase 4 implementation - showcasing all form components with Zod validation
+            Phase 4 implementation - showcasing all form components with Zod
+            validation
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -145,13 +148,15 @@ export default function FormsExamplePage() {
             <li className="flex items-start">
               <span className="mr-2">✅</span>
               <span>
-                <strong>FormWrapper:</strong> FormProvider wrapper for React Hook Form
+                <strong>FormWrapper:</strong> FormProvider wrapper for React
+                Hook Form
               </span>
             </li>
             <li className="flex items-start">
               <span className="mr-2">✅</span>
               <span>
-                <strong>FormInput:</strong> Reusable input with validation errors
+                <strong>FormInput:</strong> Reusable input with validation
+                errors
               </span>
             </li>
             <li className="flex items-start">
@@ -163,31 +168,36 @@ export default function FormsExamplePage() {
             <li className="flex items-start">
               <span className="mr-2">✅</span>
               <span>
-                <strong>FormSelect:</strong> Reusable select dropdown with Controller
+                <strong>FormSelect:</strong> Reusable select dropdown with
+                Controller
               </span>
             </li>
             <li className="flex items-start">
               <span className="mr-2">✅</span>
               <span>
-                <strong>FormCheckbox:</strong> Reusable checkbox with description
+                <strong>FormCheckbox:</strong> Reusable checkbox with
+                description
               </span>
             </li>
             <li className="flex items-start">
               <span className="mr-2">✅</span>
               <span>
-                <strong>Zod Integration:</strong> Type-safe validation with zodResolver
+                <strong>Zod Integration:</strong> Type-safe validation with
+                zodResolver
               </span>
             </li>
             <li className="flex items-start">
               <span className="mr-2">✅</span>
               <span>
-                <strong>Error Handling:</strong> Automatic error display below fields
+                <strong>Error Handling:</strong> Automatic error display below
+                fields
               </span>
             </li>
             <li className="flex items-start">
               <span className="mr-2">✅</span>
               <span>
-                <strong>TypeScript:</strong> Fully typed with inferred form data types
+                <strong>TypeScript:</strong> Fully typed with inferred form data
+                types
               </span>
             </li>
           </ul>
