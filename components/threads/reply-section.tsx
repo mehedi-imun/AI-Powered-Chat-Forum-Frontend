@@ -5,12 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import {
-  LogIn,
-  Clock,
-  MessageSquare,
-  CornerDownRight,
-} from "lucide-react";
+import { LogIn, Clock, MessageSquare, CornerDownRight } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useAuth } from "@/lib/hooks/use-auth";
 import { Textarea } from "@/components/ui/textarea";
@@ -53,7 +48,7 @@ function ReplyCard({
   const maxDepth = 5; // Limit nesting depth to prevent UI issues
   const hasChildren = childrenReplies[reply._id]?.length > 0;
   const replyCount = childrenReplies[reply._id]?.length || 0;
-  
+
   // Visual styling based on depth
   const indentClass = depth > 0 ? "ml-6 border-l-3 border-blue-300 pl-4" : "";
   const cardBgClass = depth > 0 ? "bg-blue-50/30" : "";
