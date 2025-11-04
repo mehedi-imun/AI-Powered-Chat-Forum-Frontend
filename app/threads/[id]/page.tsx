@@ -5,7 +5,7 @@ import { Navbar } from "@/components/landing/navbar";
 import { Footer } from "@/components/landing/footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { User, Clock } from "lucide-react";
+import { Clock, MessageSquare } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { RealTimeReplySection } from "@/components/threads/real-time-reply-section";
 
@@ -182,35 +182,45 @@ export default async function ThreadDetailPage({
             <span className="text-gray-900">{thread.title}</span>
           </div>
 
-          {/* Thread Content */}
-          <Card className="mb-6">
-            <CardHeader>
-              <h1 className="text-3xl font-bold mb-4">{thread.title}</h1>
-              <div className="flex items-center gap-4 text-sm text-gray-600">
-                <div className="flex items-center gap-1">
-                  <User className="h-4 w-4" />
-                  <span>
+          {/* Thread Content - Compact */}
+          <Card className="mb-6 border border-gray-200">
+            <CardHeader className="pb-3">
+              <h1 className="text-2xl font-bold mb-3">{thread.title}</h1>
+              <div className="flex items-center gap-3 text-xs text-gray-600">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-6 h-6 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xs font-semibold">
+                    {(initialPost?.author?.name || thread.createdBy?.name || "A")
+                      .charAt(0)
+                      .toUpperCase()}
+                  </div>
+                  <span className="font-medium text-gray-900">
                     {initialPost?.author?.name ||
                       thread.createdBy?.name ||
                       "Anonymous"}
                   </span>
                 </div>
+                <span className="text-gray-400">•</span>
                 <div className="flex items-center gap-1">
-                  <Clock className="h-4 w-4" />
+                  <Clock className="h-3 w-3" />
                   <span>
                     {formatDistanceToNow(new Date(thread.createdAt), {
                       addSuffix: true,
                     })}
                   </span>
                 </div>
+                <span className="text-gray-400">•</span>
+                <div className="flex items-center gap-1">
+                  <MessageSquare className="h-3 w-3" />
+                  <span>{thread.postCount} {thread.postCount === 1 ? "reply" : "replies"}</span>
+                </div>
               </div>
             </CardHeader>
-            <CardContent>
-              <div className="prose max-w-none">
+            <CardContent className="pt-0">
+              <div className="text-sm text-gray-700 leading-relaxed">
                 {initialPost?.content
                   ?.split("\n")
                   .map((paragraph: string, index: number) => (
-                    <p key={index} className="mb-4 text-gray-700">
+                    <p key={index} className="mb-3">
                       {paragraph}
                     </p>
                   )) || <p className="text-gray-500">No content available.</p>}

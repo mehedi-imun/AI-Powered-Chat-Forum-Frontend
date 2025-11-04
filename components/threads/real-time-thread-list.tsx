@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MessageSquare, User, Clock, ArrowRight } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { MessageSquare } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useSocket } from "@/components/providers/socket-provider";
 
@@ -108,65 +108,59 @@ export function RealTimeThreadList({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {threads.map((thread) => (
-        <Card
+        <Link
           key={thread._id}
-          className="hover:shadow-md transition-shadow duration-200"
+          href={`/threads/${thread._id}`}
+          className="block group"
         >
-          <CardHeader>
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <CardTitle className="text-xl mb-2">
-                  <Link
-                    href={`/threads/${thread._id}`}
-                    className="hover:text-primary transition-colors"
-                  >
-                    {thread.title}
-                  </Link>
-                </CardTitle>
-                <div className="flex items-center gap-4 text-sm text-gray-600">
-                  <div className="flex items-center gap-1">
-                    <User className="h-4 w-4" />
-                    <span>{thread.createdBy?.name || "Anonymous"}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Clock className="h-4 w-4" />
-                    <span>
-                      {formatDistanceToNow(new Date(thread.createdAt), {
-                        addSuffix: true,
-                      })}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <MessageSquare className="h-4 w-4" />
-                    <span>{thread.postCount} posts</span>
-                  </div>
+          <div className="border border-gray-200 rounded-lg p-4 hover:border-blue-300 hover:bg-blue-50/30 transition-all">
+            {/* Title */}
+            <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors mb-2">
+              {thread.title}
+            </h3>
+            
+            {/* Meta + Tags in one line */}
+            <div className="flex items-center gap-3 text-xs text-gray-600">
+              <div className="flex items-center gap-1">
+                <div className="w-5 h-5 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xs font-semibold">
+                  {(thread.createdBy?.name || "A").charAt(0).toUpperCase()}
                 </div>
+                <span className="font-medium">{thread.createdBy?.name || "Anonymous"}</span>
               </div>
-              <Link
-                href={`/threads/${thread._id}`}
-                className="ml-4 text-primary hover:text-primary/80 transition-colors"
-              >
-                <ArrowRight className="h-5 w-5" />
-              </Link>
+              <span className="text-gray-400">•</span>
+              <span>
+                {formatDistanceToNow(new Date(thread.createdAt), {
+                  addSuffix: true,
+                })}
+              </span>
+              <span className="text-gray-400">•</span>
+              <div className="flex items-center gap-1">
+                <MessageSquare className="h-3 w-3" />
+                <span>{thread.postCount}</span>
+              </div>
+              {thread.tags.length > 0 && (
+                <>
+                  <span className="text-gray-400">•</span>
+                  <div className="flex gap-1.5">
+                    {thread.tags.slice(0, 2).map((tag) => (
+                      <span
+                        key={tag}
+                        className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs font-medium"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                    {thread.tags.length > 2 && (
+                      <span className="text-gray-500">+{thread.tags.length - 2}</span>
+                    )}
+                  </div>
+                </>
+              )}
             </div>
-          </CardHeader>
-          <CardContent>
-            {thread.tags.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {thread.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+          </div>
+        </Link>
       ))}
     </div>
   );
