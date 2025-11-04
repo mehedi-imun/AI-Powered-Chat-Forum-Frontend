@@ -129,11 +129,11 @@ export default async function ThreadsPage() {
                       <div className="flex items-center gap-4">
                         <div className="flex items-center gap-1">
                           <User className="h-4 w-4" />
-                          <span>{thread.author.displayName}</span>
+                          <span>{thread.author.displayName || thread.author.username}</span>
                         </div>
                         <div className="flex items-center gap-1">
                           <MessageSquare className="h-4 w-4" />
-                          <span>{thread.replyCount} replies</span>
+                          <span>{thread.replyCount || 0} replies</span>
                         </div>
                         <div className="flex items-center gap-1">
                           <Clock className="h-4 w-4" />

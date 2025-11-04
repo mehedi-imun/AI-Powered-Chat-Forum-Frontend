@@ -14,8 +14,9 @@ interface Thread {
   title: string;
   content: string;
   author: {
+    _id: string;
     username: string;
-    displayName: string;
+    displayName?: string;
   };
   createdAt: string;
   updatedAt: string;
@@ -25,56 +26,38 @@ interface Reply {
   _id: string;
   content: string;
   author: {
+    _id: string;
     username: string;
-    displayName: string;
+    displayName?: string;
   };
   createdAt: string;
+  updatedAt: string;
 }
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
 
 async function getThread(id: string): Promise<Thread | null> {
   try {
-    // In production, fetch from backend API
-    // Mock data for now
-    const threads: Record<string, Thread> = {
-      "1": {
-        _id: "1",
-        title: "Welcome to Chat Forum!",
-        content:
-          "This is a sample thread to demonstrate the public thread detail page. In a real application, this content would be fetched from your backend API using Server Components.\n\nYou can write longer content here with multiple paragraphs to show how the thread detail page displays full content.\n\nFeel free to explore the features and join the discussion!",
-        author: {
-          username: "admin",
-          displayName: "Admin",
-        },
-        createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-        updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+    const response = await fetch(`${API_URL}/threads/${id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
       },
-      "2": {
-        _id: "2",
-        title: "How to get started with Next.js 16?",
-        content:
-          "I'm new to Next.js and want to learn about the App Router and Server Components. Any recommendations?\n\nI've heard that Next.js 16 has some great new features, especially around Turbopack and Server Actions. What are the best resources to learn these concepts?\n\nAlso, are there any good starter templates or boilerplates that showcase best practices?",
-        author: {
-          username: "developer123",
-          displayName: "Developer",
-        },
-        createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-        updatedAt: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
-      },
-      "3": {
-        _id: "3",
-        title: "Best practices for TypeScript in React",
-        content:
-          "What are your favorite TypeScript patterns and best practices when building React applications?\n\nI'm particularly interested in:\n- Type-safe form handling\n- API response typing\n- Proper use of generics\n- Avoiding 'any' types\n\nAny suggestions or resources would be appreciated!",
-        author: {
-          username: "typescript_lover",
-          displayName: "TS Enthusiast",
-        },
-        createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-        updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-      },
-    };
+      cache: "no-store", // Always fetch fresh data
+    });
 
-    return threads[id] || null;
+    if (!response.ok) {
+      console.error("Failed to fetch thread:", response.statusText);
+      return null;
+    }
+
+    const result = await response.json();
+    
+    if (result.success && result.data?.thread) {
+      return result.data.thread;
+    }
+
+    return null;
   } catch (error) {
     console.error("Failed to fetch thread:", error);
     return null;
@@ -83,33 +66,25 @@ async function getThread(id: string): Promise<Thread | null> {
 
 async function getReplies(threadId: string): Promise<Reply[]> {
   try {
-    // Mock replies
-    if (threadId === "1") {
-      return [
-        {
-          _id: "r1",
-          content:
-            "Thanks for the welcome! This looks like a great platform. Looking forward to participating in discussions.",
-          author: {
-            username: "newuser",
-            displayName: "New User",
-          },
-          createdAt: new Date(
-            Date.now() - 1 * 24 * 60 * 60 * 1000
-          ).toISOString(),
-        },
-        {
-          _id: "r2",
-          content:
-            "I agree! The UI looks clean and modern. Excited to see this community grow.",
-          author: {
-            username: "community_member",
-            displayName: "Community Member",
-          },
-          createdAt: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
-        },
-      ];
+    const response = await fetch(`${API_URL}/posts?thread=${threadId}&sort=createdAt`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      cache: "no-store", // Always fetch fresh data
+    });
+
+    if (!response.ok) {
+      console.error("Failed to fetch replies:", response.statusText);
+      return [];
     }
+
+    const result = await response.json();
+    
+    if (result.success && result.data?.posts) {
+      return result.data.posts;
+    }
+
     return [];
   } catch (error) {
     console.error("Failed to fetch replies:", error);
@@ -178,7 +153,7 @@ export default async function ThreadDetailPage({
               <div className="flex items-center gap-4 text-sm text-gray-600">
                 <div className="flex items-center gap-1">
                   <User className="h-4 w-4" />
-                  <span>{thread.author.displayName}</span>
+                  <span>{thread.author.displayName || thread.author.username}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <Clock className="h-4 w-4" />
