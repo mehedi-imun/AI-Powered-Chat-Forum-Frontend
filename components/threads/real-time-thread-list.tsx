@@ -53,7 +53,7 @@ export function RealTimeThreadList({
     // Listen for new threads
     socket.on("new-thread", (data: SocketThreadData) => {
       console.log("📨 Received new thread:", data);
-      
+
       if (data.thread) {
         // Add new thread to the top of the list
         setThreads((prev) => [data.thread, ...prev]);
@@ -63,7 +63,7 @@ export function RealTimeThreadList({
     // Listen for thread updates
     socket.on("thread-updated", (data: SocketThreadData) => {
       console.log("✏️ Thread updated:", data);
-      
+
       if (data.thread) {
         setThreads((prev) =>
           prev.map((thread) =>
@@ -76,7 +76,7 @@ export function RealTimeThreadList({
     // Listen for thread deletions
     socket.on("thread-deleted", (data: { threadId: string }) => {
       console.log("🗑️ Thread deleted:", data);
-      
+
       if (data.threadId) {
         setThreads((prev) =>
           prev.filter((thread) => thread._id !== data.threadId)
@@ -128,9 +128,7 @@ export function RealTimeThreadList({
                 <div className="flex items-center gap-4 text-sm text-gray-600">
                   <div className="flex items-center gap-1">
                     <User className="h-4 w-4" />
-                    <span>
-                      {thread.createdBy?.name || "Anonymous"}
-                    </span>
+                    <span>{thread.createdBy?.name || "Anonymous"}</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <Clock className="h-4 w-4" />

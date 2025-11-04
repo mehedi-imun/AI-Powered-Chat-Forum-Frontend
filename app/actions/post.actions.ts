@@ -41,8 +41,9 @@ interface PaginatedPosts {
  * Create a new post (reply) in a thread
  */
 export async function createPostAction(formData: FormData) {
-  const threadId = formData.get("threadId") as string;
+  const threadId = formData.get("thread") as string;
   const content = formData.get("content") as string;
+  const parentId = formData.get("parentId") as string | null;
 
   try {
     const cookieStore = await cookies();
@@ -55,13 +56,23 @@ export async function createPostAction(formData: FormData) {
       };
     }
 
+    const requestBody: { threadId: string; content: string; parentId?: string } = {
+      threadId,
+      content,
+    };
+
+    // Only include parentId if it's provided
+    if (parentId) {
+      requestBody.parentId = parentId;
+    }
+
     const response = await fetch(`${API_URL}/posts`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ thread: threadId, content }),
+      body: JSON.stringify(requestBody),
       cache: "no-store",
     });
 

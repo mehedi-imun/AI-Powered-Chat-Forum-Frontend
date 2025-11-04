@@ -58,12 +58,12 @@ export function RealTimeReplySection({
     console.log("🔌 Setting up real-time listeners for thread:", threadId);
 
     // Join the thread room
-    socket.emit("join-thread", threadId);
+    socket.emit("thread:join", threadId);
 
     // Listen for new posts in this thread
     socket.on("new-post", (data: SocketPostData) => {
       console.log("📨 Received new post:", data);
-      
+
       // Check if the post belongs to this thread
       if (data.post?.threadId === threadId) {
         const newReply: Reply = {
@@ -87,7 +87,7 @@ export function RealTimeReplySection({
     // Listen for post updates (edits, moderation changes)
     socket.on("post-updated", (data: SocketPostData) => {
       console.log("✏️ Post updated:", data);
-      
+
       if (data.post?.threadId === threadId) {
         setReplies((prev) =>
           prev.map((reply) =>
@@ -106,7 +106,7 @@ export function RealTimeReplySection({
     // Listen for post deletions
     socket.on("post-deleted", (data: SocketPostDeleteData) => {
       console.log("🗑️ Post deleted:", data);
-      
+
       if (data.postId) {
         setReplies((prev) => prev.filter((reply) => reply._id !== data.postId));
       }
@@ -115,7 +115,7 @@ export function RealTimeReplySection({
     // Cleanup: leave thread room and remove listeners
     return () => {
       console.log("🧹 Cleaning up real-time listeners for thread:", threadId);
-      socket.emit("leave-thread", threadId);
+      socket.emit("thread:leave", threadId);
       socket.off("new-post");
       socket.off("post-updated");
       socket.off("post-deleted");

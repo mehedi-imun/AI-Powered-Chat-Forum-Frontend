@@ -50,8 +50,7 @@ interface Post {
   replies?: Post[];
 }
 
-const API_URL =
-  process.env.NEXT_PUBLIC_API_URL;
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 async function getThread(id: string): Promise<Thread | null> {
   try {
@@ -220,7 +219,10 @@ export default async function ThreadDetailPage({
           </Card>
 
           {/* Reply Section with Real-Time Updates */}
-          <RealTimeReplySection threadId={thread._id} initialReplies={replies} />
+          <RealTimeReplySection
+            threadId={thread._id}
+            initialReplies={replies}
+          />
 
           {/* Bottom CTA */}
           <Card className="bg-linear-to-r from-blue-50 to-indigo-50 border-blue-200">

@@ -7,7 +7,6 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
   LogIn,
-  User,
   Clock,
   MessageSquare,
   CornerDownRight,
@@ -53,18 +52,33 @@ function ReplyCard({
 }: ReplyCardProps) {
   const maxDepth = 5; // Limit nesting depth to prevent UI issues
   const hasChildren = childrenReplies[reply._id]?.length > 0;
-  const indentClass = depth > 0 ? "ml-6 border-l-2 border-gray-200 pl-4" : "";
+  const replyCount = childrenReplies[reply._id]?.length || 0;
+  
+  // Visual styling based on depth
+  const indentClass = depth > 0 ? "ml-6 border-l-3 border-blue-300 pl-4" : "";
+  const cardBgClass = depth > 0 ? "bg-blue-50/30" : "";
 
   return (
     <div className={indentClass}>
-      <Card>
-        <CardHeader>
+      <Card className={cardBgClass}>
+        <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm">
-              <User className="h-4 w-4 text-gray-600" />
-              <span className="font-medium">
-                {reply.author.displayName || reply.author.username}
-              </span>
+              <div className="w-8 h-8 rounded-full bg-linear-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-semibold text-xs">
+                {(reply.author.displayName || reply.author.username)
+                  .charAt(0)
+                  .toUpperCase()}
+              </div>
+              <div>
+                <span className="font-medium text-gray-900">
+                  {reply.author.displayName || reply.author.username}
+                </span>
+                {depth > 0 && (
+                  <span className="ml-2 text-xs text-blue-600 font-medium">
+                    • Nested Reply
+                  </span>
+                )}
+              </div>
             </div>
             <div className="flex items-center gap-1 text-xs text-gray-500">
               <Clock className="h-3 w-3" />
@@ -76,27 +90,35 @@ function ReplyCard({
             </div>
           </div>
         </CardHeader>
-        <CardContent>
-          <p className="text-gray-700 whitespace-pre-wrap mb-3">
+        <CardContent className="pt-0">
+          <p className="text-gray-700 whitespace-pre-wrap mb-3 leading-relaxed">
             {reply.content}
           </p>
-          {isAuthenticated && depth < maxDepth && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onReply(reply._id)}
-              className="text-blue-600 hover:text-blue-800"
-            >
-              <CornerDownRight className="h-4 w-4 mr-1" />
-              Reply
-            </Button>
-          )}
+          <div className="flex items-center gap-3">
+            {isAuthenticated && depth < maxDepth && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onReply(reply._id)}
+                className="text-blue-600 hover:text-blue-800 hover:bg-blue-100"
+              >
+                <CornerDownRight className="h-4 w-4 mr-1" />
+                Reply
+              </Button>
+            )}
+            {hasChildren && (
+              <span className="text-xs text-gray-500 flex items-center gap-1">
+                <MessageSquare className="h-3 w-3" />
+                {replyCount} {replyCount === 1 ? "reply" : "replies"}
+              </span>
+            )}
+          </div>
         </CardContent>
       </Card>
 
       {/* Render nested replies recursively */}
       {hasChildren && depth < maxDepth && (
-        <div className="mt-4 space-y-4">
+        <div className="mt-3 space-y-3">
           {childrenReplies[reply._id].map((childReply) => (
             <ReplyCard
               key={childReply._id}
@@ -122,6 +144,7 @@ export function ReplySection({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
+  const [replyingToUsername, setReplyingToUsername] = useState<string>("");
 
   const handleSubmitReply = async (e: React.FormEvent, parentId?: string) => {
     e.preventDefault();
@@ -200,7 +223,9 @@ export function ReplySection({
             </div>
           </CardHeader>
           <CardContent>
-            <form onSubmit={(e) => handleSubmitReply(e, replyingTo || undefined)}>
+            <form
+              onSubmit={(e) => handleSubmitReply(e, replyingTo || undefined)}
+            >
               <Textarea
                 placeholder={
                   replyingTo
