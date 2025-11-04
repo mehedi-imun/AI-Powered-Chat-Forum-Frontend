@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { LogIn, User, Clock, MessageSquare } from "lucide-react";
+import { LogIn, User, Clock, MessageSquare, CornerDownRight } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useAuth } from "@/lib/hooks/use-auth";
 import { Textarea } from "@/components/ui/textarea";
@@ -19,6 +19,7 @@ interface Reply {
     username: string;
     displayName?: string;
   };
+  parentId?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -36,9 +37,9 @@ export function ReplySection({
   const [replyContent, setReplyContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [replies, setReplies] = useState(initialReplies);
+  const [replyingTo, setReplyingTo] = useState<string | null>(null);
 
-  const handleSubmitReply = async (e: React.FormEvent) => {
+  const handleSubmitReply = async (e: React.FormEvent, parentId?: string) => {
     e.preventDefault();
 
     if (!replyContent.trim()) {
@@ -52,11 +53,15 @@ export function ReplySection({
     const formData = new FormData();
     formData.append("content", replyContent);
     formData.append("thread", threadId);
+    if (parentId) {
+      formData.append("parentId", parentId);
+    }
 
     const result = await createPostAction(formData);
 
     if (result.success) {
       setReplyContent("");
+      setReplyingTo(null);
       // Optimistically add the reply (in real app, refetch from server)
       window.location.reload(); // Simple reload for now
     } else {
@@ -65,6 +70,29 @@ export function ReplySection({
 
     setIsSubmitting(false);
   };
+
+  // Organize replies into a tree structure
+  const organizeReplies = (
+    replies: Reply[]
+  ): { topLevel: Reply[]; children: Record<string, Reply[]> } => {
+    const topLevel: Reply[] = [];
+    const children: Record<string, Reply[]> = {};
+
+    for (const reply of replies) {
+      if (!reply.parentId) {
+        topLevel.push(reply);
+      } else {
+        if (!children[reply.parentId]) {
+          children[reply.parentId] = [];
+        }
+        children[reply.parentId].push(reply);
+      }
+    }
+
+    return { topLevel, children };
+  };
+
+  const { topLevel, children } = organizeReplies(initialReplies);
 
   return (
     <>
@@ -117,10 +145,10 @@ export function ReplySection({
       <div className="mb-6">
         <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
           <MessageSquare className="h-6 w-6" />
-          Replies ({replies.length})
+          Replies ({initialReplies.length})
         </h2>
 
-        {replies.length === 0 ? (
+        {initialReplies.length === 0 ? (
           <Card>
             <CardContent className="py-8 text-center text-gray-600">
               No replies yet. Be the first to reply!
@@ -128,32 +156,18 @@ export function ReplySection({
           </Card>
         ) : (
           <div className="space-y-4">
-            {replies.map((reply) => (
-              <Card key={reply._id}>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-sm">
-                      <User className="h-4 w-4 text-gray-600" />
-                      <span className="font-medium">
-                        {reply.author.displayName || reply.author.username}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-1 text-xs text-gray-500">
-                      <Clock className="h-3 w-3" />
-                      <span>
-                        {formatDistanceToNow(new Date(reply.createdAt), {
-                          addSuffix: true,
-                        })}
-                      </span>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-700 whitespace-pre-wrap">
-                    {reply.content}
-                  </p>
-                </CardContent>
-              </Card>
+            {topLevel.map((reply) => (
+              <ReplyCard
+                key={reply._id}
+                reply={reply}
+                children={children}
+                onReply={(parentId) => {
+                  setReplyingTo(parentId);
+                  // Scroll to reply form
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }}
+                isAuthenticated={isAuthenticated}
+              />
             ))}
           </div>
         )}
