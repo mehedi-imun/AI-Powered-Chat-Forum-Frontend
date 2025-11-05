@@ -92,7 +92,7 @@ export async function loginAction(formData: FormData) {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 60 * 15, // 15 minutes
+      maxAge: 60 * 60 * 24 * 7,
       path: "/",
     });
 
@@ -100,16 +100,15 @@ export async function loginAction(formData: FormData) {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 60 * 60 * 24 * 7, // 7 days
+      maxAge: 60 * 60 * 24 * 7, 
       path: "/",
     });
 
-    // Set user role for proxy.ts middleware
     cookieStore.set("userRole", result.data.user.role, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 60 * 60 * 24 * 7, // 7 days
+      maxAge: 60 * 60 * 24 * 7, 
       path: "/",
     });
 
