@@ -1,7 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/app/components/ui/card";
 import {
   Lock,
   KeyRound,
@@ -10,10 +15,10 @@ import {
   CheckCircle,
   AlertCircle,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/app/components/ui/button";
+import { Input } from "@/app/components/ui/input";
+import { Label } from "@/app/components/ui/label";
+import { Alert, AlertDescription } from "@/app/components/ui/alert";
 import { changePasswordAction } from "@/app/actions/user.actions";
 
 export default function SettingsPage() {
@@ -75,7 +80,7 @@ export default function SettingsPage() {
       } else {
         setError(result.error || "Failed to change password");
       }
-    } catch {
+    } catch (error) {
       setError("An unexpected error occurred");
     } finally {
       setIsChangingPassword(false);

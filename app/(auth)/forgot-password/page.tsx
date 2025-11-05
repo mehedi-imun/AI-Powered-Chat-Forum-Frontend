@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { z } from "zod";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/app/components/ui/button";
 import {
   Card,
   CardHeader,
@@ -13,10 +13,10 @@ import {
   CardDescription,
   CardContent,
   CardFooter,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+} from "@/app/components/ui/card";
+import { Input } from "@/app/components/ui/input";
+import { Label } from "@/app/components/ui/label";
+import { Alert, AlertDescription } from "@/app/components/ui/alert";
 import { Loader2, Mail, ArrowLeft } from "lucide-react";
 
 const forgotPasswordSchema = z.object({
@@ -62,7 +62,7 @@ export default function ForgotPasswordPage() {
       } else {
         setError(result.message || "Failed to send reset email");
       }
-    } catch {
+    } catch (error) {
       setError("Network error. Please try again.");
     } finally {
       setIsLoading(false);

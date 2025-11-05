@@ -1,7 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/app/components/ui/card";
 import {
   Users,
   MessageSquare,
@@ -39,12 +44,6 @@ export default function AnalyticsPage() {
       const API_URL = process.env.NEXT_PUBLIC_API_URL;
       const token = getCookie("accessToken");
 
-      console.log(
-        "📍 Fetching analytics with token:",
-        token ? "✅ Token found" : "❌ No token"
-      );
-
-      // Fetch multiple endpoints in parallel
       const [usersRes, threadsRes, postsRes] = await Promise.all([
         fetch(`${API_URL}/admin/users/stats`, {
           credentials: "include",
@@ -65,10 +64,6 @@ export default function AnalyticsPage() {
         threadsRes.json(),
         postsRes.json(),
       ]);
-
-      console.log("Users data:", usersData);
-      console.log("Threads data:", threadsData);
-      console.log("Posts data:", postsData);
 
       setAnalytics({
         totalUsers: usersData.data?.total || 0,

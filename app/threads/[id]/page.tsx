@@ -1,12 +1,12 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Navbar } from "@/components/landing/navbar";
-import { Footer } from "@/components/landing/footer";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Navbar } from "@/app/components/landing/navbar";
+import { Footer } from "@/app/components/landing/footer";
+import { Card, CardContent, CardHeader } from "@/app/components/ui/card";
 import { Clock, MessageSquare } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import { RealTimeReplySection } from "@/components/threads/real-time-reply-section";
+import { RealTimeReplySection } from "@/app/components/threads/real-time-reply-section";
 
 interface Thread {
   _id: string;

@@ -3,7 +3,7 @@
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import type { Thread } from "@/types/thread";
+import type { Thread } from "@/app/types/thread";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
 
@@ -119,7 +119,7 @@ export async function updateThreadAction(threadId: string, formData: FormData) {
       success: true,
       thread: result.data.thread,
     };
-  } catch {
+  } catch (error) {
     return {
       success: false,
       error: "Network error. Please try again.",
@@ -204,7 +204,7 @@ export async function getThreadsAction(page = 1, limit = 10) {
       success: true,
       data: result.data,
     };
-  } catch {
+  } catch (error) {
     return {
       success: false,
       error: "Network error. Please try again.",
@@ -234,7 +234,7 @@ export async function getThreadAction(slug: string) {
       success: true,
       data: result.data.thread,
     };
-  } catch {
+  } catch (error) {
     return {
       success: false,
       error: "Network error. Please try again.",
@@ -287,7 +287,7 @@ export async function getMyThreadsAction(page = 1, limit = 10) {
       success: true,
       data: result.data,
     };
-  } catch {
+  } catch (error) {
     return {
       success: false,
       error: "Network error. Please try again.",
@@ -330,7 +330,7 @@ export async function searchThreadsAction(
       success: true,
       data: result.data,
     };
-  } catch {
+  } catch (error) {
     return {
       success: false,
       error: "Network error. Please try again.",
@@ -373,7 +373,7 @@ export async function getThreadsByUserAction(
       success: true,
       data: result.data,
     };
-  } catch {
+  } catch (error) {
     return {
       success: false,
       error: "Network error. Please try again.",
@@ -418,7 +418,7 @@ export async function requestThreadSummaryAction(threadId: string) {
       success: true,
       message: result.message || "Summary requested successfully",
     };
-  } catch {
+  } catch (error) {
     return {
       success: false,
       error: "Network error. Please try again.",
@@ -456,7 +456,7 @@ export async function getThreadSummaryAction(threadId: string) {
       success: true,
       data: result.data.summary,
     };
-  } catch {
+  } catch (error) {
     return {
       success: false,
       error: "Network error. Please try again.",

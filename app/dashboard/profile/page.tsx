@@ -1,12 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/app/components/ui/card";
+import { Button } from "@/app/components/ui/button";
+import { Input } from "@/app/components/ui/input";
+import { Label } from "@/app/components/ui/label";
+import { Textarea } from "@/app/components/ui/textarea";
+import { Alert, AlertDescription } from "@/app/components/ui/alert";
 import {
   User as UserIcon,
   Mail,
@@ -64,7 +69,7 @@ export default function ProfilePage() {
       } else {
         setError(result.error || "Failed to load profile");
       }
-    } catch {
+    } catch (error) {
       setError("Failed to load profile");
     } finally {
       setLoading(false);

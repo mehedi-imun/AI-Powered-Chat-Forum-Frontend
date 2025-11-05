@@ -46,7 +46,7 @@ export async function getDashboardStatsAction() {
       success: true,
       data: result.data,
     };
-  } catch {
+  } catch (error) {
     return {
       success: false,
       error: "Network error. Please try again.",
@@ -104,7 +104,7 @@ export async function adminGetAllUsersAction(
       success: true,
       data: result.data,
     };
-  } catch {
+  } catch (error) {
     return {
       success: false,
       error: "Network error. Please try again.",
@@ -168,7 +168,7 @@ export async function adminUpdateUserAction(userId: string, formData: FormData) 
       message: result.message,
       data: result.data,
     };
-  } catch {
+  } catch (error) {
     return {
       success: false,
       error: "Network error. Please try again.",
@@ -223,7 +223,7 @@ export async function banUserAction(userId: string, formData: FormData) {
       message: result.message,
       data: result.data,
     };
-  } catch {
+  } catch (error) {
     return {
       success: false,
       error: "Network error. Please try again.",
@@ -272,7 +272,7 @@ export async function unbanUserAction(userId: string) {
       message: result.message,
       data: result.data,
     };
-  } catch {
+  } catch (error) {
     return {
       success: false,
       error: "Network error. Please try again.",
@@ -331,7 +331,7 @@ export async function createReportAction(formData: FormData) {
       message: result.message,
       data: result.data,
     };
-  } catch {
+  } catch (error) {
     return {
       success: false,
       error: "Network error. Please try again.",
@@ -389,7 +389,7 @@ export async function getAllReportsAction(
       success: true,
       data: result.data,
     };
-  } catch {
+  } catch (error) {
     return {
       success: false,
       error: "Network error. Please try again.",
@@ -432,7 +432,7 @@ export async function getReportByIdAction(reportId: string) {
       success: true,
       data: result.data,
     };
-  } catch {
+  } catch (error) {
     return {
       success: false,
       error: "Network error. Please try again.",
@@ -487,7 +487,7 @@ export async function takeReportActionAction(reportId: string, formData: FormDat
       message: result.message,
       data: result.data,
     };
-  } catch {
+  } catch (error) {
     return {
       success: false,
       error: "Network error. Please try again.",
@@ -541,7 +541,7 @@ export async function getActivityLogsAction(
       success: true,
       data: result.data,
     };
-  } catch {
+  } catch (error) {
     return {
       success: false,
       error: "Network error. Please try again.",
@@ -584,7 +584,7 @@ export async function getSystemSettingsAction() {
       success: true,
       data: result.data,
     };
-  } catch {
+  } catch (error) {
     return {
       success: false,
       error: "Network error. Please try again.",
@@ -646,7 +646,7 @@ export async function updateSystemSettingsAction(formData: FormData) {
       message: result.message,
       data: result.data,
     };
-  } catch {
+  } catch (error) {
     return {
       success: false,
       error: "Network error. Please try again.",

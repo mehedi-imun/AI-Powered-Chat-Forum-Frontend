@@ -73,7 +73,7 @@ export async function getAllUsersAction(
       success: true,
       data: result.data,
     };
-  } catch {
+  } catch (error) {
     return {
       success: false,
       error: "Network error. Please try again.",
@@ -103,7 +103,7 @@ export async function getUserByIdAction(userId: string) {
       success: true,
       data: result.data.user,
     };
-  } catch {
+  } catch (error) {
     return {
       success: false,
       error: "Network error. Please try again.",
@@ -146,7 +146,7 @@ export async function getCurrentUserProfileAction() {
       success: true,
       data: result.data.user,
     };
-  } catch {
+  } catch (error) {
     return {
       success: false,
       error: "Network error. Please try again.",
@@ -212,7 +212,7 @@ export async function updateUserProfileAction(formData: FormData) {
       message: result.message,
       data: result.data.user,
     };
-  } catch {
+  } catch (error) {
     return {
       success: false,
       error: "Network error. Please try again.",
@@ -259,7 +259,7 @@ export async function deleteUserAction(userId: string) {
       success: true,
       message: result.message,
     };
-  } catch {
+  } catch (error) {
     return {
       success: false,
       error: "Network error. Please try again.",
@@ -311,7 +311,7 @@ export async function changePasswordAction(
       success: true,
       message: result.message || "Password changed successfully",
     };
-  } catch {
+  } catch (error) {
     return {
       success: false,
       error: "Network error. Please try again.",

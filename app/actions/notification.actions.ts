@@ -93,7 +93,7 @@ export async function getUserNotificationsAction(
       success: true,
       data: result.data,
     };
-  } catch {
+  } catch (error) {
     return {
       success: false,
       error: "Network error. Please try again.",
@@ -136,7 +136,7 @@ export async function getUnreadCountAction() {
       success: true,
       data: result.data.unreadCount,
     };
-  } catch {
+  } catch (error) {
     return {
       success: false,
       error: "Network error. Please try again.",
@@ -179,7 +179,7 @@ export async function getNotificationByIdAction(notificationId: string) {
       success: true,
       data: result.data.notification,
     };
-  } catch {
+  } catch (error) {
     return {
       success: false,
       error: "Network error. Please try again.",
@@ -227,7 +227,7 @@ export async function markNotificationAsReadAction(notificationId: string) {
       message: result.message,
       data: result.data.notification,
     };
-  } catch {
+  } catch (error) {
     return {
       success: false,
       error: "Network error. Please try again.",
@@ -275,7 +275,7 @@ export async function markAllNotificationsAsReadAction() {
       message: result.message,
       data: result.data,
     };
-  } catch {
+  } catch (error) {
     return {
       success: false,
       error: "Network error. Please try again.",
@@ -322,7 +322,7 @@ export async function deleteNotificationAction(notificationId: string) {
       success: true,
       message: result.message,
     };
-  } catch {
+  } catch (error) {
     return {
       success: false,
       error: "Network error. Please try again.",
@@ -370,7 +370,7 @@ export async function deleteAllReadNotificationsAction() {
       message: result.message,
       data: result.data,
     };
-  } catch {
+  } catch (error) {
     return {
       success: false,
       error: "Network error. Please try again.",

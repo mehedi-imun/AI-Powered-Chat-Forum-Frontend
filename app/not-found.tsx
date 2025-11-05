@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { Navbar } from "@/components/landing/navbar";
-import { Footer } from "@/components/landing/footer";
-import { Button } from "@/components/ui/button";
+import { Navbar } from "@/app/components/landing/navbar";
+import { Footer } from "@/app/components/landing/footer";
+import { Button } from "@/app/components/ui/button";
 import { FileQuestion } from "lucide-react";
 
 export default function NotFound() {

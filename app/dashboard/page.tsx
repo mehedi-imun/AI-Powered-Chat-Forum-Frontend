@@ -2,7 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/hooks/use-auth";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/app/components/ui/card";
 import {
   MessageSquare,
   MessageCircle,
@@ -13,8 +18,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { StatCard, PageHeader } from "@/components/ui/stat-card";
-import { PageLoader } from "@/components/ui/loading";
+import { StatCard, PageHeader } from "@/app/components/ui/stat-card";
+import { PageLoader } from "@/app/components/ui/loading";
 import { formatRelativeTime } from "@/lib/utils/format";
 import { ROUTES } from "@/lib/constants";
 

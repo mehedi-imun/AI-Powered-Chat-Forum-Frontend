@@ -8,15 +8,15 @@ import {
 } from "@/app/actions/auth.actions";
 import { useAppDispatch } from "@/lib/hooks/use-app-dispatch";
 import { setCredentials, UserRole } from "@/lib/redux/slices/authSlice";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/app/components/ui/button";
 import {
   Card,
   CardHeader,
   CardTitle,
   CardDescription,
   CardContent,
-} from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+} from "@/app/components/ui/card";
+import { Alert, AlertDescription } from "@/app/components/ui/alert";
 import { Loader2, CheckCircle, XCircle, Mail } from "lucide-react";
 
 function VerifyEmailContent() {

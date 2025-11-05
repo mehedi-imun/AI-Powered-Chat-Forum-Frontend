@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { Sidebar } from "@/components/shared/sidebar";
-import { Header } from "@/components/shared/header";
+import { Sidebar } from "@/app/components/shared/sidebar";
+import { Header } from "@/app/components/shared/header";
 import { getCurrentUserAction } from "@/app/actions/auth.actions";
 
 export const metadata: Metadata = {

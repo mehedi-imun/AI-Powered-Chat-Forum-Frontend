@@ -1,9 +1,12 @@
 import { Metadata } from "next";
-import { Navbar } from "@/components/landing/navbar";
-import { Footer } from "@/components/landing/footer";
-import { StartDiscussionButton } from "@/components/threads/start-discussion-button";
-import { SearchBar } from "@/components/threads/search-bar";
-import { RealTimeThreadList } from "@/components/threads/real-time-thread-list";
+import { Suspense } from "react";
+import { Navbar } from "@/app/components/landing/navbar";
+import { Footer } from "@/app/components/landing/footer";
+import { StartDiscussionButton } from "@/app/components/threads/start-discussion-button";
+import { ThreadsSearchBar } from "@/app/components/threads/threads-search-bar";
+import { ThreadsList } from "@/app/components/threads/threads-list";
+import { ThreadsPagination } from "@/app/components/threads/threads-pagination";
+import { Skeleton } from "@/app/components/ui/skeleton";
 
 export const metadata: Metadata = {
   title: "Discussions | Chat Forum",
@@ -14,6 +17,8 @@ export const metadata: Metadata = {
     type: "website",
   },
 };
+
+export const revalidate = 60;
 
 interface Thread {
   _id: string;
@@ -36,48 +41,115 @@ interface Thread {
   updatedAt: string;
 }
 
+interface ThreadsResponse {
+  threads: Thread[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-async function getThreads(): Promise<Thread[]> {
+async function getThreads(searchParams: {
+  page?: string;
+  search?: string;
+  limit?: string;
+}): Promise<ThreadsResponse> {
   try {
+    const page = Number(searchParams.page) || 1;
+    const limit = Number(searchParams.limit) || 20;
+    const search = searchParams.search || "";
+
+    const queryParams = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
+      sort: "-isPinned,-lastActivityAt",
+    });
+
+    if (search) {
+      queryParams.set("search", search);
+    }
+
     const response = await fetch(
-      `${API_URL}/threads?sort=-createdAt&limit=20`,
+      `${API_URL}/threads?${queryParams.toString()}`,
       {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
         },
-        cache: "no-store", // Always fetch fresh data
+        next: { revalidate: 60 },
       }
     );
 
     if (!response.ok) {
-      console.error("Failed to fetch threads:", response.statusText);
-      return [];
+      throw new Error("Failed to fetch threads");
     }
 
     const result = await response.json();
 
-    if (result.success && result.data?.threads) {
-      return result.data.threads;
+    if (result.success && result.data) {
+      const totalPages = Math.ceil(result.data.total / result.data.limit);
+      return {
+        threads: result.data.threads || [],
+        total: result.data.total || 0,
+        page: result.data.page || 1,
+        limit: result.data.limit || 20,
+        totalPages,
+      };
     }
 
-    return [];
+    return {
+      threads: [],
+      total: 0,
+      page: 1,
+      limit: 20,
+      totalPages: 0,
+    };
   } catch (error) {
-    console.error("Failed to fetch threads:", error);
-    return [];
+    console.error("Error fetching threads:", error);
+    return {
+      threads: [],
+      total: 0,
+      page: 1,
+      limit: 20,
+      totalPages: 0,
+    };
   }
 }
 
-export default async function ThreadsPage() {
-  const threads = await getThreads();
+function ThreadsLoadingSkeleton() {
+  return (
+    <div className="space-y-4">
+      {[1, 2, 3, 4, 5].map((i) => (
+        <div key={i} className="bg-white rounded-lg p-6 shadow-sm">
+          <Skeleton className="h-6 w-3/4 mb-3" />
+          <Skeleton className="h-4 w-full mb-2" />
+          <Skeleton className="h-4 w-2/3" />
+          <div className="flex gap-2 mt-4">
+            <Skeleton className="h-6 w-16" />
+            <Skeleton className="h-6 w-16" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export default async function ThreadsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string; search?: string }>;
+}) {
+  // Await searchParams in Next.js 16
+  const params = await searchParams;
+  const data = await getThreads(params);
 
   return (
     <>
       <Navbar />
       <main className="min-h-screen bg-gray-50">
         <div className="container mx-auto px-4 py-8">
-          {/* Header */}
           <div className="mb-8">
             <div className="flex items-center justify-between mb-4">
               <div>
@@ -89,21 +161,32 @@ export default async function ThreadsPage() {
               <StartDiscussionButton />
             </div>
 
-            {/* Search Bar */}
             <div className="mt-6">
-              <SearchBar />
+              <Suspense fallback={<Skeleton className="h-10 w-full" />}>
+                <ThreadsSearchBar />
+              </Suspense>
             </div>
           </div>
 
-          {/* Threads List with Real-Time Updates */}
-          <RealTimeThreadList initialThreads={threads} />
+          <Suspense fallback={<ThreadsLoadingSkeleton />}>
+            <ThreadsList threads={data.threads} />
+          </Suspense>
 
-          {/* Pagination placeholder */}
-          {threads.length > 0 && (
-            <div className="mt-8 flex justify-center">
-              <div className="text-sm text-gray-500">
-                Showing {threads.length} discussions
-              </div>
+          {data.threads.length > 0 && (
+            <ThreadsPagination
+              currentPage={data.page}
+              totalPages={data.totalPages}
+              totalItems={data.total}
+            />
+          )}
+
+          {data.threads.length === 0 && (
+            <div className="text-center py-12">
+              <p className="text-gray-500 text-lg">
+                {params.search
+                  ? `No discussions found for "${params.search}"`
+                  : "No discussions yet. Start the first one!"}
+              </p>
             </div>
           )}
         </div>

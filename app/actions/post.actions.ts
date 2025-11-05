@@ -94,7 +94,7 @@ export async function createPostAction(formData: FormData) {
       message: result.message,
       data: result.data.post,
     };
-  } catch {
+  } catch (error) {
     return {
       success: false,
       error: "Network error. Please try again.",
@@ -131,7 +131,7 @@ export async function getPostsByThreadAction(
       success: true,
       data: result.data,
     };
-  } catch {
+  } catch (error) {
     return {
       success: false,
       error: "Network error. Please try again.",
@@ -161,7 +161,7 @@ export async function getPostByIdAction(postId: string) {
       success: true,
       data: result.data.post,
     };
-  } catch {
+  } catch (error) {
     return {
       success: false,
       error: "Network error. Please try again.",
@@ -213,7 +213,7 @@ export async function updatePostAction(postId: string, formData: FormData) {
       message: result.message,
       data: result.data.post,
     };
-  } catch {
+  } catch (error) {
     return {
       success: false,
       error: "Network error. Please try again.",
@@ -260,7 +260,7 @@ export async function deletePostAction(postId: string) {
       success: true,
       message: result.message,
     };
-  } catch {
+  } catch (error) {
     return {
       success: false,
       error: "Network error. Please try again.",
@@ -297,7 +297,7 @@ export async function getPostsByUserAction(
       success: true,
       data: result.data,
     };
-  } catch {
+  } catch (error) {
     return {
       success: false,
       error: "Network error. Please try again.",
@@ -343,7 +343,7 @@ export async function getFlaggedPostsAction(page = 1, limit = 20) {
       success: true,
       data: result.data,
     };
-  } catch {
+  } catch (error) {
     return {
       success: false,
       error: "Network error. Please try again.",

@@ -1,10 +1,10 @@
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
-import { Navbar } from "@/components/landing/navbar";
-import { Footer } from "@/components/landing/footer";
-import { StartDiscussionButton } from "@/components/threads/start-discussion-button";
-import { RealTimeThreadList } from "@/components/threads/real-time-thread-list";
+import { Navbar } from "@/app/components/landing/navbar";
+import { Footer } from "@/app/components/landing/footer";
+import { StartDiscussionButton } from "@/app/components/threads/start-discussion-button";
+import { RealTimeThreadList } from "@/app/components/threads/real-time-thread-list";
 import { jwtDecode } from "jwt-decode";
 
 export const metadata: Metadata = {

@@ -8,17 +8,17 @@ import {
   createThreadSchema,
   type CreateThreadFormData,
 } from "@/lib/schemas/thread.schema";
-import { FormWrapper } from "@/components/forms/form-wrapper";
-import { FormInput } from "@/components/forms/form-input";
-import { FormTextarea } from "@/components/forms/form-textarea";
-import { Button } from "@/components/ui/button";
+import { FormWrapper } from "@/app/components/forms/form-wrapper";
+import { FormInput } from "@/app/components/forms/form-input";
+import { FormTextarea } from "@/app/components/forms/form-textarea";
+import { Button } from "@/app/components/ui/button";
 import {
   Card,
   CardHeader,
   CardTitle,
   CardDescription,
   CardContent,
-} from "@/components/ui/card";
+} from "@/app/components/ui/card";
 import { ArrowLeft, Send } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -56,7 +56,7 @@ export default function CreateThreadPage() {
       }
 
       // Server action will redirect automatically
-    } catch {
+    } catch (error) {
       setError("An unexpected error occurred");
     }
   };
