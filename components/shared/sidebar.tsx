@@ -18,15 +18,15 @@ import { useAppSelector } from "@/lib/hooks/use-app-selector";
 import { UserRole } from "@/lib/redux/slices/authSlice";
 
 // Regular user navigation
-  const userNavigation = [
-    { name: "Dashboard", href: "/dashboard", icon: Home },
-    { name: "Home", href: "/", icon: Home },
-    { name: "Threads", href: "/threads", icon: MessageSquare },
-    { name: "My Threads", href: "/threads/my-threads", icon: MessageSquare },
-    { name: "Notifications", href: "/dashboard/notifications", icon: Bell },
-    { name: "Profile", href: "/dashboard/profile", icon: User },
-    { name: "Settings", href: "/dashboard/settings", icon: Settings },
-  ];// Admin navigation (includes thread management and admin tools)
+const userNavigation = [
+  { name: "Dashboard", href: "/dashboard", icon: Home },
+  { name: "Home", href: "/", icon: Home },
+  { name: "Threads", href: "/threads", icon: MessageSquare },
+  { name: "My Threads", href: "/threads/my-threads", icon: MessageSquare },
+  { name: "Notifications", href: "/dashboard/notifications", icon: Bell },
+  { name: "Profile", href: "/dashboard/profile", icon: User },
+  { name: "Settings", href: "/dashboard/settings", icon: Settings },
+]; // Admin navigation (includes thread management and admin tools)
 const adminNavigation = [
   { name: "Dashboard", href: "/dashboard", icon: Home },
   {

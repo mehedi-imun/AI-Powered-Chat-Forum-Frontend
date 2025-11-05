@@ -55,7 +55,10 @@ export default function NotificationDropdown() {
   const playNotificationSound = () => {
     try {
       // Create a simple beep using Web Audio API
-      const AudioContextClass = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+      const AudioContextClass =
+        window.AudioContext ||
+        (window as typeof window & { webkitAudioContext?: typeof AudioContext })
+          .webkitAudioContext;
       if (!AudioContextClass) return;
       const audioContext = new AudioContextClass();
       const oscillator = audioContext.createOscillator();
@@ -68,7 +71,10 @@ export default function NotificationDropdown() {
       oscillator.type = "sine"; // Sine wave for a pleasant tone
 
       gainNode.gain.setValueAtTime(0.3, audioContext.currentTime); // Volume
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+      gainNode.gain.exponentialRampToValueAtTime(
+        0.01,
+        audioContext.currentTime + 0.3
+      );
 
       oscillator.start(audioContext.currentTime);
       oscillator.stop(audioContext.currentTime + 0.3);
@@ -191,10 +197,10 @@ export default function NotificationDropdown() {
       if (data.notification) {
         // Add new notification to the list
         setNotifications((prev) => [data.notification, ...prev]);
-        
+
         // Increment unread count
         setUnreadCount((prev) => prev + 1);
-        
+
         // Play notification sound
         playNotificationSound();
       }
