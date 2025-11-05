@@ -1,84 +1,216 @@
 "use client";
 
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Bell, Lock, Palette } from "lucide-react";
+import { Lock, KeyRound, ShieldCheck, Loader2, CheckCircle, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { changePasswordAction } from "@/app/actions/user.actions";
 
 export default function SettingsPage() {
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+
+  const handlePasswordChange = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setSuccess(false);
+
+    // Validation
+    if (!passwordForm.currentPassword || !passwordForm.newPassword || !passwordForm.confirmPassword) {
+      setError("All fields are required");
+      return;
+    }
+
+    if (passwordForm.newPassword.length < 6) {
+      setError("New password must be at least 6 characters");
+      return;
+    }
+
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      setError("New passwords do not match");
+      return;
+    }
+
+    if (passwordForm.currentPassword === passwordForm.newPassword) {
+      setError("New password must be different from current password");
+      return;
+    }
+
+    setIsChangingPassword(true);
+
+    try {
+      const result = await changePasswordAction(
+        passwordForm.currentPassword,
+        passwordForm.newPassword
+      );
+
+      if (result.success) {
+        setSuccess(true);
+        setPasswordForm({
+          currentPassword: "",
+          newPassword: "",
+          confirmPassword: "",
+        });
+        setTimeout(() => setSuccess(false), 5000);
+      } else {
+        setError(result.error || "Failed to change password");
+      }
+    } catch {
+      setError("An unexpected error occurred");
+    } finally {
+      setIsChangingPassword(false);
+    }
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-4xl">
       <div>
         <h1 className="text-3xl font-bold">Settings</h1>
         <p className="text-gray-600 mt-2">
-          Manage your account settings and preferences
+          Manage your account security and preferences
         </p>
       </div>
 
-      <div className="space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Bell className="w-5 h-5" />
-              Notification Preferences
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium">Email Notifications</p>
-                <p className="text-sm text-gray-600">Receive email updates about your threads</p>
-              </div>
-              <Button variant="outline" size="sm">Configure</Button>
-            </div>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium">Push Notifications</p>
-                <p className="text-sm text-gray-600">Get notified about replies in real-time</p>
-              </div>
-              <Button variant="outline" size="sm">Configure</Button>
-            </div>
-          </CardContent>
-        </Card>
+      {success && (
+        <Alert className="bg-green-50 text-green-900 border-green-200">
+          <CheckCircle className="h-4 w-4" />
+          <AlertDescription>
+            Password changed successfully! Please use your new password for future logins.
+          </AlertDescription>
+        </Alert>
+      )}
 
+      {error && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+
+      <div className="space-y-6">
+        {/* Password Change Section */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Lock className="w-5 h-5" />
-              Security
+              Change Password
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium">Change Password</p>
-                <p className="text-sm text-gray-600">Update your account password</p>
+          <CardContent>
+            <form onSubmit={handlePasswordChange} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="currentPassword" className="flex items-center gap-2">
+                  <KeyRound className="w-4 h-4" />
+                  Current Password
+                </Label>
+                <Input
+                  id="currentPassword"
+                  name="currentPassword"
+                  type="password"
+                  value={passwordForm.currentPassword}
+                  onChange={(e) =>
+                    setPasswordForm({ ...passwordForm, currentPassword: e.target.value })
+                  }
+                  placeholder="Enter your current password"
+                  disabled={isChangingPassword}
+                  required
+                />
               </div>
-              <Button variant="outline" size="sm">Change</Button>
-            </div>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium">Two-Factor Authentication</p>
-                <p className="text-sm text-gray-600">Add an extra layer of security</p>
+
+              <div className="space-y-2">
+                <Label htmlFor="newPassword">New Password</Label>
+                <Input
+                  id="newPassword"
+                  name="newPassword"
+                  type="password"
+                  value={passwordForm.newPassword}
+                  onChange={(e) =>
+                    setPasswordForm({ ...passwordForm, newPassword: e.target.value })
+                  }
+                  placeholder="Enter new password (min 6 characters)"
+                  disabled={isChangingPassword}
+                  minLength={6}
+                  required
+                />
+                <p className="text-xs text-gray-500">
+                  Password must be at least 6 characters long
+                </p>
               </div>
-              <Button variant="outline" size="sm">Enable</Button>
-            </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                <Input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  value={passwordForm.confirmPassword}
+                  onChange={(e) =>
+                    setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })
+                  }
+                  placeholder="Confirm your new password"
+                  disabled={isChangingPassword}
+                  required
+                />
+              </div>
+
+              <div className="pt-4">
+                <Button
+                  type="submit"
+                  disabled={isChangingPassword}
+                  className="gap-2"
+                >
+                  {isChangingPassword ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Changing Password...
+                    </>
+                  ) : (
+                    <>
+                      <ShieldCheck className="w-4 h-4" />
+                      Change Password
+                    </>
+                  )}
+                </Button>
+              </div>
+            </form>
           </CardContent>
         </Card>
 
+        {/* Security Tips */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Palette className="w-5 h-5" />
-              Appearance
+              <ShieldCheck className="w-5 h-5" />
+              Security Tips
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium">Theme</p>
-                <p className="text-sm text-gray-600">Choose your preferred color theme</p>
+          <CardContent>
+            <div className="space-y-3 text-sm text-gray-600">
+              <div className="flex items-start gap-2">
+                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2" />
+                <p>Use a strong password with at least 8 characters, including uppercase, lowercase, numbers, and symbols</p>
               </div>
-              <Button variant="outline" size="sm">Light Mode</Button>
+              <div className="flex items-start gap-2">
+                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2" />
+                <p>Don&apos;t reuse passwords from other websites or services</p>
+              </div>
+              <div className="flex items-start gap-2">
+                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2" />
+                <p>Change your password regularly and immediately if you suspect it has been compromised</p>
+              </div>
+              <div className="flex items-start gap-2">
+                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2" />
+                <p>Never share your password with anyone</p>
+              </div>
             </div>
           </CardContent>
         </Card>

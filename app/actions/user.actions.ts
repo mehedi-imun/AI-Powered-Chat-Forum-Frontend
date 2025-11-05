@@ -266,3 +266,55 @@ export async function deleteUserAction(userId: string) {
     };
   }
 }
+
+/**
+ * Change user password
+ */
+export async function changePasswordAction(
+  currentPassword: string,
+  newPassword: string
+) {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("accessToken")?.value;
+
+    if (!token) {
+      return {
+        success: false,
+        error: "Authentication required. Please log in.",
+      };
+    }
+
+    const response = await fetch(`${API_URL}/auth/change-password`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        currentPassword,
+        newPassword,
+      }),
+      cache: "no-store",
+    });
+
+    const result: ApiResponse<null> = await response.json();
+
+    if (!response.ok) {
+      return {
+        success: false,
+        error: result.message || "Failed to change password",
+      };
+    }
+
+    return {
+      success: true,
+      message: result.message || "Password changed successfully",
+    };
+  } catch {
+    return {
+      success: false,
+      error: "Network error. Please try again.",
+    };
+  }
+}
