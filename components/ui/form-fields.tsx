@@ -30,9 +30,7 @@ export function FormField({
         {required && <span className="text-red-500">*</span>}
       </Label>
       {children}
-      {helper && !error && (
-        <p className="text-xs text-gray-500">{helper}</p>
-      )}
+      {helper && !error && <p className="text-xs text-gray-500">{helper}</p>}
       {error && <p className="text-xs text-red-500">{error}</p>}
     </div>
   );
@@ -129,7 +127,10 @@ export function TextAreaField({
   maxLength,
   showCharCount,
 }: TextAreaFieldProps) {
-  const charCount = showCharCount && maxLength ? `${value.length}/${maxLength} characters` : undefined;
+  const charCount =
+    showCharCount && maxLength
+      ? `${value.length}/${maxLength} characters`
+      : undefined;
 
   return (
     <FormField

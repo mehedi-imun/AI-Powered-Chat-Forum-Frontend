@@ -7,7 +7,11 @@ interface AlertMessageProps {
   className?: string;
 }
 
-export function AlertMessage({ type, message, className = "" }: AlertMessageProps) {
+export function AlertMessage({
+  type,
+  message,
+  className = "",
+}: AlertMessageProps) {
   const configs = {
     success: {
       icon: CheckCircle,
@@ -31,7 +35,10 @@ export function AlertMessage({ type, message, className = "" }: AlertMessageProp
   const Icon = config.icon;
 
   return (
-    <Alert variant={type === "error" ? "destructive" : "default"} className={`${config.className} ${className}`}>
+    <Alert
+      variant={type === "error" ? "destructive" : "default"}
+      className={`${config.className} ${className}`}
+    >
       <Icon className="h-4 w-4" />
       <AlertDescription>{message}</AlertDescription>
     </Alert>

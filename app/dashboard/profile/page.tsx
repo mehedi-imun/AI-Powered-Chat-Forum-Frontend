@@ -7,8 +7,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { User as UserIcon, Mail, Shield, Loader2, Save, CheckCircle } from "lucide-react";
-import { getCurrentUserProfileAction, updateUserProfileAction } from "@/app/actions/user.actions";
+import {
+  User as UserIcon,
+  Mail,
+  Shield,
+  Loader2,
+  Save,
+  CheckCircle,
+} from "lucide-react";
+import {
+  getCurrentUserProfileAction,
+  updateUserProfileAction,
+} from "@/app/actions/user.actions";
 import Image from "next/image";
 
 interface User {
@@ -42,7 +52,7 @@ export default function ProfilePage() {
     try {
       setLoading(true);
       const result = await getCurrentUserProfileAction();
-      
+
       if (result.success && result.data) {
         const userData = result.data as unknown as User;
         setUser(userData);
@@ -132,7 +142,9 @@ export default function ProfilePage() {
                   name="name"
                   type="text"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
                   placeholder="Enter your name"
                 />
               </div>
@@ -142,7 +154,9 @@ export default function ProfilePage() {
                 <Textarea
                   id="bio"
                   value={formData.bio}
-                  onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, bio: e.target.value })
+                  }
                   placeholder="Tell us about yourself"
                   rows={4}
                   maxLength={500}
@@ -158,7 +172,9 @@ export default function ProfilePage() {
                   id="avatar"
                   type="url"
                   value={formData.avatar}
-                  onChange={(e) => setFormData({ ...formData, avatar: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, avatar: e.target.value })
+                  }
                   placeholder="https://example.com/avatar.jpg"
                 />
               </div>
@@ -169,7 +185,9 @@ export default function ProfilePage() {
                   Email
                 </Label>
                 <p className="mt-1 text-gray-900">{user?.email}</p>
-                <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  Email cannot be changed
+                </p>
               </div>
 
               <div>
@@ -220,7 +238,9 @@ export default function ProfilePage() {
                   </div>
                 ) : (
                   <div className="w-32 h-32 rounded-full bg-blue-500 flex items-center justify-center text-white text-4xl font-bold">
-                    {formData.name?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || "U"}
+                    {formData.name?.charAt(0).toUpperCase() ||
+                      user?.email?.charAt(0).toUpperCase() ||
+                      "U"}
                   </div>
                 )}
                 <p className="mt-4 text-sm text-gray-600 text-center">
