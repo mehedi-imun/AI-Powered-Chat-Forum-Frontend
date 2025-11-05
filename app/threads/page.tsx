@@ -1,12 +1,12 @@
 import { Metadata } from "next";
 import { Suspense } from "react";
-import { Navbar } from "@/app/components/landing/navbar";
-import { Footer } from "@/app/components/landing/footer";
-import { StartDiscussionButton } from "@/app/components/threads/start-discussion-button";
-import { ThreadsSearchBar } from "@/app/components/threads/threads-search-bar";
-import { ThreadsList } from "@/app/components/threads/threads-list";
-import { ThreadsPagination } from "@/app/components/threads/threads-pagination";
-import { Skeleton } from "@/app/components/ui/skeleton";
+import { Navbar } from "@/components/landing/navbar";
+import { Footer } from "@/components/landing/footer";
+import { StartDiscussionButton } from "@/components/threads/start-discussion-button";
+import { ThreadsSearchBar } from "@/components/threads/threads-search-bar";
+import { ThreadsList } from "@/components/threads/threads-list";
+import { ThreadsPagination } from "@/components/threads/threads-pagination";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const metadata: Metadata = {
   title: "Discussions | Chat Forum",

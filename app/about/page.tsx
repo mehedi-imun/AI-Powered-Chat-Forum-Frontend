@@ -1,12 +1,7 @@
 import { Metadata } from "next";
-import { Navbar } from "@/app/components/landing/navbar";
-import { Footer } from "@/app/components/landing/footer";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/app/components/ui/card";
+import { Navbar } from "@/components/landing/navbar";
+import { Footer } from "@/components/landing/footer";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MessageSquare, Users, Shield, Zap } from "lucide-react";
 
 export const metadata: Metadata = {

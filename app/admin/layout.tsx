@@ -1,6 +1,6 @@
 import { Metadata } from "next";
-import { AdminSidebar } from "@/app/components/shared/admin-sidebar";
-import { AdminHeader } from "@/app/components/shared/admin-header";
+import { AdminSidebar } from "@/components/shared/admin-sidebar";
+import { AdminHeader } from "@/components/shared/admin-header";
 
 export const metadata: Metadata = {
   robots: "noindex, nofollow",

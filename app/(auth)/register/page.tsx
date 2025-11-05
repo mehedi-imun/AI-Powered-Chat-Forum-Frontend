@@ -10,7 +10,7 @@ import {
   registerSchema,
   type RegisterFormData,
 } from "@/lib/schemas/auth.schema";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardHeader,
@@ -18,10 +18,10 @@ import {
   CardDescription,
   CardContent,
   CardFooter,
-} from "@/app/components/ui/card";
-import { Input } from "@/app/components/ui/input";
-import { Label } from "@/app/components/ui/label";
-import { Alert, AlertDescription } from "@/app/components/ui/alert";
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, UserPlus, CheckCircle } from "lucide-react";
 
 export default function RegisterPage() {

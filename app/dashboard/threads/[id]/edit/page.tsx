@@ -11,17 +11,17 @@ import {
   updateThreadSchema,
   type UpdateThreadFormData,
 } from "@/lib/schemas/thread.schema";
-import { FormWrapper } from "@/app/components/forms/form-wrapper";
-import { FormInput } from "@/app/components/forms/form-input";
-import { FormTextarea } from "@/app/components/forms/form-textarea";
-import { Button } from "@/app/components/ui/button";
+import { FormWrapper } from "@/components/forms/form-wrapper";
+import { FormInput } from "@/components/forms/form-input";
+import { FormTextarea } from "@/components/forms/form-textarea";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardHeader,
   CardTitle,
   CardDescription,
   CardContent,
-} from "@/app/components/ui/card";
+} from "@/components/ui/card";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -32,7 +32,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/app/components/ui/alert-dialog";
+} from "@/components/ui/alert-dialog";
 import { ArrowLeft, Save, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
