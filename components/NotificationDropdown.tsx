@@ -45,6 +45,7 @@ export default function NotificationDropdown() {
   const [open, setOpen] = useState(false);
   const { socket, isConnected } = useSocket();
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const hasFetchedInitial = useRef(false);
 
   // Initialize notification sound (simple beep sound)
   useEffect(() => {
@@ -185,29 +186,36 @@ export default function NotificationDropdown() {
   // Real-time notification listener
   useEffect(() => {
     if (!socket || !isConnected) {
+      console.log("⏳ Socket not connected or not available");
       return;
     }
 
     console.log("🔔 Setting up real-time notification listener");
+    console.log("📡 Socket ID:", socket.id);
+    console.log("🔗 Socket connected:", isConnected);
 
-    // Listen for new notifications
-    socket.on("new-notification", (data: { notification: Notification }) => {
-      console.log("📬 Received new notification:", data);
+    // Listen for new notifications (backend emits "notification:new")
+    socket.on(
+      "notification:new",
+      (data: { notification: Notification; timestamp?: Date }) => {
+        console.log("📬 Received new notification:", data);
+        console.log("🔊 Playing notification sound...");
 
-      if (data.notification) {
-        // Add new notification to the list
-        setNotifications((prev) => [data.notification, ...prev]);
+        if (data.notification) {
+          // Add new notification to the list
+          setNotifications((prev) => [data.notification, ...prev]);
 
-        // Increment unread count
-        setUnreadCount((prev) => prev + 1);
+          // Increment unread count
+          setUnreadCount((prev) => prev + 1);
 
-        // Play notification sound
-        playNotificationSound();
+          // Play notification sound
+          playNotificationSound();
+        }
       }
-    });
+    );
 
     // Listen for notification updates (mark as read)
-    socket.on("notification-read", (data: { notificationId: string }) => {
+    socket.on("notification:read", (data: { notificationId: string }) => {
       console.log("✓ Notification marked as read:", data);
 
       if (data.notificationId) {
@@ -223,16 +231,39 @@ export default function NotificationDropdown() {
     // Cleanup
     return () => {
       console.log("🧹 Cleaning up notification listeners");
-      socket.off("new-notification");
-      socket.off("notification-read");
+      socket.off("notification:new");
+      socket.off("notification:read");
     };
   }, [socket, isConnected]);
 
-  // Fetch notifications on mount and when dropdown opens
+  // Fetch unread count on mount (lightweight)
   useEffect(() => {
-    fetchNotifications();
+    const fetchUnreadCount = async () => {
+      try {
+        const token = getCookie("accessToken");
+        const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+        const response = await fetch(`${API_URL}/notifications/unread-count`, {
+          credentials: "include",
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          setUnreadCount(result.data?.count || 0);
+        }
+      } catch (error) {
+        console.error("Failed to fetch unread count:", error);
+      }
+    };
+
+    if (!hasFetchedInitial.current) {
+      fetchUnreadCount();
+      hasFetchedInitial.current = true;
+    }
   }, []);
 
+  // Fetch full notifications when dropdown opens
   useEffect(() => {
     if (open) {
       fetchNotifications();

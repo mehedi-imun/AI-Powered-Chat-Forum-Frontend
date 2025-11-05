@@ -1,8 +1,6 @@
 import { Metadata } from "next";
-import { redirect } from "next/navigation";
 import { AdminSidebar } from "@/components/shared/admin-sidebar";
 import { AdminHeader } from "@/components/shared/admin-header";
-import { getCurrentUserAction } from "@/app/actions/auth.actions";
 
 export const metadata: Metadata = {
   robots: "noindex, nofollow",
@@ -17,24 +15,8 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Check if user is authenticated and is admin
-  const user = await getCurrentUserAction();
-
-  // Only redirect if we're certain there's no user
-  if (user === null || user === undefined) {
-    redirect("/login?redirect=/admin");
-  }
-
-  // Check if user is admin or moderator
-  const userRole = user.role?.toLowerCase();
-  if (userRole !== "admin" && userRole !== "moderator") {
-    redirect("/dashboard");
-  }
-
-  // If user is not email verified, redirect to verify-email page
-  if (!user.emailVerified) {
-    redirect(`/verify-email?email=${encodeURIComponent(user.email)}`);
-  }
+  // Authentication is handled by proxy.ts middleware
+  // No need to check here - middleware already protects admin routes
 
   return (
     <div className="flex h-screen">
