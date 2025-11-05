@@ -80,7 +80,12 @@ export default function LoginPage() {
       }
 
       // Redirect based on role (only if email is verified)
-      if (result.user.role === "admin") {
+      const urlParams = new URLSearchParams(window.location.search);
+      const redirectTo = urlParams.get("redirect");
+      
+      if (redirectTo) {
+        router.push(redirectTo);
+      } else if (result.user.role.toLowerCase() === "admin") {
         router.push("/admin");
       } else {
         router.push("/dashboard");

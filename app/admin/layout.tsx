@@ -20,12 +20,14 @@ export default async function AdminLayout({
   // Check if user is authenticated and is admin
   const user = await getCurrentUserAction();
 
-  if (!user) {
-    redirect("/login");
+  // Only redirect if we're certain there's no user
+  if (user === null || user === undefined) {
+    redirect("/login?redirect=/admin");
   }
 
-  // Check if user is admin
-  if (user.role.toLowerCase() !== "admin") {
+  // Check if user is admin or moderator
+  const userRole = user.role?.toLowerCase();
+  if (userRole !== "admin" && userRole !== "moderator") {
     redirect("/dashboard");
   }
 

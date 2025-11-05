@@ -44,6 +44,7 @@ function ReplyCard({
   isAuthenticated,
   depth = 0,
 }: ReplyCardProps) {
+  const [isExpanded, setIsExpanded] = useState(true);
   const maxDepth = 5;
   const hasChildren = childrenReplies[reply._id]?.length > 0;
   const replyCount = childrenReplies[reply._id]?.length || 0;
@@ -89,18 +90,22 @@ function ReplyCard({
                 </button>
               )}
               {hasChildren && (
-                <span className="text-xs text-gray-500 flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => setIsExpanded(!isExpanded)}
+                  className="text-xs font-medium text-gray-500 hover:text-gray-700 transition-colors flex items-center gap-1"
+                >
                   <MessageSquare className="h-3 w-3" />
-                  {replyCount}
-                </span>
+                  {replyCount} {isExpanded ? "▼" : "►"}
+                </button>
               )}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Nested replies - minimal spacing */}
-      {hasChildren && depth < maxDepth && (
+      {/* Nested replies - minimal spacing with expand/collapse */}
+      {hasChildren && depth < maxDepth && isExpanded && (
         <div className="mt-2 space-y-0">
           {childrenReplies[reply._id].map((childReply) => (
             <ReplyCard

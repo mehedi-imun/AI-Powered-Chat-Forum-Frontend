@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { Bell, Check, CheckCheck, Trash2, X } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
@@ -16,6 +16,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { getCookie } from "@/lib/helpers/cookies";
+import { useSocket } from "@/components/providers/socket-provider";
 
 interface Notification {
   _id: string;
@@ -42,6 +43,39 @@ export default function NotificationDropdown() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
+  const { socket, isConnected } = useSocket();
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Initialize notification sound (simple beep sound)
+  useEffect(() => {
+    // Using Web Audio API for a simple notification beep
+    audioRef.current = null; // We'll use Web Audio API instead
+  }, []);
+
+  const playNotificationSound = () => {
+    try {
+      // Create a simple beep using Web Audio API
+      const AudioContextClass = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+      if (!AudioContextClass) return;
+      const audioContext = new AudioContextClass();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      oscillator.frequency.value = 800; // Frequency in Hz
+      oscillator.type = "sine"; // Sine wave for a pleasant tone
+
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime); // Volume
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.3);
+    } catch (err) {
+      console.log("Failed to play notification sound:", err);
+    }
+  };
 
   const fetchNotifications = async () => {
     try {
@@ -141,6 +175,57 @@ export default function NotificationDropdown() {
       console.error("Failed to delete notification:", error);
     }
   };
+
+  // Real-time notification listener
+  useEffect(() => {
+    if (!socket || !isConnected) {
+      return;
+    }
+
+    console.log("🔔 Setting up real-time notification listener");
+
+    // Listen for new notifications
+    socket.on("new-notification", (data: { notification: Notification }) => {
+      console.log("📬 Received new notification:", data);
+
+      if (data.notification) {
+        // Add new notification to the list
+        setNotifications((prev) => [data.notification, ...prev]);
+        
+        // Increment unread count
+        setUnreadCount((prev) => prev + 1);
+        
+        // Play notification sound
+        playNotificationSound();
+      }
+    });
+
+    // Listen for notification updates (mark as read)
+    socket.on("notification-read", (data: { notificationId: string }) => {
+      console.log("✓ Notification marked as read:", data);
+
+      if (data.notificationId) {
+        setNotifications((prev) =>
+          prev.map((n) =>
+            n._id === data.notificationId ? { ...n, isRead: true } : n
+          )
+        );
+        setUnreadCount((prev) => Math.max(0, prev - 1));
+      }
+    });
+
+    // Cleanup
+    return () => {
+      console.log("🧹 Cleaning up notification listeners");
+      socket.off("new-notification");
+      socket.off("notification-read");
+    };
+  }, [socket, isConnected]);
+
+  // Fetch notifications on mount and when dropdown opens
+  useEffect(() => {
+    fetchNotifications();
+  }, []);
 
   useEffect(() => {
     if (open) {

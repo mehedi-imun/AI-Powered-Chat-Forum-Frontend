@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { MessageSquare, Menu, X, LogOut } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/lib/hooks/use-auth";
+import NotificationDropdown from "@/components/NotificationDropdown";
 
 export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -38,12 +39,19 @@ export function Navbar() {
             {isAuthenticated ? (
               <>
                 <Link
+                  href="/threads/my-threads"
+                  className="text-gray-700 hover:text-primary transition-colors"
+                >
+                  My Threads
+                </Link>
+                <Link
                   href="/dashboard"
                   className="text-gray-700 hover:text-primary transition-colors"
                 >
                   Dashboard
                 </Link>
                 <div className="flex items-center gap-3">
+                  <NotificationDropdown />
                   <span className="text-sm text-gray-600">
                     {user?.displayName || user?.username}
                   </span>
@@ -105,6 +113,13 @@ export function Navbar() {
 
               {isAuthenticated ? (
                 <>
+                  <Link
+                    href="/threads/my-threads"
+                    className="text-gray-700 hover:text-primary transition-colors py-2"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    My Threads
+                  </Link>
                   <Link
                     href="/dashboard"
                     className="text-gray-700 hover:text-primary transition-colors py-2"

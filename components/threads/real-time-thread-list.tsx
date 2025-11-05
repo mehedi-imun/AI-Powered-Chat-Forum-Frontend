@@ -43,6 +43,11 @@ export function RealTimeThreadList({
   const [threads, setThreads] = useState(initialThreads);
 
   useEffect(() => {
+    // Update threads state when initialThreads change
+    setThreads(initialThreads);
+  }, [initialThreads]);
+
+  useEffect(() => {
     if (!socket || !isConnected) {
       console.log("⏳ Socket not connected, skipping real-time setup");
       return;
@@ -109,6 +114,17 @@ export function RealTimeThreadList({
 
   return (
     <div className="space-y-3">
+      {/* Real-time Connection Indicator */}
+      {isConnected && (
+        <div className="flex items-center gap-2 text-xs text-green-600 bg-green-50 border border-green-200 rounded px-3 py-2">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+          </span>
+          <span>Live updates active</span>
+        </div>
+      )}
+
       {threads.map((thread) => (
         <Link
           key={thread._id}

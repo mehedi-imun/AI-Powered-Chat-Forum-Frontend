@@ -3,7 +3,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Navbar } from "@/components/landing/navbar";
 import { Footer } from "@/components/landing/footer";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Clock, MessageSquare } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
@@ -275,22 +274,6 @@ export default async function ThreadDetailPage({
             threadId={thread._id}
             initialReplies={replies}
           />
-
-          {/* Bottom CTA */}
-          <Card className="bg-linear-to-r from-blue-50 to-indigo-50 border-blue-200">
-            <CardContent className="py-8 text-center">
-              <h3 className="text-xl font-semibold mb-2">
-                Ready to join the conversation?
-              </h3>
-              <p className="text-gray-600 mb-4">
-                Create an account to reply to threads and start your own
-                discussions.
-              </p>
-              <Button asChild size="lg">
-                <Link href="/register">Get Started Free</Link>
-              </Button>
-            </CardContent>
-          </Card>
         </div>
       </main>
       <Footer />
