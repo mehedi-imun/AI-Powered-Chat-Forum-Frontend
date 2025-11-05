@@ -41,11 +41,18 @@ function VerifyEmailContent() {
       setMessage("Email verified successfully! Redirecting...");
 
       // Map the user data to match Redux User type
+      let userRole = UserRole.MEMBER;
+      if (result.user.role.toLowerCase() === "admin") {
+        userRole = UserRole.ADMIN;
+      } else if (result.user.role.toLowerCase() === "moderator") {
+        userRole = UserRole.MODERATOR;
+      }
+
       const mappedUser = {
         _id: result.user._id,
         username: result.user.username,
         email: result.user.email,
-        role: result.user.role === "admin" ? UserRole.ADMIN : UserRole.USER,
+        role: userRole,
         displayName: result.user.displayName,
         avatar: result.user.avatar,
       };
@@ -55,7 +62,7 @@ function VerifyEmailContent() {
 
       // Redirect to dashboard after 2 seconds
       setTimeout(() => {
-        if (result.user?.role === "admin") {
+        if (result.user?.role.toLowerCase() === "admin") {
           router.push("/admin");
         } else {
           router.push("/dashboard");

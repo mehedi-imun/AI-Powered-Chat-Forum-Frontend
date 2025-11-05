@@ -44,12 +44,9 @@ export default function RegisterPage() {
     setSuccess(null);
 
     const formData = new FormData();
-    formData.append("username", data.username);
+    formData.append("name", data.name);
     formData.append("email", data.email);
     formData.append("password", data.password);
-    if (data.displayName) {
-      formData.append("displayName", data.displayName);
-    }
 
     const result = await registerAction(formData);
 
@@ -95,18 +92,18 @@ export default function RegisterPage() {
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="username">
-              Username <span className="text-red-500">*</span>
+            <Label htmlFor="name">
+              Name <span className="text-red-500">*</span>
             </Label>
             <Input
-              id="username"
+              id="name"
               type="text"
-              placeholder="johndoe"
-              {...register("username")}
+              placeholder="John Doe"
+              {...register("name")}
               disabled={isLoading}
             />
-            {errors.username && (
-              <p className="text-sm text-red-500">{errors.username.message}</p>
+            {errors.name && (
+              <p className="text-sm text-red-500">{errors.name.message}</p>
             )}
           </div>
 
@@ -123,22 +120,6 @@ export default function RegisterPage() {
             />
             {errors.email && (
               <p className="text-sm text-red-500">{errors.email.message}</p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="displayName">Display Name (Optional)</Label>
-            <Input
-              id="displayName"
-              type="text"
-              placeholder="John Doe"
-              {...register("displayName")}
-              disabled={isLoading}
-            />
-            {errors.displayName && (
-              <p className="text-sm text-red-500">
-                {errors.displayName.message}
-              </p>
             )}
           </div>
 

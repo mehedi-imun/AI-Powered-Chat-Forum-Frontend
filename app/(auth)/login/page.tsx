@@ -53,18 +53,33 @@ export default function LoginPage() {
 
     if (result.success && result.user && result.token) {
       // Map the user data to match Redux User type
+      let userRole = UserRole.MEMBER;
+      if (result.user.role.toLowerCase() === "admin") {
+        userRole = UserRole.ADMIN;
+      } else if (result.user.role.toLowerCase() === "moderator") {
+        userRole = UserRole.MODERATOR;
+      }
+
       const mappedUser = {
         _id: result.user._id,
         username: result.user.username,
         email: result.user.email,
-        role: result.user.role === "admin" ? UserRole.ADMIN : UserRole.USER,
+        role: userRole,
         displayName: result.user.displayName,
         avatar: result.user.avatar,
       };
 
       dispatch(setCredentials({ user: mappedUser, accessToken: result.token }));
 
-      // Redirect based on role
+      // Check if email is verified
+      if (!result.user.emailVerified) {
+        router.push(
+          `/verify-email?email=${encodeURIComponent(result.user.email)}`
+        );
+        return;
+      }
+
+      // Redirect based on role (only if email is verified)
       if (result.user.role === "admin") {
         router.push("/admin");
       } else {

@@ -27,10 +27,9 @@ interface AuthResponse {
 
 // Register Action
 export async function registerAction(formData: FormData) {
-  const username = formData.get("username") as string;
+  const name = formData.get("name") as string;
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
-  const displayName = formData.get("displayName") as string;
 
   try {
     const response = await fetch(`${API_URL}/auth/register`, {
@@ -38,7 +37,7 @@ export async function registerAction(formData: FormData) {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ username, email, password, displayName }),
+      body: JSON.stringify({ name, email, password }),
     });
 
     const result: ApiResponse<{ user: { email: string } }> =

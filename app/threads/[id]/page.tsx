@@ -151,18 +151,53 @@ export default async function ThreadDetailPage({
 
   // First post is the initial thread content
   const initialPost = posts[0];
-  // Remaining posts are replies - map to match ReplySection interface
-  const replies = posts.slice(1).map((post) => ({
-    _id: post._id,
-    content: post.content,
-    author: {
-      _id: post.author._id,
-      username: post.author.email.split("@")[0], // Use email prefix as username
-      displayName: post.author.name,
-    },
-    createdAt: post.createdAt,
-    updatedAt: post.updatedAt,
-  }));
+
+  // Flatten all replies including nested ones for the reply section
+  const flattenReplies = (
+    postsList: Post[]
+  ): Array<{
+    _id: string;
+    content: string;
+    author: { _id: string; username: string; displayName: string };
+    parentId: string | null;
+    createdAt: string;
+    updatedAt: string;
+  }> => {
+    const result: Array<{
+      _id: string;
+      content: string;
+      author: { _id: string; username: string; displayName: string };
+      parentId: string | null;
+      createdAt: string;
+      updatedAt: string;
+    }> = [];
+
+    for (const post of postsList) {
+      // Add this post
+      result.push({
+        _id: post._id,
+        content: post.content,
+        author: {
+          _id: post.author._id,
+          username: post.author.email?.split("@")[0] || "user",
+          displayName: post.author.name,
+        },
+        parentId: post.parentId,
+        createdAt: post.createdAt,
+        updatedAt: post.updatedAt,
+      });
+
+      // If it has nested replies, flatten them recursively
+      if (post.replies && post.replies.length > 0) {
+        result.push(...flattenReplies(post.replies));
+      }
+    }
+
+    return result;
+  };
+
+  // Get all replies (excluding initial post) and flatten nested structure
+  const replies = flattenReplies(posts.slice(1));
 
   return (
     <>
