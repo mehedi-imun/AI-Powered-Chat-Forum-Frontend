@@ -3,7 +3,14 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/hooks/use-auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MessageSquare, MessageCircle, Bell, Eye, TrendingUp, Users } from "lucide-react";
+import {
+  MessageSquare,
+  MessageCircle,
+  Bell,
+  Eye,
+  TrendingUp,
+  Users,
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { StatCard, PageHeader } from "@/components/ui/stat-card";
@@ -29,7 +36,8 @@ export default function DashboardPage() {
   });
   const [loading, setLoading] = useState(true);
 
-  const displayName = user?.displayName || user?.username || user?.email?.split("@")[0] || "User";
+  const displayName =
+    user?.displayName || user?.username || user?.email?.split("@")[0] || "User";
 
   // Redirect admin/moderator users to admin dashboard
   useEffect(() => {
@@ -46,10 +54,10 @@ export default function DashboardPage() {
         // TODO: Replace with actual API call
         // const response = await fetch('/api/v1/users/me/stats');
         // const data = await response.json();
-        
+
         // Mock data for now
         await new Promise((resolve) => setTimeout(resolve, 1000));
-        
+
         setStats({
           totalPosts: 0,
           totalThreads: 0,
@@ -127,29 +135,47 @@ export default function DashboardPage() {
               <div className="text-center py-8 text-gray-500">
                 <MessageCircle className="w-12 h-12 mx-auto mb-3 text-gray-300" />
                 <p className="font-medium">No activity yet</p>
-                <p className="text-sm mt-1">Start by creating a thread or replying to one!</p>
+                <p className="text-sm mt-1">
+                  Start by creating a thread or replying to one!
+                </p>
               </div>
             ) : (
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
                   <div className="w-2 h-2 bg-blue-500 rounded-full mt-2" />
                   <div>
-                    <p className="text-sm font-medium">New reply on your thread</p>
-                    <p className="text-xs text-gray-500">{formatRelativeTime(new Date())}</p>
+                    <p className="text-sm font-medium">
+                      New reply on your thread
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {formatRelativeTime(new Date())}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <div className="w-2 h-2 bg-green-500 rounded-full mt-2" />
                   <div>
-                    <p className="text-sm font-medium">User started following you</p>
-                    <p className="text-xs text-gray-500">{formatRelativeTime(new Date(Date.now() - 5 * 60 * 60 * 1000))}</p>
+                    <p className="text-sm font-medium">
+                      User started following you
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {formatRelativeTime(
+                        new Date(Date.now() - 5 * 60 * 60 * 1000)
+                      )}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <div className="w-2 h-2 bg-orange-500 rounded-full mt-2" />
                   <div>
-                    <p className="text-sm font-medium">Your thread was featured</p>
-                    <p className="text-xs text-gray-500">{formatRelativeTime(new Date(Date.now() - 24 * 60 * 60 * 1000))}</p>
+                    <p className="text-sm font-medium">
+                      Your thread was featured
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {formatRelativeTime(
+                        new Date(Date.now() - 24 * 60 * 60 * 1000)
+                      )}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -171,7 +197,9 @@ export default function DashboardPage() {
                 className="block w-full text-left px-4 py-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
               >
                 <p className="font-medium text-blue-900">Browse Threads</p>
-                <p className="text-sm text-blue-600">Explore active discussions</p>
+                <p className="text-sm text-blue-600">
+                  Explore active discussions
+                </p>
               </Link>
               <Link
                 href={ROUTES.DASHBOARD_NOTIFICATIONS}

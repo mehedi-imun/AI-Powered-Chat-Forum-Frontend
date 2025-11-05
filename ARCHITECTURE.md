@@ -61,23 +61,27 @@ frontend/
 ## 🎨 Design Principles
 
 ### 1. **DRY (Don't Repeat Yourself)**
+
 - Reusable components in `components/ui/`
 - Shared utilities in `lib/utils/`
 - Centralized constants in `lib/constants/`
 - Common types in `lib/types/`
 
 ### 2. **Separation of Concerns**
+
 - **Presentation**: Components focus on UI
 - **Business Logic**: Server actions handle API calls
 - **State Management**: Redux for global state
 - **Utilities**: Pure functions for common operations
 
 ### 3. **Type Safety**
+
 - Comprehensive TypeScript types in `lib/types/`
 - Strict type checking enabled
 - Proper interfaces for all API responses
 
 ### 4. **Scalability**
+
 - Feature-based organization
 - Easy to add new features without restructuring
 - Clear dependencies and imports
@@ -87,6 +91,7 @@ frontend/
 ### UI Components (`components/ui/`)
 
 #### StatCard
+
 ```tsx
 import { StatCard } from "@/components/ui/stat-card";
 
@@ -98,10 +103,11 @@ import { StatCard } from "@/components/ui/stat-card";
   bgColor="bg-blue-100"
   iconColor="text-blue-600"
   trend={{ value: 12, isPositive: true }}
-/>
+/>;
 ```
 
 #### PageHeader
+
 ```tsx
 import { PageHeader } from "@/components/ui/stat-card";
 
@@ -109,10 +115,11 @@ import { PageHeader } from "@/components/ui/stat-card";
   title="Dashboard"
   description="Manage your account"
   actions={<Button>Action</Button>}
-/>
+/>;
 ```
 
 #### LoadingSpinner
+
 ```tsx
 import { LoadingSpinner, PageLoader } from "@/components/ui/loading";
 
@@ -121,6 +128,7 @@ import { LoadingSpinner, PageLoader } from "@/components/ui/loading";
 ```
 
 #### AlertMessage
+
 ```tsx
 import { AlertMessage } from "@/components/ui/alert-message";
 
@@ -129,6 +137,7 @@ import { AlertMessage } from "@/components/ui/alert-message";
 ```
 
 #### Form Fields
+
 ```tsx
 import { TextField, TextAreaField } from "@/components/ui/form-fields";
 
@@ -261,11 +270,13 @@ const [stats, setStats] = useState<UserStats>({ ... });
 ## 🚀 Best Practices
 
 ### 1. **Component Organization**
+
 - Keep components small and focused
 - Extract reusable UI patterns to `components/ui/`
 - Use feature folders for complex features
 
 ### 2. **Import Organization**
+
 ```tsx
 // 1. React/Next imports
 import { useState, useEffect } from "react";
@@ -290,12 +301,14 @@ import { ROUTES } from "@/lib/constants";
 ```
 
 ### 3. **Server Actions**
+
 - Always in `app/actions/` directory
 - Use `"use server"` directive
 - Return consistent response format
 - Handle errors gracefully
 
 ### 4. **Error Handling**
+
 ```tsx
 try {
   const result = await someAction();
@@ -310,6 +323,7 @@ try {
 ```
 
 ### 5. **Loading States**
+
 ```tsx
 if (loading) {
   return <PageLoader text="Loading..." />;
@@ -346,7 +360,7 @@ export default function ExamplePage() {
     try {
       setLoading(true);
       const result = await getSomeDataAction();
-      
+
       if (result.success) {
         setData(result.data);
       } else {
@@ -365,16 +379,11 @@ export default function ExamplePage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Example Page"
-        description="This is an example"
-      />
-      
+      <PageHeader title="Example Page" description="This is an example" />
+
       {error && <AlertMessage type="error" message={error} />}
-      
-      <Card>
-        {/* Content */}
-      </Card>
+
+      <Card>{/* Content */}</Card>
     </div>
   );
 }
@@ -402,6 +411,7 @@ When updating old components:
 ## 🎉 Summary
 
 This architecture provides:
+
 - ✅ **Clean code** with clear separation of concerns
 - ✅ **Reusable components** reducing duplication
 - ✅ **Type safety** with comprehensive TypeScript types
