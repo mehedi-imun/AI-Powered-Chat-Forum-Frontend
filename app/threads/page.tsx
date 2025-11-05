@@ -68,7 +68,7 @@ async function getThreads(searchParams: {
     });
 
     if (search) {
-      queryParams.set("search", search);
+      queryParams.set("searchTerm", search); // Backend expects 'searchTerm' not 'search'
     }
 
     const response = await fetch(
