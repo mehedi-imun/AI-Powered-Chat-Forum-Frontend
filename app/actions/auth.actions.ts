@@ -91,7 +91,7 @@ export async function loginAction(formData: FormData) {
     cookieStore.set("accessToken", result.data.accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: "none",
       maxAge: 60 * 60 * 24 * 7,
       path: "/",
     });
@@ -99,7 +99,7 @@ export async function loginAction(formData: FormData) {
     cookieStore.set("refreshToken", result.data.refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: "none",
       maxAge: 60 * 60 * 24 * 7, 
       path: "/",
     });
