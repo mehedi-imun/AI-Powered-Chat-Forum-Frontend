@@ -27,9 +27,6 @@ export async function getDashboardStatsAction() {
     }
 
     const response = await fetch(`${API_URL}/admin/dashboard`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
       cache: "no-store",
       credentials: "include",
     });
@@ -88,9 +85,6 @@ export async function adminGetAllUsersAction(
     const response = await fetch(
       `${API_URL}/admin/users?${params.toString()}`,
       {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
         cache: "no-store",
         credentials: "include",
       }
@@ -152,7 +146,6 @@ export async function adminUpdateUserAction(
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(updateData),
       cache: "no-store",
@@ -208,7 +201,6 @@ export async function banUserAction(userId: string, formData: FormData) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({ reason, duration, notes }),
       cache: "no-store",
@@ -258,9 +250,6 @@ export async function unbanUserAction(userId: string) {
 
     const response = await fetch(`${API_URL}/admin/users/${userId}/unban`, {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
       cache: "no-store",
       credentials: "include",
     });
@@ -316,7 +305,6 @@ export async function createReportAction(formData: FormData) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
         reportedContentType,
@@ -385,9 +373,6 @@ export async function getAllReportsAction(
     const response = await fetch(
       `${API_URL}/admin/reports?${params.toString()}`,
       {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
         cache: "no-store",
         credentials: "include",
       }
@@ -430,9 +415,6 @@ export async function getReportByIdAction(reportId: string) {
     }
 
     const response = await fetch(`${API_URL}/admin/reports/${reportId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
       cache: "no-store",
       credentials: "include",
     });
@@ -486,7 +468,6 @@ export async function takeReportActionAction(
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ action, actionReason, status }),
         cache: "no-store",
@@ -549,9 +530,6 @@ export async function getActivityLogsAction(
     const response = await fetch(
       `${API_URL}/admin/activity-logs?${params.toString()}`,
       {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
         cache: "no-store",
         credentials: "include",
       }
@@ -594,9 +572,6 @@ export async function getSystemSettingsAction() {
     }
 
     const response = await fetch(`${API_URL}/admin/settings`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
       cache: "no-store",
       credentials: "include",
     });
@@ -654,7 +629,6 @@ export async function updateSystemSettingsAction(formData: FormData) {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(settings),
       cache: "no-store",

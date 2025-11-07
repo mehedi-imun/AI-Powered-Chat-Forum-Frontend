@@ -86,9 +86,10 @@ export default function NotificationDropdown() {
     try {
       setLoading(true);
       const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
+      const token = getCookie("accessToken");
       const response = await fetch(`${API_URL}/notifications?limit=10`, {
         credentials: "include",
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
 
       const result = await response.json();

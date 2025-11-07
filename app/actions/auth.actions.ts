@@ -104,6 +104,7 @@ export async function loginAction(formData: FormData) {
       secure: true,
       sameSite: "none",
       maxAge: 60 * 60 * 24 * 7,
+      path: "/",
     });
 
     cookieStore.set("userRole", result.data.user.role, {
@@ -111,6 +112,7 @@ export async function loginAction(formData: FormData) {
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
       maxAge: 60 * 60 * 24 * 7,
+      path: "/",
     });
 
     return {
@@ -153,7 +155,7 @@ export async function verifyEmailAction(token: string) {
     cookieStore.set("accessToken", result.data.accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: "none",
       maxAge: 60 * 15,
       path: "/",
     });
@@ -161,7 +163,7 @@ export async function verifyEmailAction(token: string) {
     cookieStore.set("refreshToken", result.data.refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: "none",
       maxAge: 60 * 60 * 24 * 7,
       path: "/",
     });
@@ -169,7 +171,7 @@ export async function verifyEmailAction(token: string) {
     cookieStore.set("userRole", result.data.user.role, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: "none",
       maxAge: 60 * 60 * 24 * 7,
       path: "/",
     });
@@ -196,9 +198,6 @@ export async function logoutAction() {
     if (token) {
       await fetch(`${API_URL}/auth/logout`, {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
         credentials: "include",
       });
     }
@@ -225,9 +224,6 @@ export async function getCurrentUserAction() {
     }
 
     const response = await fetch(`${API_URL}/users/me`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
       credentials: "include",
     });
 
