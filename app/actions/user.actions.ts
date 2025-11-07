@@ -3,7 +3,7 @@
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 interface ApiResponse<T> {
   success: boolean;
@@ -171,7 +171,7 @@ export async function updateUserProfileAction(formData: FormData) {
 
     // Build update object from formData
     const updateData: Record<string, string> = {};
-    
+
     const displayName = formData.get("displayName") as string;
     const bio = formData.get("bio") as string;
     const location = formData.get("location") as string;

@@ -3,7 +3,7 @@
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 interface ApiResponse<T> {
   success: boolean;
@@ -84,12 +84,15 @@ export async function adminGetAllUsersAction(
     if (role) params.append("role", role);
     if (isBanned !== undefined) params.append("isBanned", isBanned.toString());
 
-    const response = await fetch(`${API_URL}/admin/users?${params.toString()}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      cache: "no-store",
-    });
+    const response = await fetch(
+      `${API_URL}/admin/users?${params.toString()}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        cache: "no-store",
+      }
+    );
 
     const result: ApiResponse<any> = await response.json();
 
@@ -115,7 +118,10 @@ export async function adminGetAllUsersAction(
 /**
  * Update user (Admin only)
  */
-export async function adminUpdateUserAction(userId: string, formData: FormData) {
+export async function adminUpdateUserAction(
+  userId: string,
+  formData: FormData
+) {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get("accessToken")?.value;
@@ -129,7 +135,7 @@ export async function adminUpdateUserAction(userId: string, formData: FormData) 
 
     // Build update object from formData
     const updateData: Record<string, any> = {};
-    
+
     const role = formData.get("role") as string;
     const isBanned = formData.get("isBanned") as string;
     const displayName = formData.get("displayName") as string;
@@ -367,14 +373,18 @@ export async function getAllReportsAction(
 
     if (status) params.append("status", status);
     if (reportType) params.append("reportType", reportType);
-    if (reportedContentType) params.append("reportedContentType", reportedContentType);
+    if (reportedContentType)
+      params.append("reportedContentType", reportedContentType);
 
-    const response = await fetch(`${API_URL}/admin/reports?${params.toString()}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      cache: "no-store",
-    });
+    const response = await fetch(
+      `${API_URL}/admin/reports?${params.toString()}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        cache: "no-store",
+      }
+    );
 
     const result: ApiResponse<any> = await response.json();
 
@@ -443,7 +453,10 @@ export async function getReportByIdAction(reportId: string) {
 /**
  * Take action on a report (Admin/Moderator only)
  */
-export async function takeReportActionAction(reportId: string, formData: FormData) {
+export async function takeReportActionAction(
+  reportId: string,
+  formData: FormData
+) {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get("accessToken")?.value;
@@ -459,15 +472,18 @@ export async function takeReportActionAction(reportId: string, formData: FormDat
     const actionReason = formData.get("actionReason") as string;
     const status = formData.get("status") as string;
 
-    const response = await fetch(`${API_URL}/admin/reports/${reportId}/action`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ action, actionReason, status }),
-      cache: "no-store",
-    });
+    const response = await fetch(
+      `${API_URL}/admin/reports/${reportId}/action`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ action, actionReason, status }),
+        cache: "no-store",
+      }
+    );
 
     const result: ApiResponse<any> = await response.json();
 
@@ -521,12 +537,15 @@ export async function getActivityLogsAction(
 
     if (adminId) params.append("adminId", adminId);
 
-    const response = await fetch(`${API_URL}/admin/activity-logs?${params.toString()}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      cache: "no-store",
-    });
+    const response = await fetch(
+      `${API_URL}/admin/activity-logs?${params.toString()}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        cache: "no-store",
+      }
+    );
 
     const result: ApiResponse<any> = await response.json();
 
@@ -609,13 +628,14 @@ export async function updateSystemSettingsAction(formData: FormData) {
 
     // Build settings object from formData
     const settings: Record<string, any> = {};
-    
+
     for (const [key, value] of formData.entries()) {
       // Convert string booleans to actual booleans
       if (value === "true") settings[key] = true;
       else if (value === "false") settings[key] = false;
       // Convert string numbers to actual numbers
-      else if (!isNaN(Number(value)) && value !== "") settings[key] = Number(value);
+      else if (!isNaN(Number(value)) && value !== "")
+        settings[key] = Number(value);
       else settings[key] = value;
     }
 

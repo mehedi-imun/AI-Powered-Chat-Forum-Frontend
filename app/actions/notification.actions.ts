@@ -3,7 +3,7 @@
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 interface ApiResponse<T> {
   success: boolean;
@@ -73,12 +73,15 @@ export async function getUserNotificationsAction(
 
     if (isRead !== undefined) params.append("isRead", isRead.toString());
 
-    const response = await fetch(`${API_URL}/notifications?${params.toString()}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      cache: "no-store",
-    });
+    const response = await fetch(
+      `${API_URL}/notifications?${params.toString()}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        cache: "no-store",
+      }
+    );
 
     const result: ApiResponse<PaginatedNotifications> = await response.json();
 
@@ -166,7 +169,8 @@ export async function getNotificationByIdAction(notificationId: string) {
       cache: "no-store",
     });
 
-    const result: ApiResponse<{ notification: Notification }> = await response.json();
+    const result: ApiResponse<{ notification: Notification }> =
+      await response.json();
 
     if (!response.ok) {
       return {
@@ -202,15 +206,19 @@ export async function markNotificationAsReadAction(notificationId: string) {
       };
     }
 
-    const response = await fetch(`${API_URL}/notifications/${notificationId}/read`, {
-      method: "PATCH",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      cache: "no-store",
-    });
+    const response = await fetch(
+      `${API_URL}/notifications/${notificationId}/read`,
+      {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        cache: "no-store",
+      }
+    );
 
-    const result: ApiResponse<{ notification: Notification }> = await response.json();
+    const result: ApiResponse<{ notification: Notification }> =
+      await response.json();
 
     if (!response.ok) {
       return {
@@ -258,7 +266,8 @@ export async function markAllNotificationsAsReadAction() {
       cache: "no-store",
     });
 
-    const result: ApiResponse<{ modifiedCount: number }> = await response.json();
+    const result: ApiResponse<{ modifiedCount: number }> =
+      await response.json();
 
     if (!response.ok) {
       return {

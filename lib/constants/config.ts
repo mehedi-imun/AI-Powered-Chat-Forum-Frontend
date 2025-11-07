@@ -1,9 +1,9 @@
 export const APP_CONFIG = {
-  name: process.env.NEXT_PUBLIC_APP_NAME ,
-  url: process.env.NEXT_PUBLIC_APP_URL ,
+  name: process.env.NEXT_PUBLIC_APP_NAME,
+  url: process.env.NEXT_PUBLIC_APP_URL,
   api: {
-    baseUrl: process.env.NEXT_PUBLIC_API_URL ,
-    socketUrl: process.env.NEXT_PUBLIC_SOCKET_URL ,
+    baseUrl: process.env.NEXT_PUBLIC_API_URL,
+    socketUrl: process.env.NEXT_PUBLIC_SOCKET_URL,
   },
   pagination: {
     defaultPageSize: 20,
