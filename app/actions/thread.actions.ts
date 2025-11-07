@@ -5,7 +5,8 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import type { Thread } from "@/app/types/thread";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL ;
 
 interface ApiResponse<T> {
   success: boolean;
@@ -39,7 +40,12 @@ export async function createThreadAction(formData: FormData) {
       body: JSON.stringify({
         title,
         initialPostContent,
-        tags: tags ? tags.split(",").map((t) => t.trim()).filter(Boolean) : [],
+        tags: tags
+          ? tags
+              .split(",")
+              .map((t) => t.trim())
+              .filter(Boolean)
+          : [],
       }),
     });
 
@@ -52,9 +58,10 @@ export async function createThreadAction(formData: FormData) {
       };
     }
 
-    // Revalidate relevant paths
-    revalidatePath("/threads");
-    revalidatePath("/dashboard/threads");
+    // Revalidate relevant paths BEFORE redirect
+    revalidatePath("/threads", "page");
+    revalidatePath("/dashboard/threads", "page");
+    revalidatePath("/", "page");
 
     // Redirect to the new thread (use _id, not slug)
     if (result.data?._id) {
@@ -111,15 +118,17 @@ export async function updateThreadAction(threadId: string, formData: FormData) {
     }
 
     // Revalidate relevant paths
-    revalidatePath(`/threads/${result.data.thread.slug}`);
-    revalidatePath("/threads");
-    revalidatePath("/dashboard/threads");
+    revalidatePath(`/threads/${result.data.thread.slug}`, "page");
+    revalidatePath(`/threads/${threadId}`, "page");
+    revalidatePath("/threads", "page");
+    revalidatePath("/dashboard/threads", "page");
+    revalidatePath("/", "page");
 
     return {
       success: true,
       thread: result.data.thread,
     };
-  } catch (error) {
+  } catch (_error) {
     return {
       success: false,
       error: "Network error. Please try again.",
@@ -156,9 +165,10 @@ export async function deleteThreadAction(threadId: string) {
       };
     }
 
-    // Revalidate relevant paths
-    revalidatePath("/threads");
-    revalidatePath("/dashboard/threads");
+    // Revalidate relevant paths BEFORE redirect
+    revalidatePath("/threads", "page");
+    revalidatePath("/dashboard/threads", "page");
+    revalidatePath("/", "page");
 
     // Redirect to dashboard threads
     redirect("/dashboard/threads");
@@ -181,7 +191,9 @@ export async function getThreadsAction(page = 1, limit = 10) {
       `${API_URL}/threads?page=${page}&limit=${limit}`,
       {
         cache: "no-store",
-      }
+        
+      },
+      
     );
 
     const result: ApiResponse<{
@@ -204,7 +216,7 @@ export async function getThreadsAction(page = 1, limit = 10) {
       success: true,
       data: result.data,
     };
-  } catch (error) {
+  } catch (_error) {
     return {
       success: false,
       error: "Network error. Please try again.",
@@ -234,7 +246,7 @@ export async function getThreadAction(slug: string) {
       success: true,
       data: result.data.thread,
     };
-  } catch (error) {
+  } catch (_error) {
     return {
       success: false,
       error: "Network error. Please try again.",
@@ -287,7 +299,7 @@ export async function getMyThreadsAction(page = 1, limit = 10) {
       success: true,
       data: result.data,
     };
-  } catch (error) {
+  } catch (_error) {
     return {
       success: false,
       error: "Network error. Please try again.",
@@ -304,7 +316,9 @@ export async function searchThreadsAction(
 ) {
   try {
     const response = await fetch(
-      `${API_URL}/threads/search?keyword=${encodeURIComponent(keyword)}&page=${page}&limit=${limit}`,
+      `${API_URL}/threads/search?keyword=${encodeURIComponent(
+        keyword
+      )}&page=${page}&limit=${limit}`,
       {
         cache: "no-store",
       }
@@ -330,7 +344,7 @@ export async function searchThreadsAction(
       success: true,
       data: result.data,
     };
-  } catch (error) {
+  } catch (_error) {
     return {
       success: false,
       error: "Network error. Please try again.",
@@ -373,7 +387,7 @@ export async function getThreadsByUserAction(
       success: true,
       data: result.data,
     };
-  } catch (error) {
+  } catch (_error) {
     return {
       success: false,
       error: "Network error. Please try again.",
@@ -418,7 +432,7 @@ export async function requestThreadSummaryAction(threadId: string) {
       success: true,
       message: result.message || "Summary requested successfully",
     };
-  } catch (error) {
+  } catch (_error) {
     return {
       success: false,
       error: "Network error. Please try again.",
@@ -456,7 +470,7 @@ export async function getThreadSummaryAction(threadId: string) {
       success: true,
       data: result.data.summary,
     };
-  } catch (error) {
+  } catch (_error) {
     return {
       success: false,
       error: "Network error. Please try again.",
