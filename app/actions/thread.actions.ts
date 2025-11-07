@@ -5,8 +5,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import type { Thread } from "@/app/types/thread";
 
-const API_URL =
-  process.env.NEXT_PUBLIC_API_URL ;
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 interface ApiResponse<T> {
   success: boolean;
@@ -47,6 +46,7 @@ export async function createThreadAction(formData: FormData) {
               .filter(Boolean)
           : [],
       }),
+      credentials: "include",
     });
 
     const result: ApiResponse<Thread> = await response.json();
@@ -106,6 +106,7 @@ export async function updateThreadAction(threadId: string, formData: FormData) {
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({ title, content }),
+      credentials: "include",
     });
 
     const result: ApiResponse<{ thread: Thread }> = await response.json();
@@ -154,6 +155,7 @@ export async function deleteThreadAction(threadId: string) {
       headers: {
         Authorization: `Bearer ${token}`,
       },
+      credentials: "include",
     });
 
     const result: ApiResponse<unknown> = await response.json();
@@ -191,9 +193,8 @@ export async function getThreadsAction(page = 1, limit = 10) {
       `${API_URL}/threads?page=${page}&limit=${limit}`,
       {
         cache: "no-store",
-        
-      },
-      
+        credentials: "include",
+      }
     );
 
     const result: ApiResponse<{
@@ -230,6 +231,7 @@ export async function getThreadAction(slug: string) {
   try {
     const response = await fetch(`${API_URL}/threads/${slug}`, {
       cache: "no-store",
+      credentials: "include",
     });
 
     const result: ApiResponse<{ thread: Thread }> = await response.json();
@@ -276,6 +278,7 @@ export async function getMyThreadsAction(page = 1, limit = 10) {
           Authorization: `Bearer ${token}`,
         },
         cache: "no-store",
+        credentials: "include",
       }
     );
 
@@ -321,6 +324,7 @@ export async function searchThreadsAction(
       )}&page=${page}&limit=${limit}`,
       {
         cache: "no-store",
+        credentials: "include",
       }
     );
 
@@ -364,6 +368,7 @@ export async function getThreadsByUserAction(
       `${API_URL}/threads/user/${userId}?page=${page}&limit=${limit}`,
       {
         cache: "no-store",
+        credentials: "include",
       }
     );
 
@@ -414,6 +419,7 @@ export async function requestThreadSummaryAction(threadId: string) {
       headers: {
         Authorization: `Bearer ${token}`,
       },
+      credentials: "include",
     });
 
     const result: ApiResponse<{ message: string }> = await response.json();
@@ -445,6 +451,7 @@ export async function getThreadSummaryAction(threadId: string) {
   try {
     const response = await fetch(`${API_URL}/threads/${threadId}/summary`, {
       cache: "no-store",
+      credentials: "include",
     });
 
     const result: ApiResponse<{

@@ -37,6 +37,7 @@ export async function registerAction(formData: FormData) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ name, email, password }),
+      credentials: "include",
     });
 
     const result: ApiResponse<{ user: { email: string } }> =
@@ -76,6 +77,7 @@ export async function loginAction(formData: FormData) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ email, password }),
+      credentials: "include",
     });
 
     const result: ApiResponse<AuthResponse> = await response.json();
@@ -102,7 +104,6 @@ export async function loginAction(formData: FormData) {
       secure: true,
       sameSite: "none",
       maxAge: 60 * 60 * 24 * 7,
-    
     });
 
     cookieStore.set("userRole", result.data.user.role, {
@@ -134,6 +135,7 @@ export async function verifyEmailAction(token: string) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ token }),
+      credentials: "include",
     });
 
     const result: ApiResponse<AuthResponse> = await response.json();
@@ -197,6 +199,7 @@ export async function logoutAction() {
         headers: {
           Authorization: `Bearer ${token}`,
         },
+        credentials: "include",
       });
     }
   } catch (error) {
@@ -225,6 +228,7 @@ export async function getCurrentUserAction() {
       headers: {
         Authorization: `Bearer ${token}`,
       },
+      credentials: "include",
     });
 
     if (!response.ok) {
@@ -248,6 +252,7 @@ export async function resendVerificationEmailAction(email: string) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ email }),
+      credentials: "include",
     });
 
     const result: ApiResponse<unknown> = await response.json();

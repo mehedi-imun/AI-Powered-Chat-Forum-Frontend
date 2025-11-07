@@ -58,6 +58,7 @@ export async function getAllUsersAction(
 
     const response = await fetch(`${API_URL}/users?${params.toString()}`, {
       cache: "no-store",
+      credentials: "include",
     });
 
     const result: ApiResponse<PaginatedUsers> = await response.json();
@@ -88,6 +89,7 @@ export async function getUserByIdAction(userId: string) {
   try {
     const response = await fetch(`${API_URL}/users/${userId}`, {
       cache: "no-store",
+      credentials: "include",
     });
 
     const result: ApiResponse<{ user: User }> = await response.json();
@@ -131,6 +133,7 @@ export async function getCurrentUserProfileAction() {
         Authorization: `Bearer ${token}`,
       },
       cache: "no-store",
+      credentials: "include",
     });
 
     const result: ApiResponse<{ user: User }> = await response.json();
@@ -192,6 +195,7 @@ export async function updateUserProfileAction(formData: FormData) {
       },
       body: JSON.stringify(updateData),
       cache: "no-store",
+      credentials: "include",
     });
 
     const result: ApiResponse<{ user: User }> = await response.json();
@@ -241,6 +245,7 @@ export async function deleteUserAction(userId: string) {
         Authorization: `Bearer ${token}`,
       },
       cache: "no-store",
+      credentials: "include",
     });
 
     const result: ApiResponse<null> = await response.json();
@@ -296,6 +301,7 @@ export async function changePasswordAction(
         newPassword,
       }),
       cache: "no-store",
+      credentials: "include",
     });
 
     const result: ApiResponse<null> = await response.json();

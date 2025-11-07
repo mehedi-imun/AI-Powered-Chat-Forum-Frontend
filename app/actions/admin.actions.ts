@@ -31,6 +31,7 @@ export async function getDashboardStatsAction() {
         Authorization: `Bearer ${token}`,
       },
       cache: "no-store",
+      credentials: "include",
     });
 
     const result: ApiResponse<any> = await response.json();
@@ -91,6 +92,7 @@ export async function adminGetAllUsersAction(
           Authorization: `Bearer ${token}`,
         },
         cache: "no-store",
+        credentials: "include",
       }
     );
 
@@ -154,6 +156,7 @@ export async function adminUpdateUserAction(
       },
       body: JSON.stringify(updateData),
       cache: "no-store",
+      credentials: "include",
     });
 
     const result: ApiResponse<any> = await response.json();
@@ -209,6 +212,7 @@ export async function banUserAction(userId: string, formData: FormData) {
       },
       body: JSON.stringify({ reason, duration, notes }),
       cache: "no-store",
+      credentials: "include",
     });
 
     const result: ApiResponse<any> = await response.json();
@@ -258,6 +262,7 @@ export async function unbanUserAction(userId: string) {
         Authorization: `Bearer ${token}`,
       },
       cache: "no-store",
+      credentials: "include",
     });
 
     const result: ApiResponse<any> = await response.json();
@@ -321,6 +326,7 @@ export async function createReportAction(formData: FormData) {
         description,
       }),
       cache: "no-store",
+      credentials: "include",
     });
 
     const result: ApiResponse<any> = await response.json();
@@ -383,6 +389,7 @@ export async function getAllReportsAction(
           Authorization: `Bearer ${token}`,
         },
         cache: "no-store",
+        credentials: "include",
       }
     );
 
@@ -427,6 +434,7 @@ export async function getReportByIdAction(reportId: string) {
         Authorization: `Bearer ${token}`,
       },
       cache: "no-store",
+      credentials: "include",
     });
 
     const result: ApiResponse<any> = await response.json();
@@ -482,6 +490,7 @@ export async function takeReportActionAction(
         },
         body: JSON.stringify({ action, actionReason, status }),
         cache: "no-store",
+        credentials: "include",
       }
     );
 
@@ -544,6 +553,7 @@ export async function getActivityLogsAction(
           Authorization: `Bearer ${token}`,
         },
         cache: "no-store",
+        credentials: "include",
       }
     );
 
@@ -588,6 +598,7 @@ export async function getSystemSettingsAction() {
         Authorization: `Bearer ${token}`,
       },
       cache: "no-store",
+      credentials: "include",
     });
 
     const result: ApiResponse<any> = await response.json();
@@ -647,6 +658,7 @@ export async function updateSystemSettingsAction(formData: FormData) {
       },
       body: JSON.stringify(settings),
       cache: "no-store",
+      credentials: "include",
     });
 
     const result: ApiResponse<any> = await response.json();

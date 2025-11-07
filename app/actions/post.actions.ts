@@ -3,7 +3,7 @@
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ;
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 interface ApiResponse<T> {
   success: boolean;
@@ -56,7 +56,11 @@ export async function createPostAction(formData: FormData) {
       };
     }
 
-    const requestBody: { threadId: string; content: string; parentId?: string } = {
+    const requestBody: {
+      threadId: string;
+      content: string;
+      parentId?: string;
+    } = {
       threadId,
       content,
     };
@@ -74,6 +78,7 @@ export async function createPostAction(formData: FormData) {
       },
       body: JSON.stringify(requestBody),
       cache: "no-store",
+      credentials: "include",
     });
 
     const result: ApiResponse<{ post: Post }> = await response.json();
@@ -115,6 +120,7 @@ export async function getPostsByThreadAction(
       `${API_URL}/posts/thread/${threadId}?page=${page}&limit=${limit}`,
       {
         cache: "no-store",
+        credentials: "include",
       }
     );
 
@@ -146,6 +152,7 @@ export async function getPostByIdAction(postId: string) {
   try {
     const response = await fetch(`${API_URL}/posts/${postId}`, {
       cache: "no-store",
+      credentials: "include",
     });
 
     const result: ApiResponse<{ post: Post }> = await response.json();
@@ -194,6 +201,7 @@ export async function updatePostAction(postId: string, formData: FormData) {
       },
       body: JSON.stringify({ content }),
       cache: "no-store",
+      credentials: "include",
     });
 
     const result: ApiResponse<{ post: Post }> = await response.json();
@@ -242,6 +250,7 @@ export async function deletePostAction(postId: string) {
         Authorization: `Bearer ${token}`,
       },
       cache: "no-store",
+      credentials: "include",
     });
 
     const result: ApiResponse<null> = await response.json();
@@ -281,6 +290,7 @@ export async function getPostsByUserAction(
       `${API_URL}/posts/user/${userId}?page=${page}&limit=${limit}`,
       {
         cache: "no-store",
+        credentials: "include",
       }
     );
 
@@ -327,6 +337,7 @@ export async function getFlaggedPostsAction(page = 1, limit = 20) {
           Authorization: `Bearer ${token}`,
         },
         cache: "no-store",
+        credentials: "include",
       }
     );
 

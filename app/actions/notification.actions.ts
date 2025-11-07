@@ -80,6 +80,7 @@ export async function getUserNotificationsAction(
           Authorization: `Bearer ${token}`,
         },
         cache: "no-store",
+        credentials: "include",
       }
     );
 
@@ -124,6 +125,7 @@ export async function getUnreadCountAction() {
         Authorization: `Bearer ${token}`,
       },
       cache: "no-store",
+      credentials: "include",
     });
 
     const result: ApiResponse<{ unreadCount: number }> = await response.json();
@@ -167,6 +169,7 @@ export async function getNotificationByIdAction(notificationId: string) {
         Authorization: `Bearer ${token}`,
       },
       cache: "no-store",
+      credentials: "include",
     });
 
     const result: ApiResponse<{ notification: Notification }> =
@@ -214,6 +217,7 @@ export async function markNotificationAsReadAction(notificationId: string) {
           Authorization: `Bearer ${token}`,
         },
         cache: "no-store",
+        credentials: "include",
       }
     );
 
@@ -264,6 +268,7 @@ export async function markAllNotificationsAsReadAction() {
         Authorization: `Bearer ${token}`,
       },
       cache: "no-store",
+      credentials: "include",
     });
 
     const result: ApiResponse<{ modifiedCount: number }> =
@@ -313,6 +318,7 @@ export async function deleteNotificationAction(notificationId: string) {
         Authorization: `Bearer ${token}`,
       },
       cache: "no-store",
+      credentials: "include",
     });
 
     const result: ApiResponse<null> = await response.json();
@@ -360,6 +366,7 @@ export async function deleteAllReadNotificationsAction() {
         Authorization: `Bearer ${token}`,
       },
       cache: "no-store",
+      credentials: "include",
     });
 
     const result: ApiResponse<{ deletedCount: number }> = await response.json();
