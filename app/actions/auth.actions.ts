@@ -52,7 +52,8 @@ export async function registerAction(formData: FormData) {
     // Return success - user needs to verify email
     return {
       success: true,
-      message: "Registration successful! Please check your email to verify your account.",
+      message:
+        "Registration successful! Please check your email to verify your account.",
       email: result.data.user.email,
     };
   } catch (error) {
@@ -90,7 +91,7 @@ export async function loginAction(formData: FormData) {
 
     cookieStore.set("accessToken", result.data.accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: true,
       sameSite: "none",
       maxAge: 60 * 60 * 24 * 7,
       path: "/",
@@ -98,18 +99,17 @@ export async function loginAction(formData: FormData) {
 
     cookieStore.set("refreshToken", result.data.refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: true,
       sameSite: "none",
-      maxAge: 60 * 60 * 24 * 7, 
-      path: "/",
+      maxAge: 60 * 60 * 24 * 7,
+    
     });
 
     cookieStore.set("userRole", result.data.user.role, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 60 * 60 * 24 * 7, 
-      path: "/",
+      maxAge: 60 * 60 * 24 * 7,
     });
 
     return {
