@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-import { LogIn, MessageSquare, CornerDownRight } from "lucide-react";
+import { LogIn, MessageSquare, CornerDownRight, Cross, X } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useAuth } from "@/lib/hooks/use-auth";
 import { Textarea } from "@/components/ui/textarea";
@@ -209,9 +209,9 @@ export function ReplySection({
                   setReplyingTo(null);
                   setReplyingToUsername("");
                 }}
-                className="text-gray-400 hover:text-gray-600 ml-auto"
+                className="text-gray-900 hover:text-gray-600 ml-auto"
               >
-                ✕
+                <X></X>
               </button>
             </div>
           )}

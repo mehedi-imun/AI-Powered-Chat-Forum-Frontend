@@ -4,6 +4,7 @@ import { ReduxProvider } from "@/components/providers/redux-provider";
 import "./globals.css";
 import SocketProvider from "@/components/providers/socket-provider";
 
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -31,7 +32,6 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-       
       >
         <ReduxProvider>
           <SocketProvider>{children}</SocketProvider>

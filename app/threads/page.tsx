@@ -141,7 +141,6 @@ export default async function ThreadsPage({
 }: {
   searchParams: Promise<{ page?: string; search?: string }>;
 }) {
-  // Await searchParams in Next.js 16
   const params = await searchParams;
   const data = await getThreads(params);
 
