@@ -1,8 +1,6 @@
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
-import { Navbar } from "@/components/landing/navbar";
-import { Footer } from "@/components/landing/footer";
 import { StartDiscussionButton } from "@/components/threads/start-discussion-button";
 import { RealTimeThreadList } from "@/components/threads/real-time-thread-list";
 import { jwtDecode } from "jwt-decode";
@@ -74,7 +72,7 @@ async function getMyThreads(): Promise<Thread[]> {
           "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
         },
-        cache: "no-store", 
+        cache: "no-store",
       }
     );
 
@@ -100,8 +98,7 @@ export default async function MyThreadsPage() {
   const threads = await getMyThreads();
 
   return (
-    <>
-      <Navbar />
+
       <main className="min-h-screen bg-gray-50">
         <div className="container mx-auto px-4 py-8">
           {/* Header */}
@@ -131,7 +128,6 @@ export default async function MyThreadsPage() {
           )}
         </div>
       </main>
-      <Footer />
-    </>
+ 
   );
 }

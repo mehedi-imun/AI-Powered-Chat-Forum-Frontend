@@ -38,12 +38,7 @@ export function Navbar() {
 
             {isAuthenticated ? (
               <>
-                <Link
-                  href="/threads/my-threads"
-                  className="text-gray-700 hover:text-primary transition-colors"
-                >
-                  My Threads
-                </Link>
+                
                 <Link
                   href="/dashboard"
                   className="text-gray-700 hover:text-primary transition-colors"

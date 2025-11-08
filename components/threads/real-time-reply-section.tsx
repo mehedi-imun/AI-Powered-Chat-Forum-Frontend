@@ -117,7 +117,7 @@ export function RealTimeReplySection({
       {/* Show connection status indicator if not connected */}
       {!isConnected && (
         <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md text-yellow-800 text-sm">
-          ⚠️ Real-time updates are currently unavailable. Refresh the page to
+           Real-time updates are currently unavailable. Refresh the page to
           see new replies.
         </div>
       )}

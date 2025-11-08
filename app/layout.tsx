@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ReduxProvider } from "@/components/providers/redux-provider";
-import { SocketProvider } from "@/components/providers/socket-provider";
 import "./globals.css";
+import SocketProvider from "@/components/providers/socket-provider";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,7 +31,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        cz-shortcut-listen="true"
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ReduxProvider>

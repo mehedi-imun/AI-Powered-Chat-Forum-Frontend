@@ -1,113 +1,104 @@
 "use client";
 
-import { createContext, useContext, useEffect, useRef, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useCallback,
+} from "react";
 import { io, Socket } from "socket.io-client";
 import { useAppSelector } from "@/lib/hooks/use-app-selector";
 
 interface SocketContextType {
   socket: Socket | null;
   isConnected: boolean;
+  connect: () => void;
+  disconnect: () => void;
+  getSocket: () => Socket | null;
 }
 
-const SocketContext = createContext<SocketContextType>({
-  socket: null,
-  isConnected: false,
-});
+const SocketContext = createContext<SocketContextType | null>(null);
 
-export function SocketProvider({ children }: { children: React.ReactNode }) {
+export default function SocketProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const { accessToken, isAuthenticated } = useAppSelector((s) => s.auth);
+  const socketRef = useRef<Socket | null>(null);
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
-  const socketRef = useRef<Socket | null>(null);
-  const { accessToken, isAuthenticated } = useAppSelector(
-    (state) => state.auth
-  );
 
-  useEffect(() => {
-    // Only connect if user is authenticated
-    if (!isAuthenticated || !accessToken) {
-      // Disconnect existing socket if user logs out
-      if (socketRef.current) {
-        socketRef.current.disconnect();
-        socketRef.current = null;
-        setSocket(null);
-        setIsConnected(false);
-      }
-      return;
-    }
+  const cleanupSocket = useCallback(() => {
+    const s = socketRef.current;
+    if (!s) return;
+    s.removeAllListeners();
+    s.disconnect();
+    socketRef.current = null;
+  }, []);
 
-    // Don't create a new socket if one already exists
-    if (socketRef.current?.connected) {
-      return;
-    }
-
-    // Create socket connection
-    const socketUrl =
-      process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:5000";
-
-    const socketInstance = io(socketUrl, {
-      auth: {
-        token: accessToken,
-      },
+  const initSocket = useCallback((token: string) => {
+    if (!token) return null;
+    const url = process.env.NEXT_PUBLIC_SOCKET_URL as string;
+    const s = io(url, {
+      auth: { token },
       transports: ["websocket", "polling"],
       reconnection: true,
-      reconnectionDelay: 1000,
-      reconnectionAttempts: 5,
+      reconnectionAttempts: Infinity,
+      reconnectionDelayMax: 5000,
+      autoConnect: true,
     });
 
-    // Connection event handlers
-    socketInstance.on("connect", () => {
-      setIsConnected(true);
-    });
+    s.on("connect", () => setIsConnected(true));
+    s.on("disconnect", () => setIsConnected(false));
+    s.on("connect_error", () => setIsConnected(false));
 
-    socketInstance.on("disconnect", (reason) => {
+    socketRef.current = s;
+    return s;
+  }, []);
+
+  const connect = useCallback(() => {
+    if (!isAuthenticated || !accessToken) return;
+    if (socketRef.current && socketRef.current.connected) return;
+    const s = initSocket(accessToken);
+    if (s) {
+      setTimeout(() => setSocket(s), 0);
+    }
+  }, [accessToken, isAuthenticated, initSocket]);
+
+  const disconnect = useCallback(() => {
+    setTimeout(() => {
+      cleanupSocket();
       setIsConnected(false);
-    });
+      setSocket(null);
+    }, 0);
+  }, [cleanupSocket]);
 
-    socketInstance.on("connect_error", (error) => {
-      console.error("🔴 Socket.IO connection error:", error.message);
-      setIsConnected(false);
-    });
+  const getSocket = useCallback(() => socketRef.current, []);
 
-    socketInstance.on("error", (error) => {
-      console.error("🔴 Socket.IO error:", error);
-    });
+  useEffect(() => {
+    if (isAuthenticated && accessToken) {
+      connect();
+    } else {
+      disconnect();
+    }
+  }, [accessToken, isAuthenticated, connect, disconnect]);
 
-    // Reconnection handlers
-    socketInstance.on("reconnect", (attemptNumber) => {
-      setIsConnected(true);
-    });
+  const value = useMemo(
+    () => ({ socket, isConnected, connect, disconnect, getSocket }),
+    [socket, isConnected, connect, disconnect, getSocket]
+  );
 
-    socketInstance.on("reconnect_attempt", (attemptNumber) => {
-    });
-
-    socketInstance.on("reconnect_failed", () => {
-      console.error("🔴 Socket.IO reconnection failed");
-      setIsConnected(false);
-    });
-
-    // Store socket instance in both ref and state
-    socketRef.current = socketInstance;
-    setSocket(socketInstance);
-
-    // Cleanup only on unmount or auth change
-    return () => {
-      if (socketRef.current) {
-        socketRef.current.disconnect();
-        socketRef.current = null;
-      }
-    };
-  }, [accessToken, isAuthenticated]);
   return (
-    <SocketContext.Provider value={{ socket, isConnected }}>
-      {children}
-    </SocketContext.Provider>
+    <SocketContext.Provider value={value}>{children}</SocketContext.Provider>
   );
 }
 
-export const useSocket = () => {
-  const context = useContext(SocketContext);
-  if (context === undefined) {
-    throw new Error("useSocket must be used within SocketProvider");
-  }
-  return context;
-};
+export function useSocket() {
+  const ctx = useContext(SocketContext);
+  if (!ctx) throw new Error("useSocket must be used within SocketProvider");
+  return ctx;
+}
