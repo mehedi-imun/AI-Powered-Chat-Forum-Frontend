@@ -10,13 +10,9 @@ export const useAuth = () => {
   const { user, isAuthenticated, accessToken } = useAppSelector(
     (state) => state.auth
   );
-
   const logout = async () => {
-    // Clear Redux state first
     dispatch(logoutRedux());
-    // Then call server action to clear cookies and redirect
     await logoutAction();
   };
-
   return { user, isAuthenticated, accessToken, logout };
 };

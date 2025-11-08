@@ -7,20 +7,16 @@ export function Hero() {
     <section className="py-20 md:py-32 bg-linear-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800">
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto text-center">
-          {/* Main Heading */}
           <h1 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
             Join the Conversation,
             <br />
             <span className="text-primary">Connect with Community</span>
           </h1>
-
-          {/* Subheading */}
           <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
             A modern forum platform powered by AI. Share ideas, ask questions,
             and engage in meaningful discussions with thousands of users.
           </p>
 
-          {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
             <Button size="lg" asChild>
               <Link href="/register">
@@ -33,7 +29,6 @@ export function Hero() {
             </Button>
           </div>
 
-          {/* Feature Cards */}
           <div className="grid md:grid-cols-3 gap-8 mt-16">
             <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm border">
               <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4 mx-auto">
