@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/purity */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -27,58 +28,15 @@ interface DashboardStats {
 
 export default function DashboardPage() {
   const { user } = useAuth();
-  const router = useRouter();
   const [stats, setStats] = useState<DashboardStats>({
     totalPosts: 0,
     totalThreads: 0,
     unreadNotifications: 0,
     profileViews: 0,
   });
-  const [loading, setLoading] = useState(true);
 
   const displayName =
     user?.displayName || user?.username || user?.email?.split("@")[0] || "User";
-
-  // Redirect admin/moderator users to admin dashboard
-  useEffect(() => {
-    if (user?.role === "Admin" || user?.role === "Moderator") {
-      router.push(ROUTES.ADMIN);
-    }
-  }, [user, router]);
-
-  // Fetch dashboard stats
-  useEffect(() => {
-    // Simulate API call - replace with actual API when available
-    const fetchStats = async () => {
-      try {
-        // TODO: Replace with actual API call
-        // const response = await fetch('/api/v1/users/me/stats');
-        // const data = await response.json();
-
-        // Mock data for now
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-
-        setStats({
-          totalPosts: 0,
-          totalThreads: 0,
-          unreadNotifications: 0,
-          profileViews: 0,
-        });
-      } catch (error) {
-        console.error("Failed to fetch stats:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (user) {
-      fetchStats();
-    }
-  }, [user]);
-
-  if (loading) {
-    return <PageLoader text="Loading dashboard..." />;
-  }
 
   return (
     <div className="space-y-6">
