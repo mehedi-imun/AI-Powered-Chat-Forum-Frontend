@@ -48,7 +48,7 @@ export function getAllCookies(): Record<string, string> {
 	return document.cookie.split(";").reduce(
 		(cookies, cookie) => {
 			const [name, value] = cookie.trim().split("=");
-			if (name && value) {z
+			if (name && value) {
 				cookies[name] = value;
 			}
 			return cookies;
