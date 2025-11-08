@@ -74,7 +74,7 @@ async function getMyThreads(): Promise<Thread[]> {
           "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
         },
-        cache: "no-store", // Always fetch fresh data
+        cache: "no-store", 
       }
     );
 

@@ -44,18 +44,10 @@ export default function NotificationDropdown() {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const { socket, isConnected } = useSocket();
-  const audioRef = useRef<HTMLAudioElement | null>(null);
   const hasFetchedInitial = useRef(false);
-
-  // Initialize notification sound (simple beep sound)
-  useEffect(() => {
-    // Using Web Audio API for a simple notification beep
-    audioRef.current = null; // We'll use Web Audio API instead
-  }, []);
 
   const playNotificationSound = () => {
     try {
-      // Create a simple beep using Web Audio API
       const AudioContextClass =
         window.AudioContext ||
         (window as typeof window & { webkitAudioContext?: typeof AudioContext })
@@ -64,61 +56,107 @@ export default function NotificationDropdown() {
       const audioContext = new AudioContextClass();
       const oscillator = audioContext.createOscillator();
       const gainNode = audioContext.createGain();
-
       oscillator.connect(gainNode);
       gainNode.connect(audioContext.destination);
-
-      oscillator.frequency.value = 800; // Frequency in Hz
-      oscillator.type = "sine"; // Sine wave for a pleasant tone
-
-      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime); // Volume
+      oscillator.frequency.value = 800;
+      oscillator.type = "sine";
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
       gainNode.gain.exponentialRampToValueAtTime(
         0.01,
         audioContext.currentTime + 0.3
       );
-
       oscillator.start(audioContext.currentTime);
       oscillator.stop(audioContext.currentTime + 0.3);
-    } catch (err) {}
+    } catch {}
   };
 
   const fetchNotifications = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
       const API_URL = process.env.NEXT_PUBLIC_API_URL;
       const token = getCookie("accessToken");
-      const response = await fetch(`${API_URL}/notifications?limit=10`, {
+      const res = await fetch(`${API_URL}/notifications?limit=10`, {
         credentials: "include",
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
-
-      const result = await response.json();
+      const result = await res.json();
       if (result.success) {
         setNotifications(result.data?.notifications || []);
         setUnreadCount(result.data?.unreadCount || 0);
       }
     } catch (error) {
-      console.error("Failed to fetch notifications:", error);
+      console.error(error);
     } finally {
       setLoading(false);
     }
   };
 
-  const markAsRead = async (notificationId: string) => {
+  const markAsRead = async (id: string) => {
+    setNotifications((prev) =>
+      prev.map((n) => (n._id === id ? { ...n, isRead: true } : n))
+    );
+    setUnreadCount((prev) => Math.max(0, prev - 1));
     try {
-      const token = getCookie("accessToken");
       const API_URL = process.env.NEXT_PUBLIC_API_URL;
+      const token = getCookie("accessToken");
+      await fetch(`${API_URL}/notifications/${id}/read`, {
+        method: "PATCH",
+        credentials: "include",
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-      const response = await fetch(
-        `${API_URL}/notifications/${notificationId}/read`,
-        {
-          method: "PATCH",
-          credentials: "include",
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        }
-      );
+  const markAllAsRead = async () => {
+    setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+    setUnreadCount(0);
+    try {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL;
+      const token = getCookie("accessToken");
+      await fetch(`${API_URL}/notifications/mark-all-read`, {
+        method: "PATCH",
+        credentials: "include",
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-      if (response.ok) {
+  const deleteNotification = async (id: string) => {
+    const wasUnread = notifications.find((n) => n._id === id)?.isRead === false;
+    setNotifications((prev) => prev.filter((n) => n._id !== id));
+    if (wasUnread) setUnreadCount((prev) => Math.max(0, prev - 1));
+    try {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL;
+      const token = getCookie("accessToken");
+      await fetch(`${API_URL}/notifications/${id}`, {
+        method: "DELETE",
+        credentials: "include",
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    if (!socket || !isConnected) return;
+
+    socket.on(
+      "notification:new",
+      ({ notification }: { notification: Notification }) => {
+        setNotifications((prev) => [notification, ...prev]);
+        setUnreadCount((prev) => prev + 1);
+        playNotificationSound();
+      }
+    );
+
+    socket.on(
+      "notification:read",
+      ({ notificationId }: { notificationId: string }) => {
         setNotifications((prev) =>
           prev.map((n) =>
             n._id === notificationId ? { ...n, isRead: true } : n
@@ -126,141 +164,43 @@ export default function NotificationDropdown() {
         );
         setUnreadCount((prev) => Math.max(0, prev - 1));
       }
-    } catch (error) {
-      console.error("Failed to mark notification as read:", error);
-    }
-  };
-
-  const markAllAsRead = async () => {
-    try {
-      const token = getCookie("accessToken");
-      const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
-      const response = await fetch(`${API_URL}/notifications/mark-all-read`, {
-        method: "PATCH",
-        credentials: "include",
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
-
-      if (response.ok) {
-        setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
-        setUnreadCount(0);
-      }
-    } catch (error) {
-      console.error("Failed to mark all as read:", error);
-    }
-  };
-
-  const deleteNotification = async (notificationId: string) => {
-    try {
-      const token = getCookie("accessToken");
-      const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
-      const response = await fetch(
-        `${API_URL}/notifications/${notificationId}`,
-        {
-          method: "DELETE",
-          credentials: "include",
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        }
-      );
-
-      if (response.ok) {
-        setNotifications((prev) =>
-          prev.filter((n) => n._id !== notificationId)
-        );
-        const wasUnread =
-          notifications.find((n) => n._id === notificationId)?.isRead === false;
-        if (wasUnread) {
-          setUnreadCount((prev) => Math.max(0, prev - 1));
-        }
-      }
-    } catch (error) {
-      console.error("Failed to delete notification:", error);
-    }
-  };
-
-  // Real-time notification listener
-  useEffect(() => {
-    if (!socket || !isConnected) {
-      return;
-    }
-
-    // Listen for new notifications (backend emits "notification:new")
-    socket.on(
-      "notification:new",
-      (data: { notification: Notification; timestamp?: Date }) => {
-        if (data.notification) {
-          // Add new notification to the list
-          setNotifications((prev) => [data.notification, ...prev]);
-
-          // Increment unread count
-          setUnreadCount((prev) => prev + 1);
-
-          // Play notification sound
-          playNotificationSound();
-        }
-      }
     );
 
-    // Listen for notification updates (mark as read)
-    socket.on("notification:read", (data: { notificationId: string }) => {
-      if (data.notificationId) {
-        setNotifications((prev) =>
-          prev.map((n) =>
-            n._id === data.notificationId ? { ...n, isRead: true } : n
-          )
-        );
-        setUnreadCount((prev) => Math.max(0, prev - 1));
-      }
-    });
-
-    // Cleanup
     return () => {
       socket.off("notification:new");
       socket.off("notification:read");
     };
   }, [socket, isConnected]);
 
-  // Fetch unread count on mount (lightweight)
   useEffect(() => {
-    const fetchUnreadCount = async () => {
-      try {
-        const token = getCookie("accessToken");
-        const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
-        const response = await fetch(`${API_URL}/notifications/unread-count`, {
-          credentials: "include",
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        });
-
-        const result = await response.json();
-        if (result.success) {
-          setUnreadCount(result.data?.count || 0);
-        }
-      } catch (error) {
-        console.error("Failed to fetch unread count:", error);
-      }
-    };
-
     if (!hasFetchedInitial.current) {
+      const fetchUnreadCount = async () => {
+        try {
+          const API_URL = process.env.NEXT_PUBLIC_API_URL;
+          const token = getCookie("accessToken");
+          const res = await fetch(`${API_URL}/notifications/unread-count`, {
+            credentials: "include",
+            headers: token ? { Authorization: `Bearer ${token}` } : {},
+          });
+          const result = await res.json();
+          if (result.success) setUnreadCount(result.data?.count || 0);
+        } catch (error) {
+          console.error(error);
+        }
+      };
       fetchUnreadCount();
       hasFetchedInitial.current = true;
     }
   }, []);
 
-  // Fetch full notifications when dropdown opens
   useEffect(() => {
-    if (open) {
-      fetchNotifications();
-    }
+    if (open) fetchNotifications();
   }, [open]);
 
   const getNotificationIcon = (type: string) => {
     const iconClass = "w-4 h-4";
     switch (type) {
       case "post_created":
-        return <Bell className={iconClass} />;
       case "thread_created":
         return <Bell className={iconClass} />;
       case "ai_moderation_rejected":
@@ -322,7 +262,6 @@ export default function NotificationDropdown() {
           )}
         </div>
         <DropdownMenuSeparator />
-
         <ScrollArea className="h-[400px]">
           {loading ? (
             <div className="flex items-center justify-center py-8">
@@ -335,44 +274,38 @@ export default function NotificationDropdown() {
             </div>
           ) : (
             <div className="space-y-1">
-              {notifications.map((notification) => (
+              {notifications.map((n) => (
                 <div
-                  key={notification._id}
+                  key={n._id}
                   className={`relative p-3 hover:bg-gray-50 transition-colors border-l-4 ${
-                    notification.isRead
-                      ? "border-l-transparent"
-                      : "border-l-blue-500"
-                  } ${getNotificationColor(notification.type)}`}
+                    n.isRead ? "border-l-transparent" : "border-l-blue-500"
+                  } ${getNotificationColor(n.type)}`}
                 >
                   <div className="flex items-start gap-3">
-                    <div className="mt-1">
-                      {getNotificationIcon(notification.type)}
-                    </div>
+                    <div className="mt-1">{getNotificationIcon(n.type)}</div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
-                        {notification.link ? (
+                        {n.link ? (
                           <Link
-                            href={notification.link}
+                            href={n.link}
                             className="text-sm font-medium hover:underline"
                             onClick={() => {
-                              markAsRead(notification._id);
+                              markAsRead(n._id);
                               setOpen(false);
                             }}
                           >
-                            {notification.title}
+                            {n.title}
                           </Link>
                         ) : (
-                          <p className="text-sm font-medium">
-                            {notification.title}
-                          </p>
+                          <p className="text-sm font-medium">{n.title}</p>
                         )}
                         <div className="flex items-center gap-1">
-                          {!notification.isRead && (
+                          {!n.isRead && (
                             <Button
                               variant="ghost"
                               size="icon"
                               className="h-6 w-6"
-                              onClick={() => markAsRead(notification._id)}
+                              onClick={() => markAsRead(n._id)}
                               title="Mark as read"
                             >
                               <Check className="h-3 w-3" />
@@ -382,18 +315,16 @@ export default function NotificationDropdown() {
                             variant="ghost"
                             size="icon"
                             className="h-6 w-6 text-red-500 hover:text-red-700"
-                            onClick={() => deleteNotification(notification._id)}
+                            onClick={() => deleteNotification(n._id)}
                             title="Delete"
                           >
                             <Trash2 className="h-3 w-3" />
                           </Button>
                         </div>
                       </div>
-                      <p className="text-xs text-gray-600 mt-1">
-                        {notification.message}
-                      </p>
+                      <p className="text-xs text-gray-600 mt-1">{n.message}</p>
                       <p className="text-xs text-gray-400 mt-1">
-                        {formatDistanceToNow(new Date(notification.createdAt), {
+                        {formatDistanceToNow(new Date(n.createdAt), {
                           addSuffix: true,
                         })}
                       </p>
@@ -404,7 +335,6 @@ export default function NotificationDropdown() {
             </div>
           )}
         </ScrollArea>
-
         {notifications.length > 0 && (
           <>
             <DropdownMenuSeparator />

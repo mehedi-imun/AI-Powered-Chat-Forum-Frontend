@@ -92,7 +92,7 @@ export async function loginAction(formData: FormData) {
     const cookieStore = await cookies();
 
     cookieStore.set("accessToken", result.data.accessToken, {
-      httpOnly: true,
+      httpOnly: false,
       secure: true,
       sameSite: "none",
       maxAge: 60 * 60 * 24 * 7,
@@ -100,7 +100,7 @@ export async function loginAction(formData: FormData) {
     });
 
     cookieStore.set("refreshToken", result.data.refreshToken, {
-      httpOnly: true,
+      httpOnly: false,
       secure: true,
       sameSite: "none",
       maxAge: 60 * 60 * 24 * 7,
@@ -108,7 +108,7 @@ export async function loginAction(formData: FormData) {
     });
 
     cookieStore.set("userRole", result.data.user.role, {
-      httpOnly: true,
+      httpOnly: false,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
       maxAge: 60 * 60 * 24 * 7,
@@ -153,7 +153,7 @@ export async function verifyEmailAction(token: string) {
     const cookieStore = await cookies();
 
     cookieStore.set("accessToken", result.data.accessToken, {
-      httpOnly: true,
+      httpOnly: false,
       secure: process.env.NODE_ENV === "production",
       sameSite: "none",
       maxAge: 60 * 15,
@@ -161,7 +161,7 @@ export async function verifyEmailAction(token: string) {
     });
 
     cookieStore.set("refreshToken", result.data.refreshToken, {
-      httpOnly: true,
+      httpOnly: false,
       secure: process.env.NODE_ENV === "production",
       sameSite: "none",
       maxAge: 60 * 60 * 24 * 7,
