@@ -22,8 +22,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, LogIn } from "lucide-react";
-import { Navbar } from "@/components/landing/navbar";
-
 export default function LoginPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -33,6 +31,7 @@ export default function LoginPage() {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -41,20 +40,27 @@ export default function LoginPage() {
       password: "",
     },
   });
-      // email: "admin@chatforum.com",
-      // password: "Admin@1234",
+
+  //  Autofill helper
+  const handleAutofill = (type: "admin" | "user") => {
+    if (type === "admin") {
+      setValue("email", "mehediimun@gmail.com");
+      setValue("password", "123456");
+    } else {
+      setValue("email", "mehediimun.ph@gmail.com");
+      setValue("password", "123456");
+    }
+  };
+
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
     setError(null);
-
     const formData = new FormData();
     formData.append("email", data.email);
     formData.append("password", data.password);
 
     const result = await loginAction(formData);
-
     if (result.success && result.user && result.token) {
-      // Map the user data to match Redux User type
       let userRole = UserRole.MEMBER;
       if (result.user.role.toLowerCase() === "admin") {
         userRole = UserRole.ADMIN;
@@ -73,7 +79,6 @@ export default function LoginPage() {
 
       dispatch(setCredentials({ user: mappedUser, accessToken: result.token }));
 
-      // Check if email is verified
       if (!result.user.emailVerified) {
         router.push(
           `/verify-email?email=${encodeURIComponent(result.user.email)}`
@@ -81,7 +86,6 @@ export default function LoginPage() {
         return;
       }
 
-      // Redirect based on role (only if email is verified)
       const urlParams = new URLSearchParams(window.location.search);
       const redirectTo = urlParams.get("redirect");
       if (redirectTo) {
@@ -98,17 +102,16 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="w-full max-w-md my-10 mx-5">
-      <Card>
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">
-            Welcome Back
-          </CardTitle>
-          <CardDescription className="text-center">
-            Sign in to your account to continue
-          </CardDescription>
+    <div className="flex justify-center items-center my-10 mx-5">
+      <Card className="w-full max-w-lg p-6">
+        {/* Header */}
+        <CardHeader className="space-y-1 text-center">
+          <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
+          <CardDescription>Sign in to your account to continue</CardDescription>
         </CardHeader>
-        <CardContent>
+
+        {/* Login Form */}
+        <CardContent className="space-y-4">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             {error && (
               <Alert variant="destructive">
@@ -116,6 +119,7 @@ export default function LoginPage() {
               </Alert>
             )}
 
+            {/* Email Field */}
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -130,15 +134,10 @@ export default function LoginPage() {
               )}
             </div>
 
+            {/* Password Field */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Password</Label>
-                <Link
-                  href="/forgot-password"
-                  className="text-xs text-primary hover:underline"
-                >
-                  Forgot password?
-                </Link>
               </div>
               <Input
                 id="password"
@@ -154,6 +153,7 @@ export default function LoginPage() {
               )}
             </div>
 
+            {/* Submit */}
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? (
                 <>
@@ -168,9 +168,51 @@ export default function LoginPage() {
               )}
             </Button>
           </form>
+
+          {/* Divider */}
+          <div className="border-t my-6" />
+
+          {/* Credentials Section */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-center">
+            {/* Admin */}
+            <div className="space-y-1">
+              <h3 className="font-semibold text-lg">Admin</h3>
+              <p className="text-sm text-muted-foreground">
+                mehediimun@gmail.com
+              </p>
+              <p className="text-sm text-muted-foreground mb-2">123456</p>
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full"
+                onClick={() => handleAutofill("admin")}
+              >
+                Autofill Admin
+              </Button>
+            </div>
+
+            {/* User */}
+            <div className="space-y-1">
+              <h3 className="font-semibold text-lg">User</h3>
+              <p className="text-sm text-muted-foreground">
+                mehediimun.ph@gmail.com
+              </p>
+              <p className="text-sm text-muted-foreground mb-2">123456</p>
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full"
+                onClick={() => handleAutofill("user")}
+              >
+                Autofill User
+              </Button>
+            </div>
+          </div>
         </CardContent>
-        <CardFooter className="flex flex-col space-y-2">
-          <div className="text-sm text-center text-muted-foreground">
+
+        {/* Footer */}
+        <CardFooter className="flex flex-col space-y-2 text-center">
+          <p className="text-sm text-muted-foreground">
             Don&apos;t have an account?{" "}
             <Link
               href="/register"
@@ -178,7 +220,7 @@ export default function LoginPage() {
             >
               Sign up
             </Link>
-          </div>
+          </p>
         </CardFooter>
       </Card>
     </div>
