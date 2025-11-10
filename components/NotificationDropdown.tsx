@@ -232,7 +232,7 @@ export default function NotificationDropdown() {
   };
 
   return (
-    <DropdownMenu open={open} onOpenChange={setOpen}>
+    <DropdownMenu open={open} onOpenChange={setOpen} >
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="relative">
           <Bell className="h-5 w-5" />
@@ -246,7 +246,7 @@ export default function NotificationDropdown() {
           )}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-[400px]">
+      <DropdownMenuContent align="end" className="w-[350px]">
         <div className="flex items-center justify-between px-2 py-2">
           <DropdownMenuLabel className="p-0">Notifications</DropdownMenuLabel>
           {notifications.length > 0 && unreadCount > 0 && (
