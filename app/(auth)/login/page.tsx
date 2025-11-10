@@ -86,10 +86,9 @@ export default function LoginPage() {
         return;
       }
 
-      const urlParams = new URLSearchParams(window.location.search);
-      const redirectTo = urlParams.get("redirect");
-      if (redirectTo) {
-        router.push(redirectTo);
+  
+      if (result.user.role.toLowerCase() === "admin") {
+        router.push("/admin");
       } else {
         router.push("/threads");
       }
