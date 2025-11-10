@@ -12,6 +12,7 @@ import {
   Shield,
   Bell,
   X,
+  User,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAppSelector } from "@/lib/hooks/use-app-selector";
@@ -28,7 +29,7 @@ const navigation = [
   { name: "Reports", href: "/admin/reports", icon: Flag },
   { name: "Notifications", href: "/admin/notifications", icon: Bell },
   { name: "Settings", href: "/admin/settings", icon: Settings },
-
+  { name: "admin profile", href: "/admin/profile", icon: User },
   { name: "User Discussions", href: "/threads", icon: MessageSquare },
 ];
 
