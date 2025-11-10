@@ -38,14 +38,13 @@ export function proxy(request: NextRequest) {
   const decodedToken = decode(accessToken) as DecodedToken | null;
   const role = decodedToken?.role;
 
-  console.log("Decoded role:", role);
 
   // Redirect logged-in users away from auth pages
   if (isAuthPage && accessToken) {
     if (role === "Admin") {
       return NextResponse.redirect(new URL("/admin", request.url));
     }
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    return NextResponse.redirect(new URL("/threads", request.url));
   }
 
   // Admin & Moderator role authorization for /admin routes
