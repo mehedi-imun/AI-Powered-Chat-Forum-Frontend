@@ -84,7 +84,7 @@ export default function ProfilePage() {
 
     const result = await updateUserProfileAction(submitFormData);
 
-    if (result.success ) {
+    if (result.success) {
       setSuccess(true);
       setUser(result.data as unknown as User);
       setTimeout(() => setSuccess(false), 3000);
@@ -227,7 +227,6 @@ export default function ProfilePage() {
                 {formData.avatar ? (
                   <div className="relative w-32 h-32 rounded-full overflow-hidden">
                     <Image
-                    
                       src={formData.avatar}
                       alt="Avatar"
                       fill

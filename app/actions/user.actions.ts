@@ -175,13 +175,14 @@ export async function updateUserProfileAction(formData: FormData) {
     // Build update object from formData
     const updateData: Record<string, string> = {};
 
-    const displayName = formData.get("displayName") as string;
+    const displayName = formData.get("name") as string;
+    console.log(displayName)
     const bio = formData.get("bio") as string;
     const location = formData.get("location") as string;
     const website = formData.get("website") as string;
     const avatar = formData.get("avatar") as string;
 
-    if (displayName) updateData.displayName = displayName;
+    if (displayName) updateData.name = displayName;
     if (bio) updateData.bio = bio;
     if (location) updateData.location = location;
     if (website) updateData.website = website;
@@ -197,9 +198,10 @@ export async function updateUserProfileAction(formData: FormData) {
       cache: "no-store",
       credentials: "include",
     });
+   
 
     const result: ApiResponse<{ user: User }> = await response.json();
-
+console.log(result)
     if (!response.ok) {
       return {
         success: false,
