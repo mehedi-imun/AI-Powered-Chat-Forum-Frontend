@@ -90,10 +90,8 @@ export default function LoginPage() {
       const redirectTo = urlParams.get("redirect");
       if (redirectTo) {
         router.push(redirectTo);
-      } else if (result.user.role.toLowerCase() === "admin") {
-        router.push("/admin");
       } else {
-        router.push("/dashboard");
+        router.push("/threads");
       }
     } else {
       setError(result.error || "Login failed");
