@@ -23,8 +23,7 @@ export function Footer() {
             </p>
             <div className="flex gap-4">
               <a
-                href="https://github.com"
-                target="_blank"
+                href="#"
                 rel="noopener noreferrer"
                 className="text-gray-600 hover:text-primary transition-colors"
                 aria-label="GitHub"
@@ -32,8 +31,7 @@ export function Footer() {
                 <Github className="h-5 w-5" />
               </a>
               <a
-                href="https://twitter.com"
-                target="_blank"
+                href="#"
                 rel="noopener noreferrer"
                 className="text-gray-600 hover:text-primary transition-colors"
                 aria-label="Twitter"
@@ -41,8 +39,7 @@ export function Footer() {
                 <Twitter className="h-5 w-5" />
               </a>
               <a
-                href="https://linkedin.com"
-                target="_blank"
+                href="#"
                 rel="noopener noreferrer"
                 className="text-gray-600 hover:text-primary transition-colors"
                 aria-label="LinkedIn"
@@ -66,7 +63,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/features"
+                  href="#"
                   className="text-gray-600 hover:text-primary transition-colors"
                 >
                   Features
@@ -74,7 +71,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/pricing"
+                  href="#"
                   className="text-gray-600 hover:text-primary transition-colors"
                 >
                   Pricing
@@ -82,7 +79,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/changelog"
+                  href="/#"
                   className="text-gray-600 hover:text-primary transition-colors"
                 >
                   Changelog
@@ -97,7 +94,7 @@ export function Footer() {
             <ul className="space-y-2 text-sm">
               <li>
                 <Link
-                  href="/about"
+                  href="#"
                   className="text-gray-600 hover:text-primary transition-colors"
                 >
                   About Us
@@ -105,7 +102,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/blog"
+                  href="#"
                   className="text-gray-600 hover:text-primary transition-colors"
                 >
                   Blog
@@ -113,7 +110,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/careers"
+                  href="#"
                   className="text-gray-600 hover:text-primary transition-colors"
                 >
                   Careers
@@ -121,7 +118,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/contact"
+                  href="#"
                   className="text-gray-600 hover:text-primary transition-colors"
                 >
                   Contact
@@ -136,7 +133,7 @@ export function Footer() {
             <ul className="space-y-2 text-sm">
               <li>
                 <Link
-                  href="/privacy"
+                  href="#"
                   className="text-gray-600 hover:text-primary transition-colors"
                 >
                   Privacy Policy
@@ -144,7 +141,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/terms"
+                  href="#"
                   className="text-gray-600 hover:text-primary transition-colors"
                 >
                   Terms of Service
@@ -152,7 +149,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/cookies"
+                  href="#"
                   className="text-gray-600 hover:text-primary transition-colors"
                 >
                   Cookie Policy
@@ -160,7 +157,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/guidelines"
+                  href="#"
                   className="text-gray-600 hover:text-primary transition-colors"
                 >
                   Community Guidelines
@@ -172,8 +169,7 @@ export function Footer() {
 
         <div className="border-t mt-8 pt-8 text-center text-sm text-gray-600 dark:text-gray-400">
           <p>
-            &copy; {currentYear} Chat Forum. All rights reserved. Built with
-            Next.js, TypeScript, and ❤️
+            &copy; {currentYear} Chat Forum. All rights reserved.
           </p>
         </div>
       </div>
