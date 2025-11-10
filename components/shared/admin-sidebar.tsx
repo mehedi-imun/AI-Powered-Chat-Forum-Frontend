@@ -19,6 +19,7 @@ import { useAppDispatch } from "@/lib/hooks/use-app-dispatch";
 import { toggleSidebar } from "@/lib/redux/slices/uiSlice";
 
 const navigation = [
+  { name: "Home", href: "/", icon: Home },
   { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { name: "Users", href: "/admin/users", icon: Users },
   { name: "Threads", href: "/admin/threads", icon: MessageSquare },
@@ -26,12 +27,25 @@ const navigation = [
   { name: "AI Moderation", href: "/admin/moderation", icon: Shield },
   { name: "Reports", href: "/admin/reports", icon: Flag },
   { name: "Notifications", href: "/admin/notifications", icon: Bell },
-  { name: "Settings", href: "/admin", icon: Settings },
+  { name: "Settings", href: "/admin/settings", icon: Settings },
+
+  { name: "User Discussions", href: "/threads", icon: MessageSquare },
 ];
 
-const externalLinks = [
-  { name: "View Site", href: "/", icon: Home },
-  { name: "Discussions", href: "/threads", icon: MessageSquare },
+
+const monitoringLinks = [
+  {
+    name: "Grafana",
+    href: "http://3.1.47.175:3000",
+    icon: Shield,
+    external: true,
+  },
+  {
+    name: "Prometheus",
+    href: "http://3.1.47.175:9090/",
+    icon: Shield,
+    external: true,
+  },
 ];
 
 export function AdminSidebar() {
@@ -42,9 +56,7 @@ export function AdminSidebar() {
   if (!sidebarOpen) return null;
 
   const handleClose = () => {
-    if (window.innerWidth < 1024) {
-      dispatch(toggleSidebar());
-    }
+    dispatch(toggleSidebar());
   };
 
   return (
@@ -92,25 +104,39 @@ export function AdminSidebar() {
           })}
         </nav>
 
-        {/* External Links */}
-        <div className="px-3 pb-6">
-          <div className="border-t border-gray-700 pt-4 space-y-1">
-            {externalLinks.map((item) => {
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  onClick={handleClose}
-                  className="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-sm text-gray-400 hover:bg-gray-800 hover:text-white"
-                  rel="noopener noreferrer"
+        {/* Monitoring Tools */}
+        <div className="border-t border-gray-700 mt-4 pt-4 space-y-1">
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-3 mb-2">
+            Monitoring
+          </p>
+          {monitoringLinks.map((item) => {
+            const Icon = item.icon;
+            return (
+              <a
+                key={item.name}
+                href={item.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-sm text-gray-400 hover:bg-gray-800 hover:text-white"
+              >
+                <Icon className="w-5 h-5" />
+                {item.name}
+                <svg
+                  className="w-3 h-3 ml-auto"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                 >
-                  <Icon className="w-5 h-5" />
-                  {item.name}
-                </Link>
-              );
-            })}
-          </div>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                  />
+                </svg>
+              </a>
+            );
+          })}
         </div>
       </aside>
     </>
