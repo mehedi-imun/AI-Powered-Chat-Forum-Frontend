@@ -22,7 +22,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, LogIn } from "lucide-react";
-
 export default function LoginPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -32,27 +31,36 @@ export default function LoginPage() {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "admin@chatforum.com",
-      password: "Admin@1234",
+      email: "",
+      password: "",
     },
   });
+
+  //  Autofill helper
+  const handleAutofill = (type: "admin" | "user") => {
+    if (type === "admin") {
+      setValue("email", "mehediimun@gmail.com");
+      setValue("password", "123456");
+    } else {
+      setValue("email", "mehediimun.ph@gmail.com");
+      setValue("password", "123456");
+    }
+  };
 
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
     setError(null);
-
     const formData = new FormData();
     formData.append("email", data.email);
     formData.append("password", data.password);
 
     const result = await loginAction(formData);
-
     if (result.success && result.user && result.token) {
-      // Map the user data to match Redux User type
       let userRole = UserRole.MEMBER;
       if (result.user.role.toLowerCase() === "admin") {
         userRole = UserRole.ADMIN;
@@ -71,7 +79,6 @@ export default function LoginPage() {
 
       dispatch(setCredentials({ user: mappedUser, accessToken: result.token }));
 
-      // Check if email is verified
       if (!result.user.emailVerified) {
         router.push(
           `/verify-email?email=${encodeURIComponent(result.user.email)}`
@@ -79,7 +86,6 @@ export default function LoginPage() {
         return;
       }
 
-      // Redirect based on role (only if email is verified)
       const urlParams = new URLSearchParams(window.location.search);
       const redirectTo = urlParams.get("redirect");
       if (redirectTo) {
@@ -96,85 +102,127 @@ export default function LoginPage() {
   };
 
   return (
-    <Card>
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold text-center">
-          Welcome Back
-        </CardTitle>
-        <CardDescription className="text-center">
-          Sign in to your account to continue
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {error && (
-            <Alert variant="destructive">
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
+    <div className="flex justify-center items-center my-10 mx-5">
+      <Card className="w-full max-w-lg p-6">
+        {/* Header */}
+        <CardHeader className="space-y-1 text-center">
+          <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
+          <CardDescription>Sign in to your account to continue</CardDescription>
+        </CardHeader>
 
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="you@example.com"
-              {...register("email")}
-              disabled={isLoading}
-            />
-            {errors.email && (
-              <p className="text-sm text-red-500">{errors.email.message}</p>
+        {/* Login Form */}
+        <CardContent className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            {error && (
+              <Alert variant="destructive">
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
             )}
-          </div>
 
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="password">Password</Label>
-              <Link
-                href="/forgot-password"
-                className="text-xs text-primary hover:underline"
-              >
-                Forgot password?
-              </Link>
+            {/* Email Field */}
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="you@example.com"
+                {...register("email")}
+                disabled={isLoading}
+              />
+              {errors.email && (
+                <p className="text-sm text-red-500">{errors.email.message}</p>
+              )}
             </div>
-            <Input
-              id="password"
-              type="password"
-              placeholder="••••••••"
-              {...register("password")}
-              disabled={isLoading}
-            />
-            {errors.password && (
-              <p className="text-sm text-red-500">{errors.password.message}</p>
-            )}
-          </div>
 
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Signing in...
-              </>
-            ) : (
-              <>
-                <LogIn className="mr-2 h-4 w-4" />
-                Sign In
-              </>
-            )}
-          </Button>
-        </form>
-      </CardContent>
-      <CardFooter className="flex flex-col space-y-2">
-        <div className="text-sm text-center text-muted-foreground">
-          Don&apos;t have an account?{" "}
-          <Link
-            href="/register"
-            className="text-primary hover:underline font-medium"
-          >
-            Sign up
-          </Link>
-        </div>
-      </CardFooter>
-    </Card>
+            {/* Password Field */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="password">Password</Label>
+              </div>
+              <Input
+                id="password"
+                type="password"
+                placeholder="••••••••"
+                {...register("password")}
+                disabled={isLoading}
+              />
+              {errors.password && (
+                <p className="text-sm text-red-500">
+                  {errors.password.message}
+                </p>
+              )}
+            </div>
+
+            {/* Submit */}
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Signing in...
+                </>
+              ) : (
+                <>
+                  <LogIn className="mr-2 h-4 w-4" />
+                  Sign In
+                </>
+              )}
+            </Button>
+          </form>
+
+          {/* Divider */}
+          <div className="border-t my-6" />
+
+          {/* Credentials Section */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-center">
+            {/* Admin */}
+            <div className="space-y-1">
+              <h3 className="font-semibold text-lg">Admin</h3>
+              <p className="text-sm text-muted-foreground">
+                mehediimun@gmail.com
+              </p>
+              <p className="text-sm text-muted-foreground mb-2">123456</p>
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full"
+                onClick={() => handleAutofill("admin")}
+              >
+                Autofill Admin
+              </Button>
+            </div>
+
+            {/* User */}
+            <div className="space-y-1">
+              <h3 className="font-semibold text-lg">User</h3>
+              <p className="text-sm text-muted-foreground">
+                mehediimun.ph@gmail.com
+              </p>
+              <p className="text-sm text-muted-foreground mb-2">123456</p>
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full"
+                onClick={() => handleAutofill("user")}
+              >
+                Autofill User
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+
+        {/* Footer */}
+        <CardFooter className="flex flex-col space-y-2 text-center">
+          <p className="text-sm text-muted-foreground">
+            Don&apos;t have an account?{" "}
+            <Link
+              href="/register"
+              className="text-primary hover:underline font-medium"
+            >
+              Sign up
+            </Link>
+          </p>
+        </CardFooter>
+      </Card>
+    </div>
   );
 }
