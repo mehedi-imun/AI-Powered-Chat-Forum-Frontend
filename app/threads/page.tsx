@@ -7,6 +7,8 @@ import { ThreadsSearchBar } from "@/components/threads/threads-search-bar";
 import { ThreadsList } from "@/components/threads/threads-list";
 import { ThreadsPagination } from "@/components/threads/threads-pagination";
 import { Skeleton } from "@/components/ui/skeleton";
+import { GuidelinePopup } from "./GuidelinePopup";
+
 
 export const metadata: Metadata = {
   title: "Discussions | Chat Forum",
@@ -148,6 +150,7 @@ export default async function ThreadsPage({
     <>
       <Navbar />
       <main className="min-h-screen bg-gray-50">
+        <GuidelinePopup />
         <div className="container mx-auto px-4 py-8">
           <div className="mb-8">
             <div className="flex items-center justify-between mb-4">

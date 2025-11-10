@@ -32,7 +32,6 @@ const navigation = [
   { name: "User Discussions", href: "/threads", icon: MessageSquare },
 ];
 
-
 const monitoringLinks = [
   {
     name: "Grafana",
@@ -56,7 +55,9 @@ export function AdminSidebar() {
   if (!sidebarOpen) return null;
 
   const handleClose = () => {
-    dispatch(toggleSidebar());
+    if (window.innerWidth < 1024) {
+      dispatch(toggleSidebar());
+    }
   };
 
   return (
