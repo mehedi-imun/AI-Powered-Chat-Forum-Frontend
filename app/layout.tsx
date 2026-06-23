@@ -5,7 +5,6 @@ import "./globals.css";
 import SocketProvider from "@/components/providers/socket-provider";
 import ApiVersionBadge from "@/components/shared/ApiVersionBadge";
 
-
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],

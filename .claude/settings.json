@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd /home/mehedi/web-development/projects/Chat\\ Forum\\ Application/frontend && npx tsc --noEmit 2>&1 | grep -E 'error TS' | head -5 || true"
+          }
+        ]
+      }
+    ]
+  }
+}
