@@ -2,7 +2,6 @@ import { getHealthAction } from "@/app/actions/health.actions";
 
 export default async function ApiVersionBadge() {
 	const health = await getHealthAction();
-	console.log("health", health);
 
 	if (!health) return null;
 
@@ -15,7 +14,6 @@ export default async function ApiVersionBadge() {
 	return (
 		<span className="text-sm font-medium text-foreground border border-border rounded px-2 py-1">
 			v{version} · {uptimeDisplay}
-			hello
 		</span>
 	);
 }
