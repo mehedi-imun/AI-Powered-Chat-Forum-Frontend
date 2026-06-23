@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { ReduxProvider } from "@/components/providers/redux-provider";
 import "./globals.css";
 import SocketProvider from "@/components/providers/socket-provider";
+import ApiVersionBadge from "@/components/shared/ApiVersionBadge";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,6 +36,9 @@ export default function RootLayout({
       >
         <ReduxProvider>
           <SocketProvider>{children}</SocketProvider>
+          <div className="fixed bottom-3 right-3 z-50">
+            <ApiVersionBadge />
+          </div>
         </ReduxProvider>
       </body>
     </html>
