@@ -24,6 +24,12 @@ import {
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { getCookie } from "@/lib/helpers/cookies";
+import { QueueHealthCard } from "@/components/shared/queue-health-card";
+import {
+  getFailedJobsAction,
+  replayFailedJobAction,
+  type FailedJob,
+} from "@/app/actions/admin.actions";
 
 interface ModeratedPost {
   _id: string;
@@ -77,6 +83,8 @@ export default function ModerationPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
   const limit = 10;
+  const [failedJobs, setFailedJobs] = useState<FailedJob[]>([]);
+  const [replayingJobId, setReplayingJobId] = useState<string | null>(null);
 
   const fetchSummary = async () => {
     try {
@@ -90,9 +98,25 @@ export default function ModerationPage() {
 
       const result = await response.json();
       setSummary(result.data);
-    } catch (error) {
-      console.error("Failed to fetch AI summary:", error);
+    } catch {
+      // silently handle fetch errors
     }
+  };
+
+  const fetchFailedJobs = async () => {
+    const result = await getFailedJobsAction();
+    if (result.success) {
+      setFailedJobs(result.data?.jobs ?? []);
+    }
+  };
+
+  const handleReplayJob = async (id: string) => {
+    setReplayingJobId(id);
+    const result = await replayFailedJobAction(id);
+    if (result.success) {
+      setFailedJobs((prev) => prev.filter((j) => j._id !== id));
+    }
+    setReplayingJobId(null);
   };
 
   const fetchModeratedPosts = useCallback(async () => {
@@ -115,8 +139,8 @@ export default function ModerationPage() {
       setPosts(result.data?.posts || []);
       setTotal(result.data?.total || 0);
       setTotalPages(result.data?.totalPages || 1);
-    } catch (error) {
-      console.error("Failed to fetch moderated posts:", error);
+    } catch {
+      // silently handle fetch errors
     } finally {
       setLoading(false);
     }
@@ -125,6 +149,7 @@ export default function ModerationPage() {
   useEffect(() => {
     fetchSummary();
     fetchModeratedPosts();
+    fetchFailedJobs();
   }, [filter, fetchModeratedPosts]);
 
   const handleFilterChange = (newFilter: string) => {
@@ -210,6 +235,10 @@ export default function ModerationPage() {
         >
           Refresh
         </button>
+      </div>
+
+      <div className="mb-6">
+        <QueueHealthCard />
       </div>
 
       {/* AI Summary Stats */}
@@ -625,6 +654,56 @@ export default function ModerationPage() {
           </Pagination>
         </div>
       )}
+
+      {/* Failed Queue Jobs */}
+      <div className="space-y-4">
+        <h2 className="text-xl font-semibold flex items-center gap-2">
+          <AlertTriangle className="h-5 w-5 text-red-600" />
+          Failed Queue Jobs
+        </h2>
+        {failedJobs.length === 0 ? (
+          <Card>
+            <CardContent className="py-8 text-center text-gray-500 text-sm">
+              No failed queue jobs.
+            </CardContent>
+          </Card>
+        ) : (
+          failedJobs.map((job) => (
+            <Card key={job._id}>
+              <CardContent className="py-4">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xs font-mono bg-gray-100 px-2 py-0.5 rounded">
+                        {job.queue}
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        {job.retryCount} retries
+                      </span>
+                      <span className="text-xs text-gray-400">
+                        {formatDistanceToNow(new Date(job.failedAt), {
+                          addSuffix: true,
+                        })}
+                      </span>
+                    </div>
+                    <p className="text-sm text-red-700 truncate">
+                      {job.lastError}
+                    </p>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={replayingJobId === job._id}
+                    onClick={() => handleReplayJob(job._id)}
+                  >
+                    {replayingJobId === job._id ? "Replaying..." : "Replay"}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))
+        )}
+      </div>
     </div>
   );
 }

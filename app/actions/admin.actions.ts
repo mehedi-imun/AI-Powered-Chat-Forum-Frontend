@@ -598,6 +598,130 @@ export async function getSystemSettingsAction() {
   }
 }
 
+export interface FailedJob {
+  _id: string;
+  queue: string;
+  payload: Record<string, unknown>;
+  retryCount: number;
+  lastError: string;
+  status: "failed" | "replayed";
+  failedAt: string;
+  replayedAt?: string;
+}
+
+/**
+ * Get queue health (Admin/Moderator only)
+ */
+export async function getQueueHealthAction(): Promise<{
+  success: boolean;
+  data?: { pendingModeration: number; failedJobs: number };
+  error?: string;
+}> {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("accessToken")?.value;
+
+    if (!token) {
+      return { success: false, error: "Authentication required. Please log in." };
+    }
+
+    const response = await fetch(`${API_URL}/admin/queue/health`, {
+      cache: "no-store",
+      headers: { Authorization: `Bearer ${token}` },
+      credentials: "include",
+    });
+
+    const result: ApiResponse<{ pendingModeration: number; failedJobs: number }> =
+      await response.json();
+
+    if (!response.ok) {
+      return { success: false, error: result.message || "Failed to fetch queue health" };
+    }
+
+    return { success: true, data: result.data };
+  } catch {
+    return { success: false, error: "Network error. Please try again." };
+  }
+}
+
+/**
+ * Get failed queue jobs (Admin only)
+ */
+export async function getFailedJobsAction(page = 1): Promise<{
+  success: boolean;
+  data?: { jobs: FailedJob[]; total: number; totalPage: number };
+  error?: string;
+}> {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("accessToken")?.value;
+
+    if (!token) {
+      return { success: false, error: "Authentication required. Please log in." };
+    }
+
+    const response = await fetch(
+      `${API_URL}/admin/queue/failed-jobs?page=${page}&limit=10`,
+      {
+        cache: "no-store",
+        headers: { Authorization: `Bearer ${token}` },
+        credentials: "include",
+      }
+    );
+
+    const result: ApiResponse<{ jobs: FailedJob[]; total: number; totalPage: number }> =
+      await response.json();
+
+    if (!response.ok) {
+      return { success: false, error: result.message || "Failed to fetch failed jobs" };
+    }
+
+    return { success: true, data: result.data };
+  } catch {
+    return { success: false, error: "Network error. Please try again." };
+  }
+}
+
+/**
+ * Replay a failed queue job (Admin only)
+ */
+export async function replayFailedJobAction(id: string): Promise<{
+  success: boolean;
+  error?: string;
+}> {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("accessToken")?.value;
+
+    if (!token) {
+      return { success: false, error: "Authentication required. Please log in." };
+    }
+
+    const response = await fetch(
+      `${API_URL}/admin/queue/failed-jobs/${id}/replay`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        credentials: "include",
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      return { success: false, error: result.message || "Failed to replay job" };
+    }
+
+    revalidatePath("/admin/moderation");
+    return { success: true };
+  } catch {
+    return { success: false, error: "Network error. Please try again." };
+  }
+}
+
 /**
  * Update system settings (Admin only)
  */
